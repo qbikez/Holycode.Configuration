@@ -10,37 +10,20 @@ namespace Microsoft.Framework.ConfigurationModel
 {
     public static class LogConfigExtensions
     {
-        public static IConfiguration ConfigureLog4net(this IConfiguration config, string appName, ILog log = null, string logRootPath = null)
+        public static IConfiguration ConfigureLog4net(this IConfiguration config, string appName, ILog log = null, string logRootPath = null, bool internalDebug = false)
         {
+            if (internalDebug)
+            {
+                log4net.Util.LogLog.InternalDebugging = true;
+            }
             log = log ?? LogManager.GetLogger("root");
             var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
 
             var section = config.GetSubKeys("log4net.appenders");
 
-            var solrConnectionString = config.GetConnectionStringValue("log4net:appenders:solr");
-            var solrEnabled = (config.GetNullable<bool>("log4net:appenders:solr:enabled") ?? true) && solrConnectionString != null;
-            if (solrEnabled)
-            {
-                log.AddSolrLog(options =>
-                {
-                    options.SolrUrl = solrConnectionString;
-                    options.DebugLog = null;
-                }, domain: appName);
-            }
+            ConfigureSolrLog(config, appName, log);
 
-            var logFilename = config.GetConnectionStringValue("log4net:appenders:file");
-            var fileEnabled = (config.GetNullable<bool>("log4net:appenders:file:enabled") ?? true);
-            if (fileEnabled)
-            {
-                logRootPath = logRootPath ??
-                              config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
-                logFilename = logFilename ?? "log/{appName}-{env}.log";
-                var logfile = $"{logRootPath}/{logFilename}";
-                log.AddFileAppender(logfile,
-                    config: appender =>
-                    {
-                    });
-            }
+            ConfigureFileLog(config, appName, env, logRootPath, log);
 
             var traceEnabled = config.GetNullable<bool>("log4net:appenders:trace:enabled") ?? true;
             if (traceEnabled && Debugger.IsAttached)
@@ -55,6 +38,48 @@ namespace Microsoft.Framework.ConfigurationModel
             }
 
             return config;
+        }
+
+        private static void ConfigureSolrLog(IConfiguration config, string appName, ILog log)
+        {
+            var solrConnectionString = config.GetConnectionStringValue("log4net:appenders:solr");
+            var solrEnabled = (config.GetNullable<bool>("log4net:appenders:solr:enabled") ?? true) &&
+                              solrConnectionString != null;
+            if (solrEnabled)
+            {
+                log.AddSolrLog(options =>
+                {
+                    options.SolrUrl = solrConnectionString;
+                    options.DebugLog = null;
+                },
+                    domain: appName);
+            }
+        }
+
+        private static void ConfigureFileLog(IConfiguration config, string appName, string env, string logRootPath, ILog log)
+        {
+            var logFilename = config.GetConnectionStringValue("log4net:appenders:file");
+            var fileEnabled = (config.GetNullable<bool>("log4net:appenders:file:enabled") ?? true);
+
+            if (logFilename?.Equals("True") ?? false)
+            {
+                logFilename = null;
+                fileEnabled = true;
+            }
+            if (logFilename?.Equals("False") ?? false)
+            {
+                fileEnabled = false;
+            }
+
+            if (fileEnabled)
+            {
+                logRootPath = logRootPath ??
+                              config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
+                logFilename = logFilename ?? $"log\\{appName}-{env}.log";
+                var logfile = $"{logRootPath}\\{logFilename}";
+                log.AddFileAppender(logfile,
+                    config: appender => { });
+            }
         }
     }
 }
