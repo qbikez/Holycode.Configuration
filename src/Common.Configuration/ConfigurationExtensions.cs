@@ -113,24 +113,29 @@ namespace Microsoft.Framework.ConfigurationModel
             var keys = configuration.GetSubKeys();
 
             string val = null;
-            if (configuration is ConfigurationFocus)
-            {
-                val = ((ConfigurationFocus)configuration).Get(null);
-            }
+           
             TResult ag = default(TResult);
             if (keys != null)
             {
                 foreach (var key in keys)
                 {
-                    var subag = Aggregate(key.Value, action, rootNs + ":" + key.Key);
-                    ag = action(ag, rootNs + ":" + key.Key, subag);
+                    var sub = key.Value;
+                    if (sub is ConfigurationFocus)
+                    {
+                        val = ((ConfigurationFocus)sub).Get(null);
+                    }
+                    if (val != null)
+                    {
+                        ag = action(ag, rootNs + ":" + key.Key, val);
+                    }
+                    else
+                    {
+                        var subag = Aggregate(key.Value, action, rootNs + ":" + key.Key);
+                        ag = action(ag, rootNs + ":" + key.Key, subag);
+                    }
                 }
             }
-            if (val != null)
-            {
-                var key = rootNs.TrimStart(':');
-                ag = action(ag, key, val);
-            }
+            
 
             return ag;
         }
