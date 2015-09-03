@@ -6,11 +6,17 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Framework.ConfigurationModel.Internal;
 
 namespace Common.Configuration
 {
     public static class WebConfigExtensions
     {
+        /// <summary>
+        /// Adds the config values from web.config AppSettings and ConnectionStrings to IConfiguration, replacing '.' separator with ':'
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns></returns>
         public static IConfiguration AddWebConfig(this IConfiguration configuration)
         {
             var keys = ConfigurationManager.AppSettings.AllKeys;
@@ -29,6 +35,15 @@ namespace Common.Configuration
                 configuration.Set($"connectionStrings:{c.Name}:provider", c.ProviderName);
             }
 
+            return configuration;
+        }
+
+     
+        
+
+        public static IConfiguration FillAppSettings(this IConfiguration configuration, string rootNs = "")
+        {
+            configuration.Traverse((key, val) => { ConfigurationManager.AppSettings[key.Replace(':','.')] = val; });
             return configuration;
         }
     }
