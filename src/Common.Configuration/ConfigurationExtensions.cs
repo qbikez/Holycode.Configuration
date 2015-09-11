@@ -55,7 +55,8 @@ namespace Microsoft.Framework.ConfigurationModel
           where T : struct
         {
             var v = (cfg.Get(key));
-            if (v == null) return null;
+            if (string.IsNullOrEmpty(v)) return null;
+            if (v.Equals("false", StringComparison.InvariantCultureIgnoreCase) && typeof(T) != typeof(bool)) return null;
             else return (T)Convert.ChangeType(v, typeof(T));
         }
 
