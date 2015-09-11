@@ -45,6 +45,11 @@ namespace Microsoft.Framework.ConfigurationModel
             var solrConnectionString = config.GetConnectionStringValue("log4net:appenders:solr");
             var solrEnabled = (config.GetNullable<bool>("log4net:appenders:solr:enabled") ?? true) &&
                               solrConnectionString != null;
+            if (solrConnectionString?.Equals("False") ?? false)
+            {
+                solrConnectionString = null;
+                solrEnabled = false;
+            }
             if (solrEnabled)
             {
                 log.AddSolrLog(options =>
