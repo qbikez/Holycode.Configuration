@@ -41,6 +41,7 @@ namespace Microsoft.Framework.ConfigurationModel
                     }
                 }
 
+                src = src.AddJsonFile($"env.local.json", optional: true);
             }
             else
             {
