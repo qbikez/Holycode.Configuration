@@ -41,7 +41,7 @@ namespace Microsoft.Framework.ConfigurationModel
                     }
                 }
 
-                src = src.AddJsonFile($"env.local.json", optional: true);
+                src = src.AddJsonFile(Path.Combine(envPath.Source, $"env.local.json"), optional: true);
             }
             else
             {
@@ -52,13 +52,20 @@ namespace Microsoft.Framework.ConfigurationModel
         }
 
 
-        public static Nullable<T> GetNullable<T>(this IConfiguration cfg, string key)
+        public static Nullable<T> GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
           where T : struct
         {
             var v = (cfg.Get(key));
             if (string.IsNullOrEmpty(v)) return null;
-            if (v.Equals("false", StringComparison.InvariantCultureIgnoreCase) && typeof(T) != typeof(bool)) return null;
-            else return (T)Convert.ChangeType(v, typeof(T));
+            if (v.Equals("false", StringComparison.InvariantCultureIgnoreCase) && typeof(T) != typeof(bool))
+            {
+                return null;
+            }
+            else
+            {
+                if (convert != null) return convert(v);
+                return (T)Convert.ChangeType(v, typeof(T));
+            }
         }
 
         public static Dictionary<string, string> GetDictionary(this IConfiguration cfg, string key)
