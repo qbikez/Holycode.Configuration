@@ -17,6 +17,9 @@ namespace Microsoft.Framework.ConfigurationModel
                 log4net.Util.LogLog.InternalDebugging = true;
             }
             log = log ?? LogManager.GetLogger("root");
+            var level = config.Get("log4net:level") ?? "Debug";
+            log.SetLevel(level);
+            
             var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
 
             var section = config.GetSubKeys("log4net.appenders");
@@ -84,6 +87,7 @@ namespace Microsoft.Framework.ConfigurationModel
                 var logfile = $"{logRootPath}\\{logFilename}";
                 log.AddFileAppender(logfile,
                     config: appender => { });
+                log.DebugFormat("configured file appender");
             }
         }
     }
