@@ -85,8 +85,7 @@ namespace Microsoft.Framework.ConfigurationModel
                               config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
                 logFilename = logFilename ?? $"log\\{appName}-{env}.log";
                 var logfile = $"{logRootPath}\\{logFilename}";
-                log.AddFileAppender(logfile,
-                    config: appender => { });
+                log.AddFileAppender(logfile);
                 log.DebugFormat("configured file appender");
             }
         }
