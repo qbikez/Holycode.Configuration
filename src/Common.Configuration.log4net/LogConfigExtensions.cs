@@ -64,7 +64,7 @@ namespace Microsoft.Framework.ConfigurationModel
             }
         }
 
-        private static void ConfigureFileLog(IConfiguration config, string appName, string env, string logRootPath, ILog log)
+        private static void ConfigureFileLog(IConfiguration config, string appName, string env, string logRootPath, ILog log, bool minimalLock = true)
         {
             var logFilename = config.GetConnectionStringValue("log4net:appenders:file");
             var fileEnabled = (config.GetNullable<bool>("log4net:appenders:file:enabled") ?? true);
@@ -85,7 +85,7 @@ namespace Microsoft.Framework.ConfigurationModel
                               config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
                 logFilename = logFilename ?? $"log\\{appName}-{env}.log";
                 var logfile = $"{logRootPath}\\{logFilename}";
-                log.AddFileAppender(logfile);
+                log.AddFileAppender(logfile, minimalLock: minimalLock);
                 log.DebugFormat("configured file appender");
             }
         }
