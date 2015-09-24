@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using log4net;
+using log4net.Core;
 using log4net.Repository.Hierarchy;
 using Microsoft.Framework.ConfigurationModel;
 
@@ -52,6 +53,20 @@ namespace Microsoft.Framework.ConfigurationModel
 
             return config;
         }
+
+        public static ILog ConfigureStatsLogs(this IConfiguration config, string appName, string logdir)
+        {
+            var statsLog = log4net.LogManager.GetLogger("req-stats");
+            statsLog.SetLevel(Level.Info);
+            statsLog.SetAdditivity(false);
+            statsLog.AddFileAppender($"{logdir}/stats/{appName}-stats.csv", "stats", minimalLock: false);
+
+            var reqLog = log4net.LogManager.GetLogger("req");
+            reqLog.SetAdditivity(false);
+            reqLog.AddFileAppender($"{logdir}/reqs/{appName}-req.log", "reqs", minimalLock: false);
+            return statsLog;
+        }
+
 
         private static void ConfigureSolrLog(IConfiguration config, string appName, ILog log)
         {
