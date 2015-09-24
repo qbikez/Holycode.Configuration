@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using log4net;
+using log4net.Repository.Hierarchy;
 using Microsoft.Framework.ConfigurationModel;
 
 namespace Microsoft.Framework.ConfigurationModel
@@ -16,9 +17,18 @@ namespace Microsoft.Framework.ConfigurationModel
             {
                 log4net.Util.LogLog.InternalDebugging = true;
             }
+
+
             log = log ?? LogManager.GetLogger("root");
+            bool isRoot = log.Logger.Name == "root";
+
             var level = config.Get("log4net:level") ?? "Debug";
             log.SetLevel(level);
+            if (isRoot)
+            {
+                ((Logger)log.Logger).Hierarchy.Root.SetLevel(level);
+            }
+            
             
             var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
 
