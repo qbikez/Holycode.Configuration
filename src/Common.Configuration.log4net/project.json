@@ -9,7 +9,7 @@
   "dependencies": {
     "Common.Configuration": "",
     "log4net": "2.0.3",
-    "QLogger.Solr": "1.1.0-beta4",
+    "QLogger.Solr": "1.1.0-beta5",
     "Common.Utils.log4net": "",
   },
   "commands": {

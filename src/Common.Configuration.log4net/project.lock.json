@@ -5,13 +5,209 @@
     "": [
       "Common.Configuration ",
       "log4net >= 2.0.3",
-      "QLogger.Solr >= 1.1.0-beta4",
+      "QLogger.Solr >= 1.1.0-beta5",
       "Common.Utils.log4net "
     ],
     ".NETFramework,Version=v4.5.1": [],
     "DNX,Version=v4.5.1": []
   },
   "libraries": {
+    "Common.Configuration/1.1.4": {
+      "serviceable": false,
+      "sha": "/AELpboNnZIUQOt67vF1XUuEkzGp1rqElXsaGfBSQVeSONEqOK5uEkf6Odffy40tPMqaBud/2qgS1C5cqpJ0lA==",
+      "frameworks": {
+        ".NETFramework,Version=v4.5.1": {
+          "dependencies": {
+            "Microsoft.Owin": "3.0.1",
+            "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1",
+            "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3",
+            "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3"
+          },
+          "frameworkAssemblies": [
+            "System.Configuration",
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/net45/Common.Configuration.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net45/Common.Configuration.dll"
+          ]
+        },
+        "DNX,Version=v4.5.1": {
+          "dependencies": {
+            "Microsoft.AspNet.Hosting.Interfaces": "1.0.0-beta4",
+            "Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.0-beta4",
+            "Microsoft.Framework.ConfigurationModel": "1.0.0-beta4",
+            "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4"
+          },
+          "frameworkAssemblies": [
+            "System.Configuration",
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/dnx451/Common.Configuration.dll"
+          ],
+          "compileAssemblies": [
+            "lib/dnx451/Common.Configuration.dll"
+          ]
+        },
+        ".NETFramework,Version=v4.5": {
+          "dependencies": {
+            "Microsoft.Owin": "3.0.1",
+            "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1",
+            "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3",
+            "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3"
+          },
+          "frameworkAssemblies": [
+            "System.Configuration",
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/net45/Common.Configuration.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net45/Common.Configuration.dll"
+          ]
+        }
+      },
+      "files": [
+        "Common.Configuration.1.1.4.nupkg",
+        "Common.Configuration.1.1.4.nupkg.sha512",
+        "Common.Configuration.nuspec",
+        "app/project.json",
+        "lib/dnx451/Common.Configuration.dll",
+        "lib/dnx451/Common.Configuration.xml",
+        "lib/net45/Common.Configuration.dll",
+        "lib/net45/Common.Configuration.xml"
+      ]
+    },
+    "Common.Configuration.log4net/1.0.1": {
+      "serviceable": false,
+      "sha": "4jddITiyrw1gUh3hNU/1cfb5RSmhaDRw3+hR1oI4QDGn9ws24JBOzPP9hTRilw+VNH6yXlBNh3J9QUJKHJMErw==",
+      "frameworks": {
+        ".NETFramework,Version=v4.5.1": {
+          "dependencies": {
+            "Common.Configuration": "1.1.4",
+            "log4net": "2.0.3",
+            "QLogger.Solr": "1.1.0-beta4",
+            "Common.Utils.log4net": "1.1.2"
+          },
+          "frameworkAssemblies": [
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/net451/Common.Configuration.log4net.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net451/Common.Configuration.log4net.dll"
+          ]
+        },
+        "DNX,Version=v4.5.1": {
+          "dependencies": {
+            "Common.Configuration": "1.1.4",
+            "log4net": "2.0.3",
+            "QLogger.Solr": "1.1.0-beta4",
+            "Common.Utils.log4net": "1.1.2"
+          },
+          "frameworkAssemblies": [
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/dnx451/Common.Configuration.log4net.dll"
+          ],
+          "compileAssemblies": [
+            "lib/dnx451/Common.Configuration.log4net.dll"
+          ]
+        },
+        ".NETFramework,Version=v4.5": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [],
+          "compileAssemblies": []
+        }
+      },
+      "files": [
+        "Common.Configuration.log4net.1.0.1.nupkg",
+        "Common.Configuration.log4net.1.0.1.nupkg.sha512",
+        "Common.Configuration.log4net.nuspec",
+        "app/project.json",
+        "lib/dnx451/Common.Configuration.log4net.dll",
+        "lib/dnx451/Common.Configuration.log4net.xml",
+        "lib/net451/Common.Configuration.log4net.dll",
+        "lib/net451/Common.Configuration.log4net.xml"
+      ]
+    },
+    "Common.Utils.log4net/1.1.2": {
+      "serviceable": false,
+      "sha": "+upqhsjaYLr5KYxZvgAl2pAQQ9dzCEISZnC6o0OMByk6Q3JINrJ8ewMnHujIVDkwpkCcA9zO8hLX64tX/AL0lw==",
+      "frameworks": {
+        ".NETFramework,Version=v4.5.1": {
+          "dependencies": {
+            "log4net": "2.0.3"
+          },
+          "frameworkAssemblies": [
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/net451/Common.Utils.log4net.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net451/Common.Utils.log4net.dll"
+          ]
+        },
+        "DNX,Version=v4.5.1": {
+          "dependencies": {
+            "log4net": "2.0.3"
+          },
+          "frameworkAssemblies": [
+            "mscorlib",
+            "System",
+            "System.Core",
+            "Microsoft.CSharp"
+          ],
+          "runtimeAssemblies": [
+            "lib/dnx451/Common.Utils.log4net.dll"
+          ],
+          "compileAssemblies": [
+            "lib/dnx451/Common.Utils.log4net.dll"
+          ]
+        },
+        ".NETFramework,Version=v4.5": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [],
+          "compileAssemblies": []
+        }
+      },
+      "files": [
+        "Common.Utils.log4net.1.1.2.nupkg",
+        "Common.Utils.log4net.1.1.2.nupkg.sha512",
+        "Common.Utils.log4net.nuspec",
+        "lib/dnx451/Common.Utils.log4net.dll",
+        "lib/dnx451/Common.Utils.log4net.xml",
+        "lib/net451/Common.Utils.log4net.dll",
+        "lib/net451/Common.Utils.log4net.xml"
+      ]
+    },
     "CommonServiceLocator/1.0": {
       "serviceable": false,
       "sha": "RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ==",
@@ -1122,9 +1318,9 @@
         "lib/net451/QLogger.Log4net.dll"
       ]
     },
-    "QLogger.Solr/1.1.0-beta4": {
+    "QLogger.Solr/1.1.0-beta5": {
       "serviceable": false,
-      "sha": "AE0Ijs/Ve8obFhjq/nyZYpgfDOPDxHX6SKqv1XiDrTkUD6VHPhebo8ebHxnSOWJzfCWlhYamh88hUK8n3TlMyA==",
+      "sha": "xVnYou+8L694/KhXOn01iwVpVOogbaKvfV0ayk1FxxuIh5W+OQWtTciGwiDZ8CdB63hllqOp4Dop2t2Ihvl49g==",
       "frameworks": {
         ".NETFramework,Version=v4.5.1": {
           "dependencies": {
@@ -1166,8 +1362,8 @@
         }
       },
       "files": [
-        "QLogger.Solr.1.1.0-beta4.nupkg",
-        "QLogger.Solr.1.1.0-beta4.nupkg.sha512",
+        "QLogger.Solr.1.1.0-beta5.nupkg",
+        "QLogger.Solr.1.1.0-beta5.nupkg.sha512",
         "QLogger.Solr.nuspec",
         "lib/net451/QLogger.Solr.dll",
         "lib/net451/QLogger.Solr.xml"
