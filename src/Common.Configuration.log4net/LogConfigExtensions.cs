@@ -106,13 +106,21 @@ namespace Microsoft.Framework.ConfigurationModel
 
             if (fileEnabled)
             {
-                logRootPath = logRootPath ??
-                              config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
+                logRootPath = EnsureLogPath(config, logRootPath);
                 logFilename = logFilename ?? $"log\\{appName}-{env}.log";
                 var logfile = $"{logRootPath}\\{logFilename}";
                 log.AddFileAppender(logfile, minimalLock: minimalLock);
                 log.DebugFormat("configured file appender");
+
+                ConfigureStatsLogs(config, appName, logRootPath);
             }
+        }
+
+        private static string EnsureLogPath(IConfiguration config, string logRootPath)
+        {
+            logRootPath = logRootPath ??
+                          config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
+            return logRootPath;
         }
     }
 }
