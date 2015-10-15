@@ -4,7 +4,8 @@
     "authors": [ "Holycode" ],
     "tags": [ "" ],
     "projectUrl": "",
-    "licenseUrl": "",
+  "licenseUrl": "",
+  
 
     "dependencies": {
         "Common.Configuration": "",

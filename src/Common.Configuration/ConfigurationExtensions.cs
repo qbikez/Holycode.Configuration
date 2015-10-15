@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Configuration;
 using Microsoft.Framework.ConfigurationModel.Internal;
@@ -169,6 +170,53 @@ namespace Microsoft.Framework.ConfigurationModel
                     dict.Add(key, val);
                     return dict;
                 });
+        }
+
+        /// <summary>
+        /// Gets the secure service URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="baseUrl">The base URL.</param>
+        /// <returns></returns>
+        public static string GetSecureServiceUrl(this IConfiguration config, string url, string baseUrl = null, int? sslPort = null)
+        {
+            if (url == null) return null;
+            url = config.GetServiceUrl(url, baseUrl);
+            if (sslPort == null)
+            {
+                var uri = new Uri(url);
+                if (uri.Port == 80) sslPort = 443;
+                else throw new ArgumentException($"base url uses non-standard port {uri.Port}. Cannot determine ssl port - no sslPort given and 'sslPort' key not found in config");
+            }
+            
+            if (!url.StartsWith("https://"))
+            {
+                // do not use https for localhost development
+                if (url.StartsWith("http://localhost"))
+                {
+                    return url;
+                }
+                url = url.Replace("http://", "https://");
+                url = Regex.Replace(url, @"(\:[0-9]+)/", $":{sslPort.Value}/");
+            }
+
+            return url;
+        }
+
+        public static string GetServiceUrl(this IConfiguration config, string url, string baseUrl = null)
+        {
+            if (baseUrl == null) baseUrl = config.Get("baseUrl");
+            if (baseUrl == null) throw new ArgumentException("no baseUrl given and 'baseUrl' key not found in config");
+            if (url == null) return null;
+            /// is url relative?
+            if (url.StartsWith("/"))
+            {
+                return (baseUrl.TrimEnd('/') ?? "") + url;
+            }
+            else
+            {
+                return url;
+            }
         }
     }
 }

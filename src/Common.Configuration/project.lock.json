@@ -19,64 +19,6 @@
     ]
   },
   "libraries": {
-    "Common.Configuration/1.1.4": {
-      "serviceable": false,
-      "sha": "/AELpboNnZIUQOt67vF1XUuEkzGp1rqElXsaGfBSQVeSONEqOK5uEkf6Odffy40tPMqaBud/2qgS1C5cqpJ0lA==",
-      "frameworks": {
-        ".NETFramework,Version=v4.5": {
-          "dependencies": {
-            "Microsoft.Owin": "3.0.1",
-            "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1",
-            "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3",
-            "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3"
-          },
-          "frameworkAssemblies": [
-            "System.Configuration",
-            "mscorlib",
-            "System",
-            "System.Core",
-            "Microsoft.CSharp"
-          ],
-          "runtimeAssemblies": [
-            "lib/net45/Common.Configuration.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net45/Common.Configuration.dll"
-          ]
-        },
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "Microsoft.AspNet.Hosting.Interfaces": "1.0.0-beta4",
-            "Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.0-beta4",
-            "Microsoft.Framework.ConfigurationModel": "1.0.0-beta4",
-            "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4"
-          },
-          "frameworkAssemblies": [
-            "System.Configuration",
-            "mscorlib",
-            "System",
-            "System.Core",
-            "Microsoft.CSharp"
-          ],
-          "runtimeAssemblies": [
-            "lib/dnx451/Common.Configuration.dll"
-          ],
-          "compileAssemblies": [
-            "lib/dnx451/Common.Configuration.dll"
-          ]
-        }
-      },
-      "files": [
-        "Common.Configuration.1.1.4.nupkg",
-        "Common.Configuration.1.1.4.nupkg.sha512",
-        "Common.Configuration.nuspec",
-        "app/project.json",
-        "lib/dnx451/Common.Configuration.dll",
-        "lib/dnx451/Common.Configuration.xml",
-        "lib/net45/Common.Configuration.dll",
-        "lib/net45/Common.Configuration.xml"
-      ]
-    },
     "Legimi.Microsoft.Framework.ConfigurationModel/1.0.3": {
       "serviceable": true,
       "sha": "+sq9nXHCd5P46N32GQZzA5qIsvbDKReeadH7Wh2hkei40YoeEL1+1rmLQam9j/bJPCwouI6LcZ1guUfuqr3eEw==",
