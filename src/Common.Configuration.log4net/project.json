@@ -1,34 +1,34 @@
 {
-  "version": "1.0.5",
-  "description": "Tools for configuring log4net using common.configuration model",
-  "authors": [ "Holycode" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
+    "version": "1.0.6",
+    "summary": "Tools for configuring log4net using common.configuration model",
+    "authors": [ "Holycode" ],
+    "tags": [ "" ],
+    "projectUrl": "",
+    "licenseUrl": "",
 
-  "dependencies": {
-    "Common.Configuration": "",
-    "log4net": "2.0.3",
-    "QLogger.Solr": "1.1.0-beta5",
-    "Common.Utils.log4net": "",
-  },
-  "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
-  },
-  "frameworks": {
-    "net451": {
-      "dependencies": {
-      },
-      "frameworkAssemblies": {
-      }
+    "dependencies": {
+        "Common.Configuration": "",
+        "log4net": "2.0.3",
+        "Common.Utils.log4net": "",
+        "QLogger.Solr": "1.1.0",
     },
-    "dnx451": {
-      "dependencies": {
-      },
-      "frameworkAssemblies": {
-      }
+    "commands": {
+        "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
     },
-    /*  "dnxcore50": {
+    "frameworks": {
+        "net451": {
+            "dependencies": {
+            },
+            "frameworkAssemblies": {
+            }
+        },
+        "dnx451": {
+            "dependencies": {
+            },
+            "frameworkAssemblies": {
+            }
+        },
+        /*  "dnxcore50": {
       "dependencies": {
         "System.Collections": "4.0.10-beta-22816",
         "System.Linq": "4.0.0-beta-22816",
@@ -38,5 +38,5 @@
         "System.Reflection": "4.0.10.0"
       }
     }*/
-  }
+    }
 }
