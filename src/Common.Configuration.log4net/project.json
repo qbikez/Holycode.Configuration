@@ -4,14 +4,14 @@
     "authors": [ "Holycode" ],
     "tags": [ "" ],
     "projectUrl": "",
-  "licenseUrl": "",
-  
+    "licenseUrl": "",
+
 
     "dependencies": {
         "Common.Configuration": "",
         "log4net": "2.0.3",
         "Common.Utils.log4net": "",
-        "QLogger.Solr": "1.1.0",
+        "QLogger.Solr": "1.2.1",
     },
     "commands": {
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"

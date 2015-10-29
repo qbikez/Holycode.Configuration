@@ -6,7 +6,7 @@
       "Common.Configuration ",
       "log4net >= 2.0.3",
       "Common.Utils.log4net ",
-      "QLogger.Solr >= 1.1.0"
+      "QLogger.Solr >= 1.2.1"
     ],
     ".NETFramework,Version=v4.5.1": [],
     "DNX,Version=v4.5.1": []
@@ -1130,9 +1130,9 @@
         "lib/net40/Owin.dll"
       ]
     },
-    "QLogger.Log4net/1.2.1": {
+    "QLogger.Log4net/1.3.0": {
       "serviceable": false,
-      "sha": "oE7FZeDblxxU1+gINZBUOXe734mlyecwEqEwcKCQaT2X8OOom8luu0fMT/VAymjGB/4mjAj19ffZDYlRvVcg8Q==",
+      "sha": "Zse67qsPXfIzBlwLvPPEqtzgqgnCiQJTv2AMN20tVyCDUGaJgS53cNx4BYIeo54howJRCG7mCOxwwtSqIKCOhw==",
       "frameworks": {
         ".NETFramework,Version=v4.5.1": {
           "dependencies": {
@@ -1168,8 +1168,8 @@
         }
       },
       "files": [
-        "QLogger.Log4net.1.2.1.nupkg",
-        "QLogger.Log4net.1.2.1.nupkg.sha512",
+        "QLogger.Log4net.1.3.0.nupkg",
+        "QLogger.Log4net.1.3.0.nupkg.sha512",
         "QLogger.Log4net.nuspec",
         "content/app.config.install.xdt",
         "content/web.config.install.xdt",
@@ -1177,15 +1177,15 @@
         "lib/net451/QLogger.Log4net.dll"
       ]
     },
-    "QLogger.Solr/1.1.0": {
+    "QLogger.Solr/1.2.1": {
       "serviceable": false,
-      "sha": "uI8SxpOgVM7V16rvv4rK8OGb1J+Hng5sCNRel7T5Dxe29kJQ83WsasxgDcEwh1M03Sfv/wR+1O15Hd+kvEW0Rg==",
+      "sha": "aiCQzvpdKFEjdDu6lbk9/SNg3f3sxMGByRviA9YZbSj4xyR0aNRftK4l+h1b1V+mSmdpdasLEZXY5yWd4SLyNQ==",
       "frameworks": {
         ".NETFramework,Version=v4.5.1": {
           "dependencies": {
             "Legimi.Core.Services": "1.3.0",
             "SolrNet": "0.4.0.4001",
-            "QLogger.Log4net": "1.2.1"
+            "QLogger.Log4net": "1.3.0"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
@@ -1199,7 +1199,7 @@
           "dependencies": {
             "Legimi.Core.Services": "1.3.0",
             "SolrNet": "0.4.0.4001",
-            "QLogger.Log4net": "1.2.1"
+            "QLogger.Log4net": "1.3.0"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
@@ -1213,7 +1213,7 @@
           "dependencies": {
             "Legimi.Core.Services": "1.3.0",
             "SolrNet": "0.4.0.4001",
-            "QLogger.Log4net": "1.2.1"
+            "QLogger.Log4net": "1.3.0"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [],
@@ -1221,8 +1221,8 @@
         }
       },
       "files": [
-        "QLogger.Solr.1.1.0.nupkg",
-        "QLogger.Solr.1.1.0.nupkg.sha512",
+        "QLogger.Solr.1.2.1.nupkg",
+        "QLogger.Solr.1.2.1.nupkg.sha512",
         "QLogger.Solr.nuspec",
         "lib/net451/QLogger.Solr.dll",
         "lib/net451/QLogger.Solr.xml"
