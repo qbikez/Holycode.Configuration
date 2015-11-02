@@ -218,5 +218,16 @@ namespace Microsoft.Framework.ConfigurationModel
                 return url;
             }
         }
+
+        public static IEnumerable<IConfigurationSource> GetSources(this IConfigurationSourceRoot root, string key)
+        {
+            var src = root.Sources.Where(s =>
+            {
+                string tmp;
+                return s.TryGet(key, out tmp);
+            });
+
+            return src;
+        }
     }
 }
