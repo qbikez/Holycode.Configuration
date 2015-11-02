@@ -119,7 +119,7 @@ namespace Microsoft.Framework.ConfigurationModel
         private static string EnsureLogPath(IConfiguration config, string logRootPath)
         {
             logRootPath = logRootPath ??
-                          config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? ".";
+                          config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? "./log";
             return logRootPath;
         }
     }

@@ -12,23 +12,29 @@ namespace Microsoft.Framework.ConfigurationModel
 {
     public static class ConfigurationExtensions
     {
+        internal const string EnvConfigFoundKey = "env:config:found";
+        internal const string EnvConfigPathKey = "env:config:path";
+        internal const string ApplicationBasePathKey = "application:basePath";
+        internal const string EnvironmentNameKey = "ASPNET_ENV";
+
         public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
         }
         public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, string applicationBasePath, bool optional)
         {
+            if (src.Get(ApplicationBasePathKey) == null)
+                src.Set(ApplicationBasePathKey, applicationBasePath);
+
             var envPath = ServicePathResolver.ExtractNames(applicationBasePath).FirstOrDefault();
             if (envPath != null)
             {
                 var path = Path.Combine(envPath.Source, "env.json");
                 src = src.AddJsonFile(path, optional: optional);
-                src.Set("env:config:path", path);
-                src.Set("env:config:found", File.Exists(path).ToString());
-                if (src.Get("application:basePath") == null)
-                    src.Set("application:basePath", applicationBasePath);
-
-                var environment = src.Get("ASPNET_ENV");
+                src.Set(EnvConfigPathKey, path);
+                src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
+               
+                var environment = src.Get(EnvironmentNameKey);
 
                 /// add env.qa.json, etc
                 if (!string.IsNullOrEmpty(environment))
@@ -37,8 +43,8 @@ namespace Microsoft.Framework.ConfigurationModel
                     if (File.Exists(path))
                     {
                         src = src.AddJsonFile(path, optional: optional);
-                        src.Set("env:config:path", path);
-                        src.Set("env:config:found", "true");
+                        src.Set(EnvConfigPathKey, path);
+                        src.Set(EnvConfigFoundKey, "true");
                     }
                 }
 
@@ -217,6 +223,16 @@ namespace Microsoft.Framework.ConfigurationModel
             {
                 return url;
             }
+        }
+
+        public static string EnvironmentName(this IConfiguration cfg)
+        {
+            return cfg.Get(EnvironmentNameKey);
+        }
+
+        public static string BasePath(this IConfiguration cfg)
+        {
+            return cfg.Get(ApplicationBasePathKey);
         }
 
         public static IEnumerable<IConfigurationSource> GetSources(this IConfigurationSourceRoot root, string key)

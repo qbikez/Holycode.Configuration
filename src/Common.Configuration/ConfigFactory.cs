@@ -23,17 +23,15 @@ namespace Common.Configuration
             if (File.Exists(applicationBasePath))
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
-            if (config == null)
-            {
 #if DNX451
                 config = new Microsoft.Framework.ConfigurationModel.Configuration().AddEnvironmentVariables();
 #else 
                 /// this ctor is added in a newer version of ConfigurationModel than the one that is referenced by DNX451
                 config = new Microsoft.Framework.ConfigurationModel.Configuration(applicationBasePath).AddEnvironmentVariables();
 #endif
-            }
+            if (config.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
+                config.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
 
-           
             return config;
         }
 
