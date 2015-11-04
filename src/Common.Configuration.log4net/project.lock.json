@@ -12,61 +12,6 @@
     "DNX,Version=v4.5.1": []
   },
   "libraries": {
-    "Common.Utils.log4net/1.1.3": {
-      "serviceable": false,
-      "sha": "E9kNxB/C+Vmyt4nfWhvU2rcVxnKLsOEW93VHE4pDHLo20BIK3Vc2sxE/Js68FrghSZ+Jek+I0e61z/V12uQNiw==",
-      "frameworks": {
-        ".NETFramework,Version=v4.5.1": {
-          "dependencies": {
-            "log4net": "2.0.3"
-          },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System",
-            "System.Core",
-            "Microsoft.CSharp"
-          ],
-          "runtimeAssemblies": [
-            "lib/net451/Common.Utils.log4net.dll"
-          ],
-          "compileAssemblies": [
-            "lib/net451/Common.Utils.log4net.dll"
-          ]
-        },
-        "DNX,Version=v4.5.1": {
-          "dependencies": {
-            "log4net": "2.0.3"
-          },
-          "frameworkAssemblies": [
-            "mscorlib",
-            "System",
-            "System.Core",
-            "Microsoft.CSharp"
-          ],
-          "runtimeAssemblies": [
-            "lib/dnx451/Common.Utils.log4net.dll"
-          ],
-          "compileAssemblies": [
-            "lib/dnx451/Common.Utils.log4net.dll"
-          ]
-        },
-        ".NETFramework,Version=v4.5": {
-          "dependencies": {},
-          "frameworkAssemblies": [],
-          "runtimeAssemblies": [],
-          "compileAssemblies": []
-        }
-      },
-      "files": [
-        "Common.Utils.log4net.1.1.3.nupkg",
-        "Common.Utils.log4net.1.1.3.nupkg.sha512",
-        "Common.Utils.log4net.nuspec",
-        "lib/dnx451/Common.Utils.log4net.dll",
-        "lib/dnx451/Common.Utils.log4net.xml",
-        "lib/net451/Common.Utils.log4net.dll",
-        "lib/net451/Common.Utils.log4net.xml"
-      ]
-    },
     "CommonServiceLocator/1.0": {
       "serviceable": false,
       "sha": "RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ==",
@@ -1034,7 +979,7 @@
     },
     "Newtonsoft.Json/6.0.8": {
       "serviceable": false,
-      "sha": "nZX7xCBl3PXpxRCxVtVfUXn63gSzrT8aO0VB9Tp24q656IUup9EGE8SGlo0UJ9if48OacJU34ZEtKEGWIdNCzg==",
+      "sha": "7ut47NDedTW19EbL0JpFDYUP62fcuz27hJrehCDNajdCS5NtqL+E39+7Um3OkNc2wl2ym7K8Ln5eNuLus6mVGQ==",
       "frameworks": {
         ".NETFramework,Version=v4.5.1": {
           "dependencies": {},
