@@ -10,12 +10,7 @@ namespace Common.Configuration
     public static class ConfigurationExtensionsVnext
     {
 
-        //public static IHostingEnvironment UpdateEnvironment(this IHostingEnvironment env, IConfiguration configuration)
-        //{
-        //    if (!string.IsNullOrEmpty(configuration.Get("ASPNET_ENV")))
-        //        env.EnvironmentName = configuration.Get("ASPNET_ENV");
-        //    return env;
-        //}
+
 
         //public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, IApplicationEnvironment env)
         //{
