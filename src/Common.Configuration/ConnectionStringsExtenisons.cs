@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Framework.Configuration;
 
-namespace Microsoft.Framework.ConfigurationModel
+namespace Microsoft.Framework.Configuration
 {
     public static class ConnectionStringsExtenisons
     {
@@ -15,25 +16,28 @@ namespace Microsoft.Framework.ConfigurationModel
         /// <param name="connectionStrings"> (eg. ConfigurationManager.ConnectionStrings)</param>
         public static void ExtractConnectionStrings(this IConfiguration cfg, ConnectionStringSettingsCollection connectionStrings)
         {
-            var subkeys = cfg.GetSubKeys("connectionStrings");
-            foreach (var subkey in subkeys)
+           var section = cfg.GetSection("connectionStrings");
+            var subKeys = section.GetChildren();
+
+            foreach (var subkey in subKeys)
             {
                 var name = subkey.Key;
-                var val = subkey.Value.Get("connectionString") ?? subkey.Value.Get(null);
-                var provider = subkey.Value.Get("provider") ?? "System.Data.SqlClient";
+                var val = subkey.Value ?? subkey.Get("connectionString");
+                var provider = subkey.Get("provider") ?? "System.Data.SqlClient";
                 connectionStrings.AddConnectionString(name, val, provider);
             }
         }
 
         public static string GetConnectionStringValue(this IConfiguration cfg, string name)
         {
-            var subkey = cfg.GetSubKey($"connectionStrings:{name}");
-            if (subkey.Get(null) == null && !subkey.GetSubKeys().Any())
+            var subkey = cfg.GetSection($"connectionStrings:{name}");
+            if (subkey.Value == null && !subkey.GetChildren().Any())
             {
-                subkey = cfg.GetSubKey($"{name}");
+                subkey = cfg.GetSection($"{name}");
             }
-            var val = subkey.Get("connectionString") ?? subkey.Get(null);
+            var val = subkey.Get("connectionString") ?? subkey.Value;
             return val;
+            
         }
     }
 }
