@@ -1,12 +1,12 @@
-﻿//#if !DNX451
+﻿#if !DNX451
 
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Framework.Configuration;
 using Microsoft.Framework.ConfigurationModel;
-using Microsoft.Framework.ConfigurationModel.Internal;
 
 namespace Common.Configuration
 {
@@ -49,4 +49,4 @@ namespace Common.Configuration
     }
 }
 
-//#endif
+#endif

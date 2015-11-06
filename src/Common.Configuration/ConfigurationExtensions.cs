@@ -6,9 +6,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Configuration;
-using Microsoft.Framework.ConfigurationModel.Internal;
+using Microsoft.Framework.Configuration;
+using Microsoft.Framework.Configuration.Memory;
 
-namespace Microsoft.Framework.ConfigurationModel
+namespace Microsoft.Framework.Configuration
 {
     public static class ConfigurationExtensions
     {
@@ -17,12 +18,14 @@ namespace Microsoft.Framework.ConfigurationModel
         internal const string ApplicationBasePathKey = "application:basePath";
         internal const string EnvironmentNameKey = "ASPNET_ENV";
 
-        public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, string applicationBasePath)
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
         }
-        public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, string applicationBasePath, bool optional)
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional)
         {
+            
+            
             if (src.Get(ApplicationBasePathKey) == null)
                 src.Set(ApplicationBasePathKey, applicationBasePath);
 
@@ -59,6 +62,35 @@ namespace Microsoft.Framework.ConfigurationModel
         }
 
 
+        public static IConfigurationBuilder Set(this IConfigurationBuilder builder, string key, string value)
+        {
+            builder.Properties[key] = value;
+            var mem = builder.Providers.Where(p => p is MemoryConfigurationProvider).FirstOrDefault();
+            if (mem != null)
+            {
+                 mem.Set(key, value);
+            }
+            return builder;
+        }
+
+        public static string Get(this IConfigurationBuilder builder, string key)
+        {
+            object val;
+            if (builder.Properties.TryGetValue(key, out val))
+            {
+                return val.ToString();
+            }
+            foreach (var provider in builder.Providers)
+            {
+                string strVal;
+                if (provider.TryGet(key, out strVal))
+                {
+                    return strVal;
+                }
+            }
+            return null;
+        }
+
         public static Nullable<T> GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
           where T : struct
         {
@@ -77,12 +109,12 @@ namespace Microsoft.Framework.ConfigurationModel
 
         public static Dictionary<string, string> GetDictionary(this IConfiguration cfg, string key)
         {
-            var subkeys = cfg.GetSubKeys(key);
+            var subkeys = cfg.GetChildren();
             if (subkeys == null) return null;
             var d = new Dictionary<string, string>();
             foreach (var pair in subkeys)
             {
-                d.Add(pair.Key, pair.Value.Get(null));
+                d.Add(pair.Key, pair.Value);
             }
             return d;
         }
@@ -95,20 +127,36 @@ namespace Microsoft.Framework.ConfigurationModel
             else return cfg.Get<T>(key);
         }
 
+        public static string Get(this IConfiguration configuration,string key)
+        {            
+            return configuration[key];
+        }
+
+        public static void Set(this IConfiguration configuration, string key, string value)
+        {
+            configuration[key] = value;
+        }
+
+        public static T Get<T>(this IConfiguration configuration, string key)
+        {
+            return (T)Convert.ChangeType(configuration[key], typeof(T));
+        }
+
+        /*
         public static void Traverse(this IConfiguration configuration, Action<string, string> action, string rootNs = "")
         {
-            var keys = configuration.GetSubKeys();
+            var keys = configuration.GetChildren();
 
             string val = null;
-            if (configuration is ConfigurationFocus)
-            {
-                val = ((ConfigurationFocus)configuration).Get(null);
-            }
+            //if (configuration is ConfigurationFocus)
+            //{
+            //    val = ((ConfigurationFocus)configuration).Get(null);
+            //}
             if (keys != null)
             {
                 foreach (var key in keys)
                 {
-                    Traverse(key.Value, action, rootNs + ":" + key.Key);
+                    Traverse(key., action, rootNs + ":" + key.Key);
                 }
             }
             if (val != null)
@@ -155,6 +203,9 @@ namespace Microsoft.Framework.ConfigurationModel
 
             return ag;
         }
+        */
+
+            /*
         public static Dictionary<string, string> AsDictionaryPlain(this IConfiguration config)
         {
             var dict = new Dictionary<string, string>();
@@ -177,6 +228,7 @@ namespace Microsoft.Framework.ConfigurationModel
                     return dict;
                 });
         }
+        */
 
         /// <summary>
         /// Gets the secure service URL.
@@ -230,12 +282,18 @@ namespace Microsoft.Framework.ConfigurationModel
             return cfg.Get(EnvironmentNameKey);
         }
 
+        public static string EnvironmentName(this IConfigurationBuilder cfg)
+        {
+            return cfg.Get(EnvironmentNameKey);
+        }
+
         public static string BasePath(this IConfiguration cfg)
         {
             return cfg.Get(ApplicationBasePathKey);
         }
+        /*
 
-        public static IEnumerable<IConfigurationSource> GetSources(this IConfigurationSourceRoot root, string key)
+        public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)
         {
             var src = root.Sources.Where(s =>
             {
@@ -245,5 +303,6 @@ namespace Microsoft.Framework.ConfigurationModel
 
             return src;
         }
+        */
     }
 }

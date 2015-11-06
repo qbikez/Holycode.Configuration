@@ -4,18 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Framework.Configuration;
 
 namespace Common.Configuration
 {
     public class ConfigFactory
     {
-
-        public static IConfigurationSourceRoot CreateConfigSource(string applicationBasePath = null)
+#if !DNX451
+        public static IConfigurationBuilder CreateConfigSource() : this(Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length))
+        {            
+        }
+#endif
+        public static IConfigurationBuilder CreateConfigSource(string applicationBasePath)
         {
-            IConfigurationSourceRoot config = null;
-            if (applicationBasePath == null)
-                applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
             if (applicationBasePath == null)
             {
                 throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
@@ -24,20 +25,24 @@ namespace Common.Configuration
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
 #if DNX451
-                config = new Microsoft.Framework.ConfigurationModel.Configuration().AddEnvironmentVariables();
-#else 
+            var builder = new Microsoft.Framework.Configuration.ConfigurationBuilder().AddEnvironmentVariables();
+            builder.AddInMemoryCollection();
+            builder.SetBasePath(applicationBasePath);
+            //config = builder.Build();
+#else
                 /// this ctor is added in a newer version of ConfigurationModel than the one that is referenced by DNX451
-                config = new Microsoft.Framework.ConfigurationModel.Configuration(applicationBasePath).AddEnvironmentVariables();
+                //config = new Microsoft.Framework.ConfigurationModel.Configuration(applicationBasePath).AddEnvironmentVariables();
 #endif
-            if (config.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
-                config.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
+            
+            if (builder.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
+                builder.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
 
-            return config;
+            return builder;
         }
 
         public static IConfiguration Create(string applicationBasePath = null)
         {
-            return CreateConfigSource(applicationBasePath);
+            return CreateConfigSource(applicationBasePath).Build();
         }
 
         public static IConfiguration FromEnvJson(string applicationBasePath = null)
@@ -55,7 +60,7 @@ namespace Common.Configuration
             config = config.AddEnvJson(config.BasePath);            
 #endif
 
-            return config;
+            return config.Build();
         }
     }
 }

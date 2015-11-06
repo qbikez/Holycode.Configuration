@@ -1,49 +1,46 @@
 {
-    "version": "1.1.9",
-    "description": "Tools for managing configuration",
-    "authors": [ "Holycode" ],
-    "tags": [ "" ],
-    "projectUrl": "",
-    "licenseUrl": "",
+  "version": "1.1.9",
+  "description": "Tools for managing configuration",
+  "authors": [ "Holycode" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
 
-    "dependencies": {
-     
-    },
-    "commands": {
-        "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
-    },
-    "frameworks": {
-        "net45": {
-            "dependencies": {
-                "Microsoft.Owin": "3.0.1",
-                "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1-*",
-                "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3-*",
-                "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3-*",
-            },
-            "frameworkAssemblies": {
-                "System.Configuration": "4.0.0.0"
-            }
-        },
-        "dnx451": {
-            "dependencies": {
-                "Microsoft.AspNet.Hosting.Interfaces": "1.0.0-beta4",
-                "Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.0-beta4",
-                "Microsoft.Framework.ConfigurationModel": "1.0.0-beta4",
-                "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4",
-            },
-            "frameworkAssemblies": {
-                "System.Configuration": "4.0.0.0"
-            }
-        },
-        /*  "dnxcore50": {
+  "dependencies": {
+
+  },
+  "commands": {
+    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
+  },
+  "frameworks": {
+    "dnx451": {
+      "compilationOptions": { "define": [ "DNX451" ] },
       "dependencies": {
-        "System.Collections": "4.0.10-beta-22816",
-        "System.Linq": "4.0.0-beta-22816",
-        "System.Threading": "4.0.10-beta-22816",
-        "Microsoft.CSharp": "4.0.0-beta-22816",
-        "System.Text.RegularExpressions": "4.0.10-beta-22913",
-        "System.Reflection": "4.0.10.0"
+        "Microsoft.AspNet.Hosting": "1.0.0-beta8",
+        "Microsoft.Framework.Configuration.Abstractions": "1.0.0-beta8",
+        "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
+        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta8",
+      },
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0"
       }
-    }*/
+    },
+   
+  },
+  "__commented": {
+    "frameworks": {
+       "net45": {
+      "dependencies": {
+        "Microsoft.Owin": "3.0.1",
+        "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1-*",
+        "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3-*",
+        "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3-*",
+      },
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0"
+      }
+    },
+
     }
+  }
 }

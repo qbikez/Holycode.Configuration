@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Framework.Configuration;
 
 namespace Microsoft.Framework.ConfigurationModel
 {
