@@ -142,21 +142,21 @@ namespace Microsoft.Framework.Configuration
             return (T)Convert.ChangeType(configuration[key], typeof(T));
         }
 
-        /*
+        
         public static void Traverse(this IConfiguration configuration, Action<string, string> action, string rootNs = "")
         {
             var keys = configuration.GetChildren();
 
             string val = null;
-            //if (configuration is ConfigurationFocus)
-            //{
-            //    val = ((ConfigurationFocus)configuration).Get(null);
-            //}
+            if (configuration is IConfigurationSection)
+            {
+                val = ((IConfigurationSection) configuration).Value;
+            }
             if (keys != null)
             {
                 foreach (var key in keys)
                 {
-                    Traverse(key., action, rootNs + ":" + key.Key);
+                    Traverse(key, action, rootNs + ":" + key.Key);
                 }
             }
             if (val != null)
@@ -174,7 +174,8 @@ namespace Microsoft.Framework.Configuration
         }
         private static TResult Aggregate<TResult>(this IConfiguration configuration, Func<TResult, string, object, TResult> action, string rootNs = "")
         {
-            var keys = configuration.GetSubKeys();
+            var keys = configuration.GetChildren();
+            
 
             string val = null;
            
@@ -183,18 +184,14 @@ namespace Microsoft.Framework.Configuration
             {
                 foreach (var key in keys)
                 {
-                    var sub = key.Value;
-                    if (sub is ConfigurationFocus)
-                    {
-                        val = ((ConfigurationFocus)sub).Get(null);
-                    }
+                    val = key.Value;                   
                     if (val != null)
                     {
                         ag = action(ag, rootNs + ":" + key.Key, val);
                     }
                     else
                     {
-                        var subag = Aggregate(key.Value, action, rootNs + ":" + key.Key);
+                        var subag = Aggregate(key, action, rootNs + ":" + key.Key);
                         ag = action(ag, rootNs + ":" + key.Key, subag);
                     }
                 }
@@ -203,9 +200,9 @@ namespace Microsoft.Framework.Configuration
 
             return ag;
         }
-        */
+        
 
-            /*
+            
         public static Dictionary<string, string> AsDictionaryPlain(this IConfiguration config)
         {
             var dict = new Dictionary<string, string>();
@@ -228,7 +225,7 @@ namespace Microsoft.Framework.Configuration
                     return dict;
                 });
         }
-        */
+        
 
         /// <summary>
         /// Gets the secure service URL.

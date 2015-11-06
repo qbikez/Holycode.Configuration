@@ -15,7 +15,7 @@ namespace Common.Configuration
         {            
         }
 #endif
-        public static IConfigurationBuilder CreateConfigSource(string applicationBasePath)
+        public static IConfigurationBuilder CreateConfigSource(string applicationBasePath, bool addEnvVariables = true)
         {
             if (applicationBasePath == null)
             {
@@ -25,7 +25,8 @@ namespace Common.Configuration
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
 #if DNX451
-            var builder = new Microsoft.Framework.Configuration.ConfigurationBuilder().AddEnvironmentVariables();
+            var builder = new Microsoft.Framework.Configuration.ConfigurationBuilder();
+            if (addEnvVariables) builder.AddEnvironmentVariables();
             builder.AddInMemoryCollection();
             builder.SetBasePath(applicationBasePath);
             //config = builder.Build();
@@ -40,15 +41,15 @@ namespace Common.Configuration
             return builder;
         }
 
-        public static IConfiguration Create(string applicationBasePath = null)
+        public static IConfiguration Create(string applicationBasePath = null, bool addEnvVariables = true)
         {
-            return CreateConfigSource(applicationBasePath).Build();
+            return CreateConfigSource(applicationBasePath, addEnvVariables).Build();
         }
 
-        public static IConfiguration FromEnvJson(string applicationBasePath = null)
+        public static IConfiguration FromEnvJson(string applicationBasePath = null, bool addEnvVariables = true)
         {
 
-            var config = CreateConfigSource(applicationBasePath);
+            var config = CreateConfigSource(applicationBasePath, addEnvVariables);
 #if DNX451
             if (applicationBasePath == null)
                 applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
