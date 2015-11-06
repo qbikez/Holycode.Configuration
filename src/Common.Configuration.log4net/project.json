@@ -6,19 +6,15 @@
   "projectUrl": "",
   "licenseUrl": "",
 
-
-  "commands": {
-    
+  "dependencies": {
+    "Common.Configuration": "",
+    "Common.Utils.log4net": "",
+    "QLogger.Log4net": "1.3.0",
+    "QLogger.Solr": "1.2.1",
   },
-  "frameworks": {
-    "dnx451": {
-      "dependencies": {
-        "Common.Configuration": "",
-        "log4net": "2.0.3",
-        "Common.Utils.log4net": "",
-        "QLogger.Solr": "1.2.1"
-      }    
-    }
 
+  "frameworks": {
+   "dnx451": {}
   }
+
 }

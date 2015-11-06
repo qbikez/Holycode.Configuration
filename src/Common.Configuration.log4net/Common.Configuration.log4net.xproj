@@ -8,8 +8,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>a6663009-a463-4fc1-bff1-02f0a51674e5</ProjectGuid>
     <RootNamespace>Common.Configuration.log4net</RootNamespace>
-    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
-    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AssemblyName>Common.Configuration.log4net</AssemblyName>

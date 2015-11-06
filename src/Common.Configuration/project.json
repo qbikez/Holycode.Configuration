@@ -16,7 +16,6 @@
     "dnx451": {
       "compilationOptions": { "define": [ "DNX451" ] },
       "dependencies": {
-        "Microsoft.AspNet.Hosting": "1.0.0-beta8",
         "Microsoft.Framework.Configuration.Abstractions": "1.0.0-beta8",
         "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
         "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta8",

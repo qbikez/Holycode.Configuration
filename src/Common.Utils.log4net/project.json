@@ -6,12 +6,14 @@
   "projectUrl": "",
   "licenseUrl": "",
 
-  "dependencies": {   
+  "dependencies": {
     "log4net": "2.0.3",
   },
 
   "frameworks": {
-    "dnx451": { },
-    
+    "dnx451": {
+
+    }
+
   }
 }
