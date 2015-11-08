@@ -109,7 +109,7 @@ namespace Microsoft.Framework.Configuration
 
         public static Dictionary<string, string> GetDictionary(this IConfiguration cfg, string key)
         {
-            var subkeys = cfg.GetChildren();
+            var subkeys = cfg.GetSection(key).GetChildren();
             if (subkeys == null) return null;
             var d = new Dictionary<string, string>();
             foreach (var pair in subkeys)
