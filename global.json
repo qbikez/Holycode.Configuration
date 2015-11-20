@@ -5,5 +5,5 @@
         "runtime": "clr",
         "architecture": "x86"
     },
-    "packages": "c:/users/jakub.pawlowski/.dnx-beta8/packages"
+    "packages": "../../dnx-packages"
 }
