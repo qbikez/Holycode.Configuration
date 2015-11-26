@@ -11,8 +11,10 @@ namespace Common.Configuration
     public class ConfigFactory
     {
 #if !DNX451
-        public static IConfigurationBuilder CreateConfigSource() : this(Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length))
-        {            
+
+        public static IConfigurationBuilder CreateConfigSource()
+        {
+            return CreateConfigSource(Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length));
         }
 #endif
         public static IConfigurationBuilder CreateConfigSource(string applicationBasePath, bool addEnvVariables = true)
@@ -24,17 +26,12 @@ namespace Common.Configuration
             if (File.Exists(applicationBasePath))
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
-#if DNX451
             var builder = new Microsoft.Framework.Configuration.ConfigurationBuilder();
             if (addEnvVariables) builder.AddEnvironmentVariables();
             builder.AddInMemoryCollection();
             builder.SetBasePath(applicationBasePath);
-            //config = builder.Build();
-#else
-                /// this ctor is added in a newer version of ConfigurationModel than the one that is referenced by DNX451
-                //config = new Microsoft.Framework.ConfigurationModel.Configuration(applicationBasePath).AddEnvironmentVariables();
-#endif
-            
+
+
             if (builder.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
                 builder.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
 
@@ -50,16 +47,17 @@ namespace Common.Configuration
         {
 
             var config = CreateConfigSource(applicationBasePath, addEnvVariables);
-#if DNX451
-            if (applicationBasePath == null)
-                applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-            if (File.Exists(applicationBasePath))
-                applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
-            config = config.AddEnvJson(applicationBasePath);
-#else
-            config = config.AddEnvJson(config.BasePath);            
-#endif
+            applicationBasePath = config.GetBasePath();
+            if (applicationBasePath == null)
+            {
+                applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+                if (File.Exists(applicationBasePath))
+                    applicationBasePath = Path.GetDirectoryName(applicationBasePath);
+                config.SetBasePath(applicationBasePath);
+            }
+
+            config = config.AddEnvJson(config.GetBasePath());
 
             return config.Build();
         }

@@ -7,6 +7,9 @@
   "licenseUrl": "",
 
   "dependencies": {
+    "Microsoft.Framework.Configuration.Abstractions": "1.0.0-beta8",
+    "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
+    "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta8",
 
   },
   "commands": {
@@ -14,31 +17,42 @@
   },
   "frameworks": {
     "dnx451": {
-      "compilationOptions": { "define": [ "DNX451" ] },
+        "compilationOptions": { "define": [ "DNX451" ] },
+        "dependencies": {
+
+        },
+        "frameworkAssemblies": {
+        }
+      },
+    "net451": {
       "dependencies": {
-        "Microsoft.Framework.Configuration.Abstractions": "1.0.0-beta8",
-        "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
-        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta8",
+        "Microsoft.Owin": "3.0.1",
       },
       "frameworkAssemblies": {
         "System.Configuration": "4.0.0.0"
       }
     },
-   
+
   },
   "__commented": {
     "frameworks": {
-       "net45": {
-      "dependencies": {
-        "Microsoft.Owin": "3.0.1",
-        "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1-*",
-        "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3-*",
-        "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3-*",
+      "dnx451": {
+        "compilationOptions": { "define": [ "DNX451" ] },
+        "dependencies": {
+
+        },
+        "frameworkAssemblies": {
+          "System.Configuration": "4.0.0.0"
+        }
       },
-      "frameworkAssemblies": {
-        "System.Configuration": "4.0.0.0"
-      }
-    },
+      "net45": {
+        "dependencies": {
+          "Microsoft.Owin": "3.0.1",
+        },
+        "frameworkAssemblies": {
+          "System.Configuration": "4.0.0.0"
+        }
+      },
 
     }
   }

@@ -6,7 +6,6 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Framework.Configuration;
-using Microsoft.Framework.ConfigurationModel;
 
 namespace Common.Configuration
 {
