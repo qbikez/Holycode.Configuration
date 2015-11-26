@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta1",
+  "version": "2.0.1-beta1",
   "description": "Tools for managing configuration",
   "authors": [ "Holycode" ],
   "tags": [ "" ],
@@ -19,7 +19,6 @@
     "dnx451": {
         "compilationOptions": { "define": [ "DNX451" ] },
         "dependencies": {
-
         },
         "frameworkAssemblies": {
         }
