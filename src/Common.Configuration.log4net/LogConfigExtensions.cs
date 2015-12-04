@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Framework.Configuration
+namespace Microsoft.Extensions.Configuration
 {
     public static class LogConfigExtensions
     {

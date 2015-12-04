@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace Common.Configuration
 {
@@ -26,7 +26,7 @@ namespace Common.Configuration
             if (File.Exists(applicationBasePath))
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
-            var builder = new Microsoft.Framework.Configuration.ConfigurationBuilder();
+            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
             if (addEnvVariables) builder.AddEnvironmentVariables();
             builder.AddInMemoryCollection();
             builder.SetBasePath(applicationBasePath);

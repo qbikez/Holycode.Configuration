@@ -1,5 +1,5 @@
 {
-  "version": "2.0.1-beta1",
+  "version": "2.1.0-beta1",
   "description": "Tools for managing configuration",
   "authors": [ "Holycode" ],
   "tags": [ "" ],
@@ -7,9 +7,9 @@
   "licenseUrl": "",
 
   "dependencies": {
-    "Microsoft.Framework.Configuration.Abstractions": "1.0.0-beta8",
-    "Microsoft.Framework.Configuration.Json": "1.0.0-beta8",
-    "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta8",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final"
 
   },
   "commands": {

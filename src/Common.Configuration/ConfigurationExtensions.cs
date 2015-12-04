@@ -6,10 +6,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Configuration;
-using Microsoft.Framework.Configuration;
-using Microsoft.Framework.Configuration.Memory;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 
-namespace Microsoft.Framework.Configuration
+namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensions
     {

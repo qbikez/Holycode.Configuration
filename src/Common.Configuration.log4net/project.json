@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0-beta1",
+  "version": "2.1.0-beta1",
   "summary": "Tools for configuring log4net using common.configuration model",
   "authors": [ "Holycode" ],
   "tags": [ "" ],
