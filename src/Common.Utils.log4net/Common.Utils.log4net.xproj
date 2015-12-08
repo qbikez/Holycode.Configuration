@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>96c8ac67-cf46-491e-8a16-0821598a922b</ProjectGuid>
+    <ProjectGuid>d596f765-3c88-451b-bc2a-7f08964e8e99</ProjectGuid>
     <RootNamespace>Common.Utils.log4net</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\sln\Utils\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\..\sln\Utils\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
