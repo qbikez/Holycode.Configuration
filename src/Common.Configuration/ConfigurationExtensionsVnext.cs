@@ -3,26 +3,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.ConfigurationModel;
-using Microsoft.Framework.Runtime;
+using Microsoft.Extensions.Configuration;
 
 namespace Common.Configuration
 {
     public static class ConfigurationExtensionsVnext
     {
 
-        public static IHostingEnvironment UpdateEnvironment(this IHostingEnvironment env, IConfiguration configuration)
+
+
+        //public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, IApplicationEnvironment env)
+        //{
+        //    var envPath = env.ApplicationBasePath;
+        //    return src.AddEnvJson(envPath);
+        //}
+
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src)
         {
-            if (!string.IsNullOrEmpty(configuration.Get("ASPNET_ENV")))
-                env.EnvironmentName = configuration.Get("ASPNET_ENV");
-            return env;
+            var envPath = src.GetBasePath();
+            return src.AddEnvJson(envPath);
         }
 
-        public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, IApplicationEnvironment env)
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true)
         {
-            var envPath = env.ApplicationBasePath;
-            return src.AddEnvJson(envPath);
+            var envPath = src.GetBasePath();
+            return src.AddEnvJson(envPath, optional: optional);
         }
 
     }

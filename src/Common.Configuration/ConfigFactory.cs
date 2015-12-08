@@ -4,18 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Extensions.Configuration;
 
 namespace Common.Configuration
 {
     public class ConfigFactory
     {
+#if !DNX451
 
-        public static IConfigurationSourceRoot CreateConfigSource(string applicationBasePath = null)
+        public static IConfigurationBuilder CreateConfigSource()
         {
-            IConfigurationSourceRoot config = null;
-            if (applicationBasePath == null)
-                applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+            return CreateConfigSource(Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length));
+        }
+#endif
+        public static IConfigurationBuilder CreateConfigSource(string applicationBasePath, bool addEnvVariables = true)
+        {
             if (applicationBasePath == null)
             {
                 throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
@@ -23,39 +26,40 @@ namespace Common.Configuration
             if (File.Exists(applicationBasePath))
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
-#if DNX451
-                config = new Microsoft.Framework.ConfigurationModel.Configuration().AddEnvironmentVariables();
-#else 
-                /// this ctor is added in a newer version of ConfigurationModel than the one that is referenced by DNX451
-                config = new Microsoft.Framework.ConfigurationModel.Configuration(applicationBasePath).AddEnvironmentVariables();
-#endif
-            if (config.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
-                config.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
+            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
+            if (addEnvVariables) builder.AddEnvironmentVariables();
+            builder.AddInMemoryCollection();
+            builder.SetBasePath(applicationBasePath);
 
-            return config;
+
+            if (builder.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
+                builder.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
+
+            return builder;
         }
 
-        public static IConfiguration Create(string applicationBasePath = null)
+        public static IConfiguration Create(string applicationBasePath = null, bool addEnvVariables = true)
         {
-            return CreateConfigSource(applicationBasePath);
+            return CreateConfigSource(applicationBasePath, addEnvVariables).Build();
         }
 
-        public static IConfiguration FromEnvJson(string applicationBasePath = null)
+        public static IConfiguration FromEnvJson(string applicationBasePath = null, bool addEnvVariables = true)
         {
 
-            var config = CreateConfigSource(applicationBasePath);
-#if DNX451
+            var config = CreateConfigSource(applicationBasePath, addEnvVariables);
+
+            applicationBasePath = config.GetBasePath();
             if (applicationBasePath == null)
+            {
                 applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-            if (File.Exists(applicationBasePath))
-                applicationBasePath = Path.GetDirectoryName(applicationBasePath);
+                if (File.Exists(applicationBasePath))
+                    applicationBasePath = Path.GetDirectoryName(applicationBasePath);
+                config.SetBasePath(applicationBasePath);
+            }
 
-            config = config.AddEnvJson(applicationBasePath);
-#else
-            config = config.AddEnvJson(config.BasePath);            
-#endif
+            config = config.AddEnvJson(config.GetBasePath());
 
-            return config;
+            return config.Build();
         }
     }
 }
