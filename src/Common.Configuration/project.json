@@ -34,16 +34,6 @@
             "frameworkAssemblies": {
                 "System.Configuration": "4.0.0.0"
             }
-        },
-        /*  "dnxcore50": {
-      "dependencies": {
-        "System.Collections": "4.0.10-beta-22816",
-        "System.Linq": "4.0.0-beta-22816",
-        "System.Threading": "4.0.10-beta-22816",
-        "Microsoft.CSharp": "4.0.0-beta-22816",
-        "System.Text.RegularExpressions": "4.0.10-beta-22913",
-        "System.Reflection": "4.0.10.0"
-      }
-    }*/
+        }      
     }
 }
