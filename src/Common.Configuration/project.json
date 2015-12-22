@@ -51,9 +51,8 @@
         "frameworkAssemblies": {
           "System.Configuration": "4.0.0.0"
         }
-      },
-
-    
+      }
+    }
   },
   "exclude": [
     "wwwroot",
