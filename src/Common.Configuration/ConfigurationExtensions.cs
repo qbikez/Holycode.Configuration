@@ -17,12 +17,21 @@ namespace Microsoft.Extensions.Configuration
         internal const string EnvConfigPathKey = "env:config:path";
         internal const string ApplicationBasePathKey = "application:basePath";
         internal const string EnvironmentNameKey = "ASPNET_ENV";
-
+    
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
         }
-        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional)
+
+        /// <summary>
+        /// Looks for env.json and env.{environment}.json and adds them to config
+        /// </summary>
+        /// <param name="src">configuration builder</param>
+        /// <param name="applicationBasePath">application base path</param>
+        /// <param name="optional">is env.json optional</param>
+        /// <param name="environment">force specific environment (overwrites  value provided by env.json)[optional]</param>
+        /// <returns></returns>
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional, string environment = null)
         {
             
             
@@ -36,8 +45,16 @@ namespace Microsoft.Extensions.Configuration
                 src = src.AddJsonFile(path, optional: optional);
                 src.Set(EnvConfigPathKey, path);
                 src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
-               
-                var environment = src.Get(EnvironmentNameKey);
+
+                if (environment == null)
+                {
+                    environment = src.Get(EnvironmentNameKey);
+                }
+                else
+                {
+                    // force env
+                    src.Set(EnvironmentNameKey, environment);
+                }
 
                 /// add env.qa.json, etc
                 if (!string.IsNullOrEmpty(environment))
