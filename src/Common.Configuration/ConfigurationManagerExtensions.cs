@@ -1,4 +1,7 @@
-﻿#if !DNX451
+﻿using System;
+using System.Collections.Generic;
+
+#if !DNX451
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -61,6 +64,39 @@ namespace System.Configuration
                 var provider = subkey.Get("provider") ?? "System.Data.SqlClient";
                 connectionStrings.AddConnectionString(name, val, provider);
             }
+        }
+    }
+
+}
+
+#else
+namespace Microsoft.Extensions.Configuration
+{
+    public static partial class ConnectionStringsExtenisons
+    {
+        public class ConnectionString
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public string Provider { get; set; }
+        }
+        /// <summary>
+        /// extracts connections strings from config.json into ConnectionStringSettingsCollection (eg. ConfigurationManager.ConnectionStrings)
+        /// </summary>
+        /// <param name="cfg"></param>
+        public static List<ConnectionString> ExtractConnectionStrings(this IConfiguration cfg)
+        {
+            var section = cfg.GetSection("connectionStrings");
+            var subKeys = section.GetChildren();
+            var result = new List<ConnectionString>();
+            foreach (var subkey in subKeys)
+            {
+                var name = subkey.Key;
+                var val = subkey.Value ?? subkey.Get("connectionString");
+                var provider = subkey.Get("provider") ?? "System.Data.SqlClient";
+                result.Add(new ConnectionString() { Name = name, Value = val, Provider = provider });
+            }
+            return result;
         }
     }
 
