@@ -21,7 +21,13 @@ namespace Common.Configuration
                 //if (!string.IsNullOrEmpty(locCfgName))
                 //    path = locCfgName;
                 if (path == null)
+                {
+#if !CORECLR
                     path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+#else
+                throw new Exception("could not resolve path from calling assembly codebase");
+#endif
+                }
             }
             var names = ExtractNames(path);
             var name = string.Join("|", names.Select(n => n.ServiceName));

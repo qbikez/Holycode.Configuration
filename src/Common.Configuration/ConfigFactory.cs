@@ -22,9 +22,13 @@ namespace Common.Configuration
             if (applicationBasePath == null)
             {
                 // this may return something like c:\windows\.. when running in ASP
+#if !CORECLR
                 applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-                
-                //throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
+#else
+                throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
+#endif
+
+
             }
             if (File.Exists(applicationBasePath))
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
@@ -54,7 +58,12 @@ namespace Common.Configuration
             applicationBasePath = config.GetBasePath();
             if (applicationBasePath == null)
             {
+#if !CORECLR
                 applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+#else
+                throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
+#endif
+
                 if (File.Exists(applicationBasePath))
                     applicationBasePath = Path.GetDirectoryName(applicationBasePath);
                 config.SetBasePath(applicationBasePath);

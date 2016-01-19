@@ -34,7 +34,6 @@ namespace Microsoft.Extensions.Configuration
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional, string environment = null)
         {
             
-            
             if (src.Get(ApplicationBasePathKey) == null)
                 src.Set(ApplicationBasePathKey, applicationBasePath);
 
@@ -42,7 +41,14 @@ namespace Microsoft.Extensions.Configuration
             if (envPath != null)
             {
                 var path = Path.Combine(envPath.Source, "env.json");
-                src = src.AddJsonFile(path, optional: optional);
+                try
+                {
+                    src = src.AddJsonFile(path, optional: optional);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException($"Failed to load config file {path}", ex);
+                }
                 src.Set(EnvConfigPathKey, path);
                 src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
 
@@ -62,13 +68,30 @@ namespace Microsoft.Extensions.Configuration
                     path = Path.Combine(envPath.Source, $"env.{environment}.json");
                     if (File.Exists(path))
                     {
-                        src = src.AddJsonFile(path, optional: optional);
+                        try
+                        {
+                            src = src.AddJsonFile(path, optional: optional);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new FileLoadException($"Failed to load config file {path}", ex);
+                        }
+                        
                         src.Set(EnvConfigPathKey, path);
                         src.Set(EnvConfigFoundKey, "true");
                     }
                 }
 
-                src = src.AddJsonFile(Path.Combine(envPath.Source, $"env.local.json"), optional: true);
+                try
+                {
+                    path = Path.Combine(envPath.Source, $"env.local.json");
+                    src = src.AddJsonFile(path, optional: true);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException($"Failed to load config file {path}", ex);
+                }
+                
             }
             else
             {
@@ -113,7 +136,7 @@ namespace Microsoft.Extensions.Configuration
         {
             var v = (cfg.Get(key));
             if (string.IsNullOrEmpty(v)) return null;
-            if (v.Equals("false", StringComparison.InvariantCultureIgnoreCase) && typeof(T) != typeof(bool))
+            if (v.Equals("false", StringComparison.CurrentCultureIgnoreCase) && typeof(T) != typeof(bool))
             {
                 return null;
             }

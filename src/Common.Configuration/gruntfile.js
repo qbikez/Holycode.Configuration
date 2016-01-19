@@ -18,11 +18,23 @@ module.exports = function (grunt) {
                 command: [
                     'powershell .\\push-nuget.ps1'
                 ].join('&& ')
+            },
+            build: {
+                command: "dnu build"
+            },
+            build_dnx: {
+                command: "dnu build --framework dnx451"
+            },
+            build_dnxcore: {
+                command: "dnu build --framework dnxcore50"
             }
         }
     });
 
-    //grunt.registerTask("default", ["bower:install"]);
+    grunt.registerTask("push-nuget", ["shell:push"]);
+    grunt.registerTask("build", ["shell:build"]);
+    grunt.registerTask("build-dnx", ["shell:build_dnx"]);
+    grunt.registerTask("build-dnxcore", ["shell:build:dnxcore"]);
 
     //grunt.loadNpmTasks("grunt-bower-task");
     grunt.loadNpmTasks("grunt-shell");
