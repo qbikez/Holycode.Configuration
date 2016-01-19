@@ -622,7 +622,7 @@
       "frameworks": {
         ".NETFramework,Version=v4.5": {
           "dependencies": {
-            "Owin": "1.0"
+            "Owin": "1.0.0"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
@@ -634,7 +634,7 @@
         },
         "DNX,Version=v4.5.1": {
           "dependencies": {
-            "Owin": "1.0"
+            "Owin": "1.0.0"
           },
           "frameworkAssemblies": [],
           "runtimeAssemblies": [
@@ -699,7 +699,7 @@
         "tools/install.ps1"
       ]
     },
-    "Owin/1.0": {
+    "Owin/1.0.0": {
       "serviceable": false,
       "sha": "OseTFniKmyp76mEzOBwIKGBRS5eMoYNkMKaMXOpxx9jv88+b6mh1rSaw43vjBOItNhaLFG3d0a20PfHyibH5sw==",
       "frameworks": {
@@ -725,8 +725,8 @@
         }
       },
       "files": [
-        "Owin.1.0.nupkg",
-        "Owin.1.0.nupkg.sha512",
+        "Owin.1.0.0.nupkg",
+        "Owin.1.0.0.nupkg.sha512",
         "Owin.nuspec",
         "lib/net40/Owin.dll"
       ]
