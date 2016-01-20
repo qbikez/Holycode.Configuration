@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Framework.ConfigurationModel
+namespace Microsoft.Extensions.Configuration
 {
     public static class LogConfigExtensions
     {
@@ -33,7 +32,7 @@ namespace Microsoft.Framework.ConfigurationModel
             
             var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
 
-            var section = config.GetSubKeys("log4net.appenders");
+            //var section = config.GetSection("log4net:appenders");
 
             ConfigureSolrLog(config, appName, log);
 

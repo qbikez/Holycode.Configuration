@@ -1,55 +1,81 @@
 {
-  "version": "1.1.9",
+  "version": "2.1.2-beta2",
   "description": "Tools for managing configuration",
-  "authors": [ "Holycode" ],
-  "tags": [ "" ],
+  "authors": [
+    "Holycode"
+  ],
+  "tags": [
+    ""
+  ],
   "projectUrl": "",
   "licenseUrl": "",
+  "dependencies": { },
+  "releaseNotes": "v2.1.2 - add dnxcore50 support",
 
-  "dependencies": {
-
-  },
   "commands": {
     "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
   },
   "frameworks": {
-    "net45": {
-      "dependencies": {
-        "Microsoft.Owin": "3.0.1",
-        "Legimi.Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.1-*",
-        "Legimi.Microsoft.Framework.ConfigurationModel": "1.0.3-*",
-        "Legimi.Microsoft.Framework.ConfigurationModel.Json": "1.0.3-*"
-      },
-      "frameworkAssemblies": {
-        "System.Configuration": "4.0.0.0"
-      }
-    },
     "dnx451": {
-      "dependencies": {
-        "Microsoft.AspNet.Hosting.Interfaces": "1.0.0-beta4",
-        "Microsoft.Framework.ConfigurationModel.Interfaces": "1.0.0-beta4",
-        "Microsoft.Framework.ConfigurationModel": "1.0.0-beta4",
-        "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4"
+      "compilationOptions": {
+        "define": [
+          "DNX451"
+        ]
       },
-      "frameworkAssemblies": {
-        "System.Configuration": "4.0.0.0"
+      "dependencies": {
+        "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+        "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final"
+      },
+      "frameworkAssemblies": { }
+    },
+ 
+  },
+  "__commented": {
+    "frameworks": {
+      "dnx451": {
+        "compilationOptions": {
+          "define": [
+            "DNX451"
+          ]
+        },
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": { }
+      },
+      "net45": {
+        "dependencies": {
+          "Microsoft.Owin": "3.0.1"
+        },
+        "frameworkAssemblies": {
+          "System.Configuration": "4.0.0.0"
+        }
+      },
+      "dnxcore50": {
+        "compilationOptions": {
+          "define": [
+            "DNX451",
+            "DNXCORE50",
+            "CORECLR"
+          ]
+        },
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
+          "System.Text.RegularExpressions": "4.0.11-beta-23516"
+
+        }
       }
     }
-    /*  "dnxcore50": {
-      "dependencies": {
-        "System.Collections": "4.0.10-beta-22816",
-        "System.Linq": "4.0.0-beta-22816",
-        "System.Threading": "4.0.10-beta-22816",
-        "Microsoft.CSharp": "4.0.0-beta-22816",
-        "System.Text.RegularExpressions": "4.0.10-beta-22913",
-        "System.Reflection": "4.0.10.0"
-      }
-    }*/
   },
   "exclude": [
     "wwwroot",
     "node_modules",
     "bower_components",
     "log"
-  ],
+  ]
 }

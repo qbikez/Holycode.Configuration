@@ -6,9 +6,10 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Configuration;
-using Microsoft.Framework.ConfigurationModel.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 
-namespace Microsoft.Framework.ConfigurationModel
+namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensions
     {
@@ -16,13 +17,23 @@ namespace Microsoft.Framework.ConfigurationModel
         internal const string EnvConfigPathKey = "env:config:path";
         internal const string ApplicationBasePathKey = "application:basePath";
         internal const string EnvironmentNameKey = "ASPNET_ENV";
-
-        public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, string applicationBasePath)
+    
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
         }
-        public static IConfigurationSourceRoot AddEnvJson(this IConfigurationSourceRoot src, string applicationBasePath, bool optional)
+
+        /// <summary>
+        /// Looks for env.json and env.{environment}.json and adds them to config
+        /// </summary>
+        /// <param name="src">configuration builder</param>
+        /// <param name="applicationBasePath">application base path</param>
+        /// <param name="optional">is env.json optional</param>
+        /// <param name="environment">force specific environment (overwrites  value provided by env.json)[optional]</param>
+        /// <returns></returns>
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional, string environment = null)
         {
+            
             if (src.Get(ApplicationBasePathKey) == null)
                 src.Set(ApplicationBasePathKey, applicationBasePath);
 
@@ -30,11 +41,26 @@ namespace Microsoft.Framework.ConfigurationModel
             if (envPath != null)
             {
                 var path = Path.Combine(envPath.Source, "env.json");
-                src = src.AddJsonFile(path, optional: optional);
+                try
+                {
+                    src = src.AddJsonFile(path, optional: optional);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException($"Failed to load config file {path}", ex);
+                }
                 src.Set(EnvConfigPathKey, path);
                 src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
-               
-                var environment = src.Get(EnvironmentNameKey);
+
+                if (environment == null)
+                {
+                    environment = src.Get(EnvironmentNameKey);
+                }
+                else
+                {
+                    // force env
+                    src.Set(EnvironmentNameKey, environment);
+                }
 
                 /// add env.qa.json, etc
                 if (!string.IsNullOrEmpty(environment))
@@ -42,13 +68,30 @@ namespace Microsoft.Framework.ConfigurationModel
                     path = Path.Combine(envPath.Source, $"env.{environment}.json");
                     if (File.Exists(path))
                     {
-                        src = src.AddJsonFile(path, optional: optional);
+                        try
+                        {
+                            src = src.AddJsonFile(path, optional: optional);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new FileLoadException($"Failed to load config file {path}", ex);
+                        }
+                        
                         src.Set(EnvConfigPathKey, path);
                         src.Set(EnvConfigFoundKey, "true");
                     }
                 }
 
-                src = src.AddJsonFile(Path.Combine(envPath.Source, $"env.local.json"), optional: true);
+                try
+                {
+                    path = Path.Combine(envPath.Source, $"env.local.json");
+                    src = src.AddJsonFile(path, optional: true);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException($"Failed to load config file {path}", ex);
+                }
+                
             }
             else
             {
@@ -59,12 +102,41 @@ namespace Microsoft.Framework.ConfigurationModel
         }
 
 
+        public static IConfigurationBuilder Set(this IConfigurationBuilder builder, string key, string value)
+        {
+            builder.Properties[key] = value;
+            var mem = builder.Providers.Where(p => p is MemoryConfigurationProvider).FirstOrDefault();
+            if (mem != null)
+            {
+                 mem.Set(key, value);
+            }
+            return builder;
+        }
+
+        public static string Get(this IConfigurationBuilder builder, string key)
+        {
+            object val;
+            if (builder.Properties.TryGetValue(key, out val))
+            {
+                return val.ToString();
+            }
+            foreach (var provider in builder.Providers)
+            {
+                string strVal;
+                if (provider.TryGet(key, out strVal))
+                {
+                    return strVal;
+                }
+            }
+            return null;
+        }
+
         public static Nullable<T> GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
           where T : struct
         {
             var v = (cfg.Get(key));
             if (string.IsNullOrEmpty(v)) return null;
-            if (v.Equals("false", StringComparison.InvariantCultureIgnoreCase) && typeof(T) != typeof(bool))
+            if (v.Equals("false", StringComparison.CurrentCultureIgnoreCase) && typeof(T) != typeof(bool))
             {
                 return null;
             }
@@ -77,12 +149,12 @@ namespace Microsoft.Framework.ConfigurationModel
 
         public static Dictionary<string, string> GetDictionary(this IConfiguration cfg, string key)
         {
-            var subkeys = cfg.GetSubKeys(key);
+            var subkeys = cfg.GetSection(key).GetChildren();
             if (subkeys == null) return null;
             var d = new Dictionary<string, string>();
             foreach (var pair in subkeys)
             {
-                d.Add(pair.Key, pair.Value.Get(null));
+                d.Add(pair.Key, pair.Value);
             }
             return d;
         }
@@ -95,20 +167,36 @@ namespace Microsoft.Framework.ConfigurationModel
             else return cfg.Get<T>(key);
         }
 
+        public static string Get(this IConfiguration configuration,string key)
+        {            
+            return configuration[key];
+        }
+
+        public static void Set(this IConfiguration configuration, string key, string value)
+        {
+            configuration[key] = value;
+        }
+
+        public static T Get<T>(this IConfiguration configuration, string key)
+        {
+            return (T)Convert.ChangeType(configuration[key], typeof(T));
+        }
+
+        
         public static void Traverse(this IConfiguration configuration, Action<string, string> action, string rootNs = "")
         {
-            var keys = configuration.GetSubKeys();
+            var keys = configuration.GetChildren();
 
             string val = null;
-            if (configuration is ConfigurationFocus)
+            if (configuration is IConfigurationSection)
             {
-                val = ((ConfigurationFocus)configuration).Get(null);
+                val = ((IConfigurationSection) configuration).Value;
             }
             if (keys != null)
             {
                 foreach (var key in keys)
                 {
-                    Traverse(key.Value, action, rootNs + ":" + key.Key);
+                    Traverse(key, action, rootNs + ":" + key.Key);
                 }
             }
             if (val != null)
@@ -126,7 +214,8 @@ namespace Microsoft.Framework.ConfigurationModel
         }
         private static TResult Aggregate<TResult>(this IConfiguration configuration, Func<TResult, string, object, TResult> action, string rootNs = "")
         {
-            var keys = configuration.GetSubKeys();
+            var keys = configuration.GetChildren();
+            
 
             string val = null;
            
@@ -135,18 +224,14 @@ namespace Microsoft.Framework.ConfigurationModel
             {
                 foreach (var key in keys)
                 {
-                    var sub = key.Value;
-                    if (sub is ConfigurationFocus)
-                    {
-                        val = ((ConfigurationFocus)sub).Get(null);
-                    }
+                    val = key.Value;                   
                     if (val != null)
                     {
                         ag = action(ag, rootNs + ":" + key.Key, val);
                     }
                     else
                     {
-                        var subag = Aggregate(key.Value, action, rootNs + ":" + key.Key);
+                        var subag = Aggregate(key, action, rootNs + ":" + key.Key);
                         ag = action(ag, rootNs + ":" + key.Key, subag);
                     }
                 }
@@ -155,6 +240,9 @@ namespace Microsoft.Framework.ConfigurationModel
 
             return ag;
         }
+        
+
+            
         public static Dictionary<string, string> AsDictionaryPlain(this IConfiguration config)
         {
             var dict = new Dictionary<string, string>();
@@ -177,6 +265,7 @@ namespace Microsoft.Framework.ConfigurationModel
                     return dict;
                 });
         }
+        
 
         /// <summary>
         /// Gets the secure service URL.
@@ -230,12 +319,18 @@ namespace Microsoft.Framework.ConfigurationModel
             return cfg.Get(EnvironmentNameKey);
         }
 
+        public static string EnvironmentName(this IConfigurationBuilder cfg)
+        {
+            return cfg.Get(EnvironmentNameKey);
+        }
+
         public static string BasePath(this IConfiguration cfg)
         {
             return cfg.Get(ApplicationBasePathKey);
         }
+        /*
 
-        public static IEnumerable<IConfigurationSource> GetSources(this IConfigurationSourceRoot root, string key)
+        public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)
         {
             var src = root.Sources.Where(s =>
             {
@@ -245,5 +340,6 @@ namespace Microsoft.Framework.ConfigurationModel
 
             return src;
         }
+        */
     }
 }
