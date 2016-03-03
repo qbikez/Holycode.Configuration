@@ -22,11 +22,30 @@ namespace Microsoft.Extensions.Configuration
             log = log ?? LogManager.GetLogger("root");
             bool isRoot = log.Logger.Name == "root";
 
-            var level = config.Get("log4net:level") ?? "Debug";
-            log.SetLevel(level);
+            var rootLevel = config.Get("log4net:level") ?? "Debug";
+            log.SetLevel(rootLevel);
             if (isRoot)
             {
-                ((Logger)log.Logger).Hierarchy.Root.SetLevel(level);
+                ((Logger)log.Logger).Hierarchy.Root.SetLevel(rootLevel);
+            }
+
+            var loggers = config.GetSection("log4net:loggers");
+            foreach (var ch in loggers.GetChildren())
+            {
+                var loggername = ch.Key;
+                var level = ch.Get("level");
+                if (level != null)
+                {
+                    var logger = LogManager.GetLogger(loggername);
+                    ((Logger)logger.Logger).SetLevel(level);
+                    if (ch.Get("test") != null)
+                    {
+                        logger.Debug($"testing logger {loggername} level {level}");
+                        logger.Info($"testing logger {loggername} level {level}");
+                        logger.Warn($"testing logger {loggername} level {level}");
+                        logger.Error($"testing logger {loggername} level {level}");
+                    }
+                }
             }
             
             
@@ -42,6 +61,7 @@ namespace Microsoft.Extensions.Configuration
             if (traceEnabled && Debugger.IsAttached)
             {
                 log.AddTraceAppender();
+                Logger l;
             }
 
             var consoleEnabled = config.GetNullable<bool>("log4net:appenders:console:enabled") ?? true;
