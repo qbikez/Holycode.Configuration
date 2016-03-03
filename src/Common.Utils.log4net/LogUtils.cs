@@ -20,7 +20,7 @@ namespace log4net
             @"%date [%-5.5thread] %-5level: [ %-30.30logger ] %-100message%newline";
         public static string DefaultTracceLayoutPattern =
                     @"%date [%-2.2thread] %-5level: [%-10.10logger] %-100message";
-        public static string DefaultConsoleLayoutPattern = @"%date [%-2thread] %-5level - %message%newline";
+        public static string DefaultConsoleLayoutPattern = @"%date [%-2thread] %-5level: [%-10.10logger] %message%newline";
         public static void FlushBuffers()
         {
 
