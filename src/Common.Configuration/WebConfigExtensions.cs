@@ -16,9 +16,35 @@ namespace Common.Configuration
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <returns></returns>
+        public static IConfigurationBuilder AddWebConfig(this IConfigurationBuilder configuration)
+        {
+            var keys = ConfigurationManager.AppSettings.AllKeys;
+            var dict = new Dictionary<string, string>();
+
+            foreach (var k in keys)
+            {
+                var val = ConfigurationManager.AppSettings[k];
+                dict[k.Replace(".", ":")] = val;
+                var check = configuration.Get(k.Replace(".", ":"));
+            }
+
+
+
+            var connectionStrings = ConfigurationManager.ConnectionStrings;
+            foreach (ConnectionStringSettings c in connectionStrings)
+            {
+                dict[$"connectionStrings:{c.Name}:connectionString"] = c.ConnectionString;
+                dict[$"connectionStrings:{c.Name}:provider"] = c.ProviderName;
+            }
+
+            configuration.AddInMemoryCollection(dict);
+            return configuration;
+        }
+
         public static IConfiguration AddWebConfig(this IConfiguration configuration)
         {
             var keys = ConfigurationManager.AppSettings.AllKeys;
+            var dict = new Dictionary<string, string>();
 
             foreach (var k in keys)
             {
@@ -27,24 +53,24 @@ namespace Common.Configuration
                 var check = configuration.Get(k.Replace(".", ":"));
             }
 
+
+
             var connectionStrings = ConfigurationManager.ConnectionStrings;
             foreach (ConnectionStringSettings c in connectionStrings)
             {
-                configuration.Set($"connectionStrings:{c.Name}:connectionString", c.ConnectionString);
+                configuration.Set($"connectionStrings:{c.Name}:connectionString",c.ConnectionString);
                 configuration.Set($"connectionStrings:{c.Name}:provider", c.ProviderName);
             }
 
             return configuration;
         }
 
-     
-        
 
-        public static IConfiguration FillAppSettings(this IConfiguration configuration, string rootNs = "")
-        {
-            configuration.Traverse((key, val) => { ConfigurationManager.AppSettings[key.Replace(':','.')] = val; });
-            return configuration;
-        }
+        //public static IConfigurationBuilder FillAppSettings(this IConfigurationBuilder configuration, string rootNs = "")
+        //{
+        //    configuration.Traverse((key, val) => { ConfigurationManager.AppSettings[key.Replace(':','.')] = val; });
+        //    return configuration;
+        //}
     }
 }
 

@@ -1,5 +1,5 @@
 {
-  "version": "2.1.1-beta1",
+  "version": "2.1.1-beta3",
   "summary": "Tools for configuring log4net using common.configuration model",
   "authors": [ "Holycode" ],
   "tags": [ "" ],
@@ -14,7 +14,12 @@
   },
 
   "frameworks": {
-    "dnx451": { },
+    "dnx451": {
+      "compilationOptions": {
+        "define": ["DNX451"]
+      }
+    },
+    "net451": { }
   },
 
   "exclude": [

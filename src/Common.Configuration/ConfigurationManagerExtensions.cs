@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Configuration;
+using System;
 using System.Collections.Generic;
 
 #if !DNX451
@@ -46,6 +47,17 @@ namespace System.Configuration
 
     public static partial class ConnectionStringsExtenisons
     {
+        /// <summary>
+        /// extracts connections strings from config.json into ConnectionStringSettingsCollection (eg. ConfigurationManager.ConnectionStrings)
+        /// </summary>
+        /// <param name="cfg"></param>
+        /// <param name="connectionStrings"> (eg. ConfigurationManager.ConnectionStrings)</param>
+        public static void ExtractConnectionStrings(this IConfigurationBuilder cfg,
+            ConnectionStringSettingsCollection connectionStrings)
+        {
+            cfg.Build().ExtractConnectionStrings(connectionStrings);
+        }
+
         /// <summary>
         /// extracts connections strings from config.json into ConnectionStringSettingsCollection (eg. ConfigurationManager.ConnectionStrings)
         /// </summary>
