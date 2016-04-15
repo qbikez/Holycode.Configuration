@@ -29,6 +29,24 @@ namespace Microsoft.Extensions.Configuration
                 ((Logger)log.Logger).Hierarchy.Root.SetLevel(rootLevel);
             }
 
+            
+
+            var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
+
+            //var section = config.GetSection("log4net:appenders");
+
+            ConfigureSolrLog(config, appName, log);
+            ConfigureFileLog(config, appName, env, logRootPath, log);
+            ConfigureTraceLog(config, log);
+            ConfigureConsoleLog(config, log);
+
+            ConfigureLoggers(config);
+
+            return config;
+        }
+
+        private static void ConfigureLoggers(IConfiguration config)
+        {
             var loggers = config.GetSection("log4net:loggers");
             foreach (var ch in loggers.GetChildren())
             {
@@ -47,30 +65,25 @@ namespace Microsoft.Extensions.Configuration
                     }
                 }
             }
-            
-            
-            var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
+        }
 
-            //var section = config.GetSection("log4net:appenders");
+        private static void ConfigureConsoleLog(IConfiguration config, ILog log)
+        {
+            var consoleEnabled = config.GetNullable<bool>("log4net:appenders:console:enabled") ?? true;
+            if (consoleEnabled)
+            {
+                log.AddConsoleAppenderColored();
+            }
+        }
 
-            ConfigureSolrLog(config, appName, log);
-
-            ConfigureFileLog(config, appName, env, logRootPath, log);
-
+        private static void ConfigureTraceLog(IConfiguration config, ILog log)
+        {
             var traceEnabled = config.GetNullable<bool>("log4net:appenders:trace:enabled") ?? true;
             if (traceEnabled && Debugger.IsAttached)
             {
                 log.AddTraceAppender();
                 Logger l;
             }
-
-            var consoleEnabled = config.GetNullable<bool>("log4net:appenders:console:enabled") ?? true;
-            if (consoleEnabled)
-            {
-                log.AddConsoleAppenderColored();
-            }
-
-            return config;
         }
 
         public static ILog ConfigureStatsLogs(this IConfiguration config, string appName, string logdir)
