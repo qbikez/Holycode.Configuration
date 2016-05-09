@@ -19,8 +19,7 @@
   "commands": {
     "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
   },
-  "frameworks": {
-  
+  "frameworks": {  
     "net451": {
       "dependencies": {
         "Microsoft.Owin": "3.0.1",
