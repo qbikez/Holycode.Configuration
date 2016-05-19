@@ -131,7 +131,7 @@ namespace Microsoft.Extensions.Configuration
             return null;
         }
 
-        public static Nullable<T> GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
+        public static T? GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
           where T : struct
         {
             var v = (cfg.Get(key));
