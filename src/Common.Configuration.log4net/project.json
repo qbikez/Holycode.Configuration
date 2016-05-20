@@ -9,9 +9,8 @@
   "dependencies": {
     "Common.Configuration": { "target":"project" },
     "Common.Utils.log4net": { "target":"project" },
-    "QLogger.Log4net": "1.3.0",
-    "QLogger.Solr": "1.2.1"
-  },
+    "QLogger.Log4net": "1.4.0-dev002-1c46e",
+    "QLogger.Solr": "1.3.0-dev002-1c46e"  },
 
   "frameworks": {
     "dnx451": {

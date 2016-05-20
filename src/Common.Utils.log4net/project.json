@@ -1,4 +1,4 @@
-﻿{
+{
     "version":  "2.0.1-default001-42d84",
     "description":  "Common.Utils.log4net Class Library",
     "authors":  [
@@ -9,9 +9,9 @@
              ],
     "projectUrl":  "",
     "licenseUrl":  "",
-    "dependencies":  {
-                         "log4net":  "2.0.3"
-                     },
+  "dependencies": {
+    "log4net": "2.0.5"
+  },
     "frameworks":  {
                        "dnx451":  {
 
