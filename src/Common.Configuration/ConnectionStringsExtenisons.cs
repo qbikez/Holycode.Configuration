@@ -27,8 +27,8 @@ namespace Microsoft.Extensions.Configuration
         {
             var connStr = cfg.GetConnectionStringValue(name);
             if (connStr == null) return null;
-            connStr = Regex.Replace(connStr, @"User Id\s*=.*?;", "User Id=***", RegexOptions.IgnoreCase);
-            connStr = Regex.Replace(connStr, @"Password\s*=.*?;", "User Id=***", RegexOptions.IgnoreCase);
+            connStr = Regex.Replace(connStr, @"User Id\s*=.*?(;|$)", "User Id=***", RegexOptions.IgnoreCase);
+            connStr = Regex.Replace(connStr, @"Password\s*=.*?(;|$)", "Password=***", RegexOptions.IgnoreCase);
             return connStr;
         }
     }

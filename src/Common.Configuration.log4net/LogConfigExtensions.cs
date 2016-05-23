@@ -11,11 +11,12 @@ namespace Microsoft.Extensions.Configuration
 {
     public static class LogConfigExtensions
     {
+        private static ILog debugLog = LogManager.GetLogger(typeof (LogConfigExtensions));
         public static IConfiguration ConfigureLog4net(this IConfiguration config, string appName, ILog log = null, string logRootPath = null, bool internalDebug = false)
         {
             if (internalDebug)
             {
-                log4net.Util.LogLog.InternalDebugging = true;
+                log4net.Util.LogLog.InternalDebugging = true;                
             }
 
 
@@ -35,10 +36,11 @@ namespace Microsoft.Extensions.Configuration
 
             //var section = config.GetSection("log4net:appenders");
 
-            ConfigureSolrLog(config, appName, log);
             ConfigureFileLog(config, appName, env, logRootPath, log);
             ConfigureTraceLog(config, log);
             ConfigureConsoleLog(config, log);
+
+            ConfigureSolrLog(config, appName, log);
 
             ConfigureLoggers(config);
 
@@ -109,15 +111,21 @@ namespace Microsoft.Extensions.Configuration
             {
                 solrConnectionString = null;
                 solrEnabled = false;
+                
             }
             if (solrEnabled)
             {
+                log.Info($"enabling solr log. connectionstring={solrConnectionString}");
                 log.AddSolrLog(options =>
                 {
                     options.SolrUrl = solrConnectionString;
-                    options.DebugLog = null;
+                    options.LogLogLevel = Level.All;         
                 },
                     domain: appName);
+            }
+            else
+            {
+                log.Info($"solr log not enabled. connectionstring={solrConnectionString}");
             }
         }
 
@@ -167,4 +175,5 @@ namespace log4net
             return log;
         }
     }
+    
 }
