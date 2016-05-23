@@ -1,29 +1,25 @@
-{
-    "version":  "2.0.1-default001-42d84",
-    "description":  "Common.Utils.log4net Class Library",
-    "authors":  [
-                    "jakub.pawlowski"
-                ],
-    "tags":  [
-                 ""
-             ],
-    "projectUrl":  "",
-    "licenseUrl":  "",
+﻿{
+  "version": "2.0.2-default002-6279f",
+  "description": "Common.Utils.log4net Class Library",
+  "authors": [
+    "jakub.pawlowski"
+  ],
+  "tags": [
+    ""
+  ],
+  "projectUrl": "",
+  "licenseUrl": "",
   "dependencies": {
     "log4net": "2.0.5"
   },
-    "frameworks":  {
-                       "dnx451":  {
-
-                                  },
-                       "net451":  {
-
-                                  }
-                   },
-    "exclude":  [
-                    "wwwroot",
-                    "node_modules",
-                    "bower_components",
-                    "log"
-                ]
+  "frameworks": {
+    "dnx451": {},
+    "net451": {}
+  },
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "bower_components",
+    "log"
+  ]
 }

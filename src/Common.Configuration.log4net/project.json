@@ -1,26 +1,34 @@
-{
-  "version": "2.1.1-beta3",
+﻿{
+  "version": "2.1.2-default001-6279f",
   "summary": "Tools for configuring log4net using common.configuration model",
-  "authors": [ "Holycode" ],
-  "tags": [ "" ],
+  "authors": [
+    "Holycode"
+  ],
+  "tags": [
+    ""
+  ],
   "projectUrl": "",
   "licenseUrl": "",
-
   "dependencies": {
-    "Common.Configuration": { "target":"project" },
-    "Common.Utils.log4net": { "target":"project" },
+    "Common.Configuration": {
+      "target": "project"
+    },
+    "Common.Utils.log4net": {
+      "target": "project"
+    },
     "QLogger.Log4net": "1.4.0-dev002-1c46e",
-    "QLogger.Solr": "1.3.0-dev002-1c46e"  },
-
+    "QLogger.Solr": "1.3.0-dev002-1c46e"
+  },
   "frameworks": {
     "dnx451": {
       "compilationOptions": {
-        "define": ["DNX451"]
+        "define": [
+          "DNX451"
+        ]
       }
     },
-    "net451": { }
+    "net451": {}
   },
-
   "exclude": [
     "wwwroot",
     "node_modules",
