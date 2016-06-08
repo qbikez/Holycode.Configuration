@@ -11,10 +11,10 @@ namespace Common.Configuration
 {
     public static class ConfigurationExtensionsNet
     {
-        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src)
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true)
         {
             var path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-            return src.AddEnvJson(path);
+            return src.AddEnvJson(path, optional: optional);
         }
 
         public static IConfigurationBuilder WithCallingAssemblyBasePath(

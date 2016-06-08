@@ -150,7 +150,7 @@ namespace Microsoft.Extensions.Configuration
                 logFilename = logFilename ?? $"log\\{appName}-{env}.log";
                 var logfile = $"{logRootPath}\\{logFilename}";
                 log.AddFileAppender(logfile, minimalLock: minimalLock);
-                log.DebugFormat("configured file appender");
+                log.DebugFormat($"configured file appender. logfile={logfile}");
 
                 ConfigureStatsLogs(config, appName, logRootPath);
             }

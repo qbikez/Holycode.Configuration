@@ -91,6 +91,24 @@ namespace log4net
             log4net.Config.BasicConfigurator.Configure(appender);
         }
 
+        public static void AddTerminalAppenderColored()
+        {
+            var layout = new log4net.Layout.PatternLayout(LogManagerTools.DefaultConsoleLayoutPattern);
+            var appender = new log4net.Appender.AnsiColorTerminalAppender()
+            {
+                Layout = layout,
+                Threshold = Level.Debug,
+                Name = "TerminalAppender",
+            };
+            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors() { Level = Level.Debug, ForeColor = AnsiColorTerminalAppender.AnsiColor.Green });
+            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors() { Level = Level.Info, ForeColor = AnsiColorTerminalAppender.AnsiColor.White });
+            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors() { Level = Level.Warn, ForeColor = AnsiColorTerminalAppender.AnsiColor.Yellow });
+            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors() { Level = Level.Error, ForeColor = AnsiColorTerminalAppender.AnsiColor.Red });
+
+            appender.ActivateOptions();
+            log4net.Config.BasicConfigurator.Configure(appender);
+        }
+
         public static RollingFileAppender CreateFileAppender(string filename,
             string appenderName = "RollingFileAppender", 
             bool minimalLock = true,
@@ -180,14 +198,14 @@ namespace log4net
             //if (log.Logger.Repository.GetAppenders().Any(a => a.Name == appenderName))
             //    return;
             var appender = CreateFileAppender(filename, appenderName, minimalLock, config);
-            if (log.Logger.Name == "root")
-            {
+            //if (log.Logger.Name == "root")
+            //{
                 LogManagerTools.AddFileAppender(filename, minimalLock, config);
-            }
-            else
-            {
-                AddAppender(log, appender);
-            }
+            //}
+            //else
+            //{
+            //    AddAppender(log, appender);
+            //}
         }
 
         public static void AddConsoleAppender(this ILog log)
@@ -202,6 +220,13 @@ namespace log4net
             if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "ConsoleAppender"))
                 return;
             LogManagerTools.AddConsoleAppenderColored();
+        }
+
+        public static void AddTerminalAppenderColored(this ILog log)
+        {
+            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "TerminalAppender"))
+                return;
+            LogManagerTools.AddTerminalAppenderColored();
         }
 
 
@@ -247,9 +272,17 @@ namespace log4net
             l.Level = l.Hierarchy.LevelMap[levelName];
         }
 
+        
 
         // Add an appender to a logger
-        public static void AddAppender(string loggerName, IAppender appender)
+        public static void AddAppender(this ILog log, AppenderSkeleton appender)
+        {
+            appender.ActivateOptions();
+            log4net.Config.BasicConfigurator.Configure(appender);
+        }
+
+        // Add an appender to a logger
+        public static void AddConfiguredAppender(string loggerName, IAppender appender)
         {
             ILog log = LogManager.GetLogger(loggerName);
             Logger l = (Logger)log.Logger;
@@ -258,7 +291,7 @@ namespace log4net
         }
 
         // Add an appender to a logger
-        public static void AddAppender(this ILog log, IAppender appender)
+        public static void AddConfiguredAppender(this ILog log, IAppender appender)
         {
             Logger l = (Logger)log.Logger;
             
