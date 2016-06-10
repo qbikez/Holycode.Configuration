@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.1.4-default001-6414f",
+  "version": "2.1.5-default001-6414f",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -16,7 +16,7 @@
   },
   "releaseNotes": "v2.1.2 - add dnxcore50 support",
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
+    "cfg": "Common.Configuration"
   },
   "frameworks": {
     "net451": {
@@ -26,19 +26,20 @@
       "frameworkAssemblies": {
         "System.Configuration": "4.0.0.0"
       }
+    },
+    "dnx451": {
+      "compilationOptions": {
+        "define": [
+          "DNX451"
+        ]
+      },
+      "dependencies": { },
+      "frameworkAssemblies": { }
     }
   },
   "__commented": {
     "frameworks": {
-      "dnx451": {
-        "compilationOptions": {
-          "define": [
-            "DNX451"
-          ]
-        },
-        "dependencies": {},
-        "frameworkAssemblies": {}
-      },
+      
       "_dnx451": {
         "compilationOptions": {
           "define": [

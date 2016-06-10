@@ -50,7 +50,7 @@ namespace Common.Configuration
             return CreateConfigSource(applicationBasePath, addEnvVariables).Build();
         }
 
-        public static IConfiguration FromEnvJson(string applicationBasePath = null, bool addEnvVariables = true)
+        public static IConfiguration FromEnvJson(string applicationBasePath = null, bool addEnvVariables = true, string environment = null)
         {
 
             var config = CreateConfigSource(applicationBasePath, addEnvVariables);
@@ -69,7 +69,7 @@ namespace Common.Configuration
                 config.SetBasePath(applicationBasePath);
             }
 
-            config = config.AddEnvJson(config.GetBasePath());
+            config = config.AddEnvJson(config.GetBasePath(), optional: false, environment: environment);
 
             return config.Build();
         }

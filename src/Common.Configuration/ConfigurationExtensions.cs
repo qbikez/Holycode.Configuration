@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.Configuration
                 if (!string.IsNullOrEmpty(environment))
                 {
                     path = Path.Combine(envPath.Source, $"env.{environment}.json");
-                    if (File.Exists(path))
+                    if (File.Exists(path) || !optional)
                     {
                         try
                         {
