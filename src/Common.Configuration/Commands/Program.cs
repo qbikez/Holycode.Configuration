@@ -24,8 +24,8 @@ namespace Common.Configuration.Commands
                     cmd = args[i];
                     continue;
                 }
-                if (args[i].Equals("--env", StringComparison.InvariantCultureIgnoreCase) ||
-                    args[i].Equals("-env", StringComparison.InvariantCultureIgnoreCase))
+                if (args[i].Equals("--env", StringComparison.CurrentCultureIgnoreCase) ||
+                    args[i].Equals("-env", StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (i == args.Length - 1 || args[i + 1].StartsWith("-"))
                     {

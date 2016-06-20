@@ -10,7 +10,7 @@ namespace Common.Configuration
 {
     public class ConfigFactory
     {
-#if !DNX451
+#if NETFX
 
         public static IConfigurationBuilder CreateConfigSource()
         {
