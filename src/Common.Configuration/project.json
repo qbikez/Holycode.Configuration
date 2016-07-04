@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.1.5-default001-6414f",
+  "version": "2.1.6-default008-2e21b",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -33,13 +33,12 @@
           "DNX451"
         ]
       },
-      "dependencies": { },
-      "frameworkAssemblies": { }
+      "dependencies": {},
+      "frameworkAssemblies": {}
     }
   },
   "__commented": {
     "frameworks": {
-      
       "_dnx451": {
         "compilationOptions": {
           "define": [

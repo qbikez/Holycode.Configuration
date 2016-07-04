@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace Common.Configuration
+namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensionsVnext
     {
@@ -18,16 +18,10 @@ namespace Common.Configuration
         //    return src.AddEnvJson(envPath);
         //}
 
-        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src)
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true, string environment = null)
         {
             var envPath = src.GetBasePath();
-            return src.AddEnvJson(envPath);
-        }
-
-        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true)
-        {
-            var envPath = src.GetBasePath();
-            return src.AddEnvJson(envPath, optional: optional);
+            return src.AddEnvJson(envPath, optional: optional, environment: environment = null);
         }
 
     }

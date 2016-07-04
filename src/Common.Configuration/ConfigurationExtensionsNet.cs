@@ -7,14 +7,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace Common.Configuration
+namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensionsNet
     {
-        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true)
+        public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true, string environment = null)
         {
             var path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-            return src.AddEnvJson(path, optional: optional);
+            return src.AddEnvJson(path, optional: optional, environment: environment);
         }
 
         public static IConfigurationBuilder WithCallingAssemblyBasePath(
