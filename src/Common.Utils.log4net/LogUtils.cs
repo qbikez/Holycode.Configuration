@@ -28,7 +28,7 @@ namespace log4net
 
             ILoggerRepository rep = LogManager.GetRepository();
 
-            
+
             foreach (IAppender appender in rep.GetAppenders())
             {
                 var buffered = appender as BufferingAppenderSkeleton;
@@ -47,7 +47,7 @@ namespace log4net
         /// <param name="showStackTrace">should the stacktrace be printed</param>
         public static void AddExceptionRenderer(this ILoggerRepository repository, int? level = null, bool showStackTrace = true)
         {
-            repository.RendererMap.Put(typeof (Exception), new ExceptionRenderer()
+            repository.RendererMap.Put(typeof(Exception), new ExceptionRenderer()
             {
                 InnerExceptionLevel = level,
                 ShowStackTrace = showStackTrace
@@ -86,7 +86,7 @@ namespace log4net
                 Layout = layout,
                 Threshold = Level.Debug,
                 Name = "ConsoleAppender",
-                
+
             };
             appender.ActivateOptions();
             log4net.Config.BasicConfigurator.Configure(appender);
@@ -157,12 +157,6 @@ namespace log4net
             return appender;
         }
 
-        public static void AddFileAppender(string filename, bool minimalLock = true,
-            Action<RollingFileAppender> config = null)
-        {
-            var appender = CreateFileAppender(filename, minimalLock: minimalLock, config: config);
-            log4net.Config.BasicConfigurator.Configure(appender);
-        }
 
         public static void AddSmtpAppender(string sendto, string programName = "", Level levelMin = null)
         {
@@ -214,18 +208,19 @@ namespace log4net
         public static void AddFileAppender(this ILog log, string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
             Action<RollingFileAppender> config = null)
         {
-            //if (log.Logger.Repository.GetAppenders().Any(a => a.Name == appenderName))
-            //    return;
+            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == appenderName))
+                return;
             var appender = CreateFileAppender(filename, appenderName, minimalLock, config);
-            //if (log.Logger.Name == "root")
-            //{
-            LogManagerTools.AddFileAppender(filename, minimalLock, config);
-            //}
-            //else
-            //{
-            //    AddAppender(log, appender);
-            //}
+            AddAppender(log, appender);
         }
+
+        public static void AddFileAppender(string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
+        Action<RollingFileAppender> config = null)
+        {
+            var appender = CreateFileAppender(filename, appenderName, minimalLock: minimalLock, config: config);
+            log4net.Config.BasicConfigurator.Configure(appender);
+        }
+
 
         public static void AddConsoleAppender(this ILog log)
         {
