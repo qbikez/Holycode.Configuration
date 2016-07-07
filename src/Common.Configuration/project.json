@@ -9,6 +9,14 @@
   ],
   "projectUrl": "",
   "licenseUrl": "",
+  "configurations": {
+    "cmd": {
+      "buildOptions": {
+        "emitEntryPoint": true,
+        "outputName": "cfg"
+      }
+    }
+  },
   "dependencies": {
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
