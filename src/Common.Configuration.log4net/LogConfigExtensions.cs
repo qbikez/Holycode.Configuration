@@ -30,7 +30,12 @@ namespace Microsoft.Extensions.Configuration
                 ((Logger)log.Logger).Hierarchy.Root.SetLevel(rootLevel);
             }
 
-            
+            var showStackTrace = config.GetNullable<bool>("log4net:showStackTrace") ?? true;
+            var innerLevel = config.GetNullable<int>("log4net:innerExceptionLevel");
+            if (showStackTrace)
+            {
+                log.Logger.Repository.AddExceptionRenderer(level: innerLevel, showStackTrace: showStackTrace);
+            }
 
             var env = config.Get("application:env") ?? config.Get("ASPNET_ENV") ?? "Development";
 
@@ -158,8 +163,14 @@ namespace Microsoft.Extensions.Configuration
 
         private static string EnsureLogPath(IConfiguration config, string logRootPath)
         {
-            logRootPath = logRootPath ??
-                          config.Get("application:wwwroot") ?? config.Get("application:basePath") ?? "./log";
+            if (logRootPath == null)
+            {
+                logRootPath = config.Get("application:wwwroot")
+                                ?? config.BasePath()
+                                ?? ".";
+                logRootPath += "/log";
+                if (logRootPath.StartsWith("/")) logRootPath = "." + logRootPath;
+            }            
             return logRootPath;
         }
     }

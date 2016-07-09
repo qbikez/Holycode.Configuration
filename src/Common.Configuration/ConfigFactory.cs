@@ -23,14 +23,22 @@ namespace Common.Configuration
             {
                 // this may return something like c:\windows\.. when running in ASP
 #if !CORECLR
-                applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+                var asm = Assembly.GetCallingAssembly();
+                if (asm.GetName().Name != typeof (ConfigFactory).Assembly.GetName().Name)
+                {
+                    applicationBasePath = asm.CodeBase.Substring("file:///".Length);
+                }
+                else
+                {
+                    applicationBasePath = Path.GetFullPath(".");
+                }
+                
 #else
                 throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
 #endif
-
-
             }
-            if (File.Exists(applicationBasePath))
+
+            if (applicationBasePath != null && File.Exists(applicationBasePath))
                 applicationBasePath = Path.GetDirectoryName(applicationBasePath);
 
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();

@@ -11,6 +11,8 @@ using log4net.Filter;
 using log4net.Layout;
 using log4net.Util;
 using log4net.Repository.Hierarchy;
+using log4net.ObjectRenderer;
+using System.IO;
 
 namespace log4net
 {
@@ -25,6 +27,8 @@ namespace log4net
         {
 
             ILoggerRepository rep = LogManager.GetRepository();
+
+
             foreach (IAppender appender in rep.GetAppenders())
             {
                 var buffered = appender as BufferingAppenderSkeleton;
@@ -35,10 +39,24 @@ namespace log4net
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="repository"></param>
+        /// <param name="level">level of inner exceptions to show. default = null. 0 - don't show inner exceptions, 1 - show only the first inner exception, etc.</param>
+        /// <param name="showStackTrace">should the stacktrace be printed</param>
+        public static void AddExceptionRenderer(this ILoggerRepository repository, int? level = null, bool showStackTrace = true)
+        {
+            repository.RendererMap.Put(typeof(Exception), new ExceptionRenderer()
+            {
+                InnerExceptionLevel = level,
+                ShowStackTrace = showStackTrace
+            });
+        }
 
         public static void AddTraceAppender()
         {
-            var layout = new log4net.Layout.PatternLayout(DefaultTracceLayoutPattern);
+            var layout = CreateLayout(DefaultTracceLayoutPattern);
             var appender = new log4net.Appender.AzureTraceAppender()
             {
                 Layout = layout,
@@ -51,7 +69,7 @@ namespace log4net
 
         public static void AddTapAppender()
         {
-            var layout = new log4net.Layout.PatternLayout(DefaultLayoutPattern);
+            var layout = CreateLayout(DefaultLayoutPattern);
             var appender = new log4net.Appender.LogTapAppender()
             {
                 Name = "LogTapAppender"
@@ -62,19 +80,20 @@ namespace log4net
 
         public static void AddConsoleAppender()
         {
-            var layout = new log4net.Layout.PatternLayout(DefaultConsoleLayoutPattern);
+            var layout = CreateLayout(DefaultConsoleLayoutPattern);
             var appender = new log4net.Appender.ConsoleAppender()
             {
                 Layout = layout,
                 Threshold = Level.Debug,
                 Name = "ConsoleAppender",
+
             };
             appender.ActivateOptions();
             log4net.Config.BasicConfigurator.Configure(appender);
         }
         public static void AddConsoleAppenderColored()
         {
-            var layout = new log4net.Layout.PatternLayout(DefaultConsoleLayoutPattern);
+            var layout = CreateLayout(DefaultConsoleLayoutPattern);
             var appender = new log4net.Appender.ColoredConsoleAppender()
             {
                 Layout = layout,
@@ -93,7 +112,7 @@ namespace log4net
 
         public static void AddTerminalAppenderColored()
         {
-            var layout = new log4net.Layout.PatternLayout(LogManagerTools.DefaultConsoleLayoutPattern);
+            var layout = CreateLayout(LogManagerTools.DefaultConsoleLayoutPattern);
             var appender = new log4net.Appender.AnsiColorTerminalAppender()
             {
                 Layout = layout,
@@ -110,11 +129,11 @@ namespace log4net
         }
 
         public static RollingFileAppender CreateFileAppender(string filename,
-            string appenderName = "RollingFileAppender", 
+            string appenderName = "RollingFileAppender",
             bool minimalLock = true,
             Action<RollingFileAppender> config = null)
         {
-            var layout = new log4net.Layout.PatternLayout(DefaultLayoutPattern);
+            var layout = CreateLayout(DefaultLayoutPattern);
             var appender = new log4net.Appender.RollingFileAppender()
             {
                 Layout = layout,
@@ -138,12 +157,6 @@ namespace log4net
             return appender;
         }
 
-        public static void AddFileAppender(string filename, bool minimalLock = true,
-            Action<RollingFileAppender> config = null)
-        {
-            var appender = CreateFileAppender(filename, minimalLock: minimalLock, config: config);            
-            log4net.Config.BasicConfigurator.Configure(appender);
-        }
 
         public static void AddSmtpAppender(string sendto, string programName = "", Level levelMin = null)
         {
@@ -160,7 +173,7 @@ namespace log4net
                 Password = "crash_ol_je",
                 BufferSize = 512,
                 Lossy = false,
-                Layout = new PatternLayout(layout),
+                Layout = CreateLayout(layout),
                 SubjectLayout = new PatternLayout(subjectLayout),
                 Evaluator = new LevelEvaluator(threshold: levelMin ?? Level.Error),
                 To = sendto,
@@ -195,18 +208,19 @@ namespace log4net
         public static void AddFileAppender(this ILog log, string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
             Action<RollingFileAppender> config = null)
         {
-            //if (log.Logger.Repository.GetAppenders().Any(a => a.Name == appenderName))
-            //    return;
+            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == appenderName))
+                return;
             var appender = CreateFileAppender(filename, appenderName, minimalLock, config);
-            //if (log.Logger.Name == "root")
-            //{
-                LogManagerTools.AddFileAppender(filename, minimalLock, config);
-            //}
-            //else
-            //{
-            //    AddAppender(log, appender);
-            //}
+            AddAppender(log, appender);
         }
+
+        public static void AddFileAppender(string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
+        Action<RollingFileAppender> config = null)
+        {
+            var appender = CreateFileAppender(filename, appenderName, minimalLock: minimalLock, config: config);
+            log4net.Config.BasicConfigurator.Configure(appender);
+        }
+
 
         public static void AddConsoleAppender(this ILog log)
         {
@@ -272,7 +286,7 @@ namespace log4net
             l.Level = l.Hierarchy.LevelMap[levelName];
         }
 
-        
+
 
         // Add an appender to a logger
         public static void AddAppender(this ILog log, AppenderSkeleton appender)
@@ -294,7 +308,7 @@ namespace log4net
         public static void AddConfiguredAppender(this ILog log, IAppender appender)
         {
             Logger l = (Logger)log.Logger;
-            
+
             l.AddAppender(appender);
         }
 
@@ -324,7 +338,37 @@ namespace log4net
         //    return appender;
         //}
 
+        private static ILayout CreateLayout(string layout)
+        {
+            var l = new PatternLayout(layout) { IgnoresException = true };
+            l.ActivateOptions();
+            return l;
+        }
     }
 
+    class ExceptionRenderer : IObjectRenderer
+    {
+        public int? InnerExceptionLevel = null;
+        public bool ShowStackTrace = true;
+
+        public void RenderObject(RendererMap rendererMap, object obj, TextWriter writer)
+        {
+            if (!(obj is Exception)) return;
+            var ex = obj as Exception;
+            var curLevel = 0;
+
+            while (ex != null && (InnerExceptionLevel == null || InnerExceptionLevel.Value >= curLevel))
+            {
+                writer.WriteLine(ex.Message);
+                if (ShowStackTrace)
+                {
+                    writer.WriteLine(ex.StackTrace);
+                }
+                ex = ex.InnerException;
+                if (ex != null) writer.WriteLine("--- Inner Exception:");
+                curLevel++;
+            }
+        }
+    }
 
 }

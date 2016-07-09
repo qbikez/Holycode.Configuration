@@ -1,7 +1,10 @@
 {
     "projects": [ "src", "test" ],
     "sdk": {
-        "version": "1.0.0-preview2-003119"
+		"version":"1.0.0-preview3-003172",
+        "//version": "1.0.0",
+        "runtime": "clr",
+        "architecture": "x64"
     },
-    "packages": "../../dn-packages"
+    "packages": "../../dnx-packages"
 }

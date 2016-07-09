@@ -65,12 +65,17 @@ namespace Common.Configuration
             return configuration;
         }
 
+        public static IConfiguration Fill(this System.Collections.Specialized.NameValueCollection collection, IConfiguration configuration)
+        {
+            configuration.Traverse((key, val) => { collection[key.Replace(':', '.')] = val; });
+            return configuration;
+        }
 
-        //public static IConfigurationBuilder FillAppSettings(this IConfigurationBuilder configuration, string rootNs = "")
-        //{
-        //    configuration.Traverse((key, val) => { ConfigurationManager.AppSettings[key.Replace(':','.')] = val; });
-        //    return configuration;
-        //}
+        public static IConfiguration FillAppSettings(this IConfiguration configuration)
+        {
+            configuration.Traverse((key, val) => { ConfigurationManager.AppSettings[key.Replace(':', '.')] = val; });
+            return configuration;
+        }
     }
 }
 
