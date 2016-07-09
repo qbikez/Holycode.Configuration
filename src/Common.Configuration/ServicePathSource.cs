@@ -23,5 +23,10 @@ namespace Common.Configuration
         {
             this.AdditionalInfo = additionalInfo;
         }
+
+        public override string ToString()
+        {
+            return $"{ServiceName}: '{Source}' ({AdditionalInfo})";
+        }
     }
 }
