@@ -10,86 +10,102 @@ namespace Common.Configuration.Commands
 {
     public class Program
     {
-        
 
-        public static void Main(string[] args)
+
+        public static int Main(string[] args)
         {
             //Console.WriteLine($"args={string.Join(" ", args)}");
 
-            string env = null;
-            string cmd = null;
-            string path = null;
-            int noDashArgIdx = 0;
-            for (int i = 0; i < args.Length; i++)
+            try
             {
-                if (!args[i].StartsWith("-"))
+                string env = null;
+                string cmd = null;
+                string path = null;
+                int noDashArgIdx = 0;
+                for (int i = 0; i < args.Length; i++)
                 {
-                    switch (noDashArgIdx)
+                    if (!args[i].StartsWith("-"))
                     {
-                        case 0:
-                            cmd = args[i]; break;
-                        case 1: 
-                            path = args[i]; break;
-                    }
-                    noDashArgIdx++;
+                        switch (noDashArgIdx)
+                        {
+                            case 0:
+                                cmd = args[i]; break;
+                            case 1:
+                                path = args[i]; break;
+                        }
+                        noDashArgIdx++;
 
-                    continue;
+                        continue;
+                    }
+                    if (args[i].Equals("--env", StringComparison.InvariantCultureIgnoreCase) ||
+                        args[i].Equals("-env", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (i == args.Length - 1 || args[i + 1].StartsWith("-"))
+                        {
+                            throw new ArgumentException("arg --env requires a value!");
+                        }
+                        env = args[i + 1];
+                        i++;
+                        continue;
+                    }
                 }
-                if (args[i].Equals("--env", StringComparison.InvariantCultureIgnoreCase) ||
-                    args[i].Equals("-env", StringComparison.InvariantCultureIgnoreCase))
+
+                //Console.WriteLine($"looking for env.config... environment={env}");
+                if (cmd == null)
                 {
-                    if (i == args.Length - 1 || args[i + 1].StartsWith("-"))
+                    Console.WriteLine("Available commands:");
+                    Console.WriteLine(" get              returns whole configuration, serialized as JSON");
+                    Console.WriteLine(" get {key}        returns config value for key {key}");
+                    Console.WriteLine(" connstr {name}   returns connection string with name {name}");
+                    return 0;
+                }
+
+                var conf = ConfigFactory.FromEnvJson(
+                    applicationBasePath: Directory.GetCurrentDirectory(),
+                    addEnvVariables: false,
+                    environment: env);
+
+
+                if (cmd == "get")
+                {
+                    if (path == null)
                     {
-                        throw new ArgumentException("arg --env requires a value!");
+                        var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(conf.AsDictionaryPlain());
+                        Console.WriteLine(serialized);
                     }
-                    env = args[i + 1];
-                    i++;
-                    continue;
+                    else
+                    {
+                        var val = conf.Get(path);
+                        Console.WriteLine(val);
+                    }
+
+                    return 0;
+                }
+                if (cmd.Equals("connstr", StringComparison.InvariantCultureIgnoreCase)
+                || cmd.Equals("getconnstr", StringComparison.InvariantCultureIgnoreCase)
+                || cmd.Equals("conn", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (path == null)
+                    {
+                        Console.WriteLine("Error: expected connstr name!");
+                        return -1;
+                    }
+                    else
+                    {
+                        var val = conf.GetConnectionStringValue(path);
+                        Console.WriteLine(val);
+                    }
+
+                    return 0;
                 }
             }
-
-            //Console.WriteLine($"looking for env.config... environment={env}");
-            if (cmd == null)
+            catch (Exception ex)
             {
-                Console.WriteLine("Available commands:");
-                Console.WriteLine(" get              returns whole configuration, serialized as JSON");
-                Console.WriteLine(" get {key}        returns config value for key {key}");
-                Console.WriteLine(" connstr {name}   returns connection string with name {name}");
-                return;
+                Console.WriteLine($"Error: {ex.Message} {ex.StackTrace}");
+                return -1;
             }
 
-            var conf = ConfigFactory.FromEnvJson(
-                applicationBasePath: Directory.GetCurrentDirectory(),
-                addEnvVariables: false,
-                environment: env);
-
-
-            if (cmd == "get")
-            {
-                if (path == null) {
-                    var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(conf.AsDictionaryPlain());
-                    Console.WriteLine(serialized);
-                } else {
-                    var val = conf.Get(path);
-                    Console.WriteLine(val);
-                }
-
-                return;
-            }
-            if (cmd.Equals("connstr", StringComparison.InvariantCultureIgnoreCase) 
-            || cmd.Equals("getconnstr", StringComparison.InvariantCultureIgnoreCase)
-            || cmd.Equals("conn", StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (path == null) {
-                   Console.WriteLine("Error: expected connstr name!");
-                   return;
-                } else {
-                    var val = conf.GetConnectionStringValue(path);
-                    Console.WriteLine(val);
-                }
-
-                return;
-            }
+            return 0;
         }
     }
 }
