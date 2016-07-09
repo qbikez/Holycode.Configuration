@@ -34,6 +34,7 @@ namespace Common.Configuration
                 }
                 
 #else
+                
                 throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
 #endif
             }

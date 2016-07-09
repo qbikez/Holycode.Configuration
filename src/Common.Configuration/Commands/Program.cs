@@ -37,8 +37,8 @@ namespace Common.Configuration.Commands
 
                         continue;
                     }
-                    if (args[i].Equals("--env", StringComparison.InvariantCultureIgnoreCase) ||
-                        args[i].Equals("-env", StringComparison.InvariantCultureIgnoreCase))
+                    if (args[i].Equals("--env", StringComparison.OrdinalIgnoreCase) ||
+                        args[i].Equals("-env", StringComparison.OrdinalIgnoreCase))
                     {
                         if (i == args.Length - 1 || args[i + 1].StartsWith("-"))
                         {
@@ -81,9 +81,9 @@ namespace Common.Configuration.Commands
 
                     return 0;
                 }
-                if (cmd.Equals("connstr", StringComparison.InvariantCultureIgnoreCase)
-                || cmd.Equals("getconnstr", StringComparison.InvariantCultureIgnoreCase)
-                || cmd.Equals("conn", StringComparison.InvariantCultureIgnoreCase))
+                if (cmd.Equals("connstr", StringComparison.OrdinalIgnoreCase)
+                || cmd.Equals("getconnstr", StringComparison.OrdinalIgnoreCase)
+                || cmd.Equals("conn", StringComparison.OrdinalIgnoreCase))
                 {
                     if (path == null)
                     {
