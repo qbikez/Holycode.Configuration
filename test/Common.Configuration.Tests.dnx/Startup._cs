@@ -20,7 +20,7 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace Common.Configuration
+namespace Holycode.Configuration.Tests.dnx
 {
 
     public class Startup

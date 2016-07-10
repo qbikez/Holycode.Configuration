@@ -157,6 +157,7 @@ namespace log4net
             return appender;
         }
 
+        
 
         public static void AddSmtpAppender(string sendto, string programName = "", Level levelMin = null)
         {
@@ -166,18 +167,18 @@ namespace log4net
             var appender = new SmtpAppenderWithSubjectLayout()
             {
                 Name = "SmtpAppender",
-                SmtpHost = "legimi.home.pl",
+                SmtpHost = "my.domain.com",
                 Port = 25,
                 Authentication = SmtpAppender.SmtpAuthentication.Basic,
-                Username = "crash@legimi.com",
-                Password = "crash_ol_je",
+                Username = "me@my.domain.com",
+                Password = "secret",
                 BufferSize = 512,
                 Lossy = false,
                 Layout = CreateLayout(layout),
                 SubjectLayout = new PatternLayout(subjectLayout),
                 Evaluator = new LevelEvaluator(threshold: levelMin ?? Level.Error),
                 To = sendto,
-                From = "crash@legimi.com",
+                From = "me@my.domain.com",
             };
 
             appender.AddFilter(new LevelRangeFilter()

@@ -1,4 +1,4 @@
-﻿using Common.Configuration;
+﻿using Holycode.Configuration;
 using System;
 using System.Collections.Generic;
 

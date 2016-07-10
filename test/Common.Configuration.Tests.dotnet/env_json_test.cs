@@ -5,7 +5,7 @@ using System.IO;
 using Xunit;
 using Microsoft.Extensions.Configuration;
 
-namespace Common.Configuration.Tests
+namespace Holycode.Configuration.Tests.dotnet
 {
     public class env_json_test
     {

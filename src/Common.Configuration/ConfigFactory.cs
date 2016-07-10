@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace Common.Configuration
+namespace Holycode.Configuration
 {
     public class ConfigFactory
     {

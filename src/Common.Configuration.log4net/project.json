@@ -16,8 +16,8 @@
     "Common.Utils.log4net": {
       "target": "project"
     },
-    "QLogger.Log4net": "1.4.0-dev002-1c46e",
-    "QLogger.Solr": "1.3.0-default003-a0d1e"
+    "QLogger.Log4net": "1.5.0",
+    "QLogger.Solr": "1.4.0"
   },
   "frameworks": {
     "dnx451": {

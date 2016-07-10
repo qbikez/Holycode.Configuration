@@ -9,7 +9,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using System.Threading;
 using Microsoft.AspNet.Hosting;
 
-namespace Common.Owin.Tests.vnext
+namespace Holycode.Configuration.Tests.dnx
 {
     public class Program
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ConsoleApplication
+namespace Holycode.Configuration.Tests.dotnet
 {
     public class Program
     {

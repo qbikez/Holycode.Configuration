@@ -10,7 +10,7 @@ using Should;
 using Xunit;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace Common.Configuration.web.tests
+namespace Holycode.Configuration.Tests.dnx
 {
 
     public class configuration_tests

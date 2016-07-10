@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Common.Configuration
+namespace Holycode.Configuration
 {
     public class ServicePathResolver
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using log4net;
 
-namespace Legimi.Core.Utils.Diag
+namespace Holycode.Extensions.log4net
 {
     public class Log4NetTraceListener : TraceListener
     {
