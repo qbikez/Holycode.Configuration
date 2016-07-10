@@ -6,5 +6,5 @@
         "runtime": "clr",
         "architecture": "x64"
     },
-    "packages": "../../dnx-packages"
+    "packages": "dnx-packages"
 }

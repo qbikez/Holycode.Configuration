@@ -1,1 +1,1 @@
-msbuild common.vnext.sln
+msbuild common.configuration.sln

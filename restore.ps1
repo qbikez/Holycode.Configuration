@@ -1,1 +1,2 @@
-dotnet restore
+dotnet restore src/
+dotnet restore test/

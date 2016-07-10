@@ -43,7 +43,10 @@ namespace Common.Configuration.web.tests
         [Fact]
         public void env_json_works()
         {
-            var builder = ConfigFactory.CreateConfigSource(_env.ApplicationBasePath);
+            Console.WriteLine("curdir=" + System.IO.Directory.GetCurrentDirectory());
+            var basepath = System.IO.Path.GetFullPath(@".\input\reporoot1\subfolder\projectfolder");
+            var builder = ConfigFactory.CreateConfigSource(basepath);
+
             builder.AddEnvJson(optional: false);
 
             var props = builder.Properties;
@@ -52,7 +55,7 @@ namespace Common.Configuration.web.tests
             var cfg = builder.Build();
 
             cfg.BasePath().ShouldNotBeNull();
-            cfg.BasePath().ShouldEqual(_env.ApplicationBasePath);
+            cfg.BasePath().ShouldEqual(basepath);
 
             cfg.EnvironmentName().ShouldEqual("test-env");
             cfg.Get("test").ShouldEqual("global-test-env-value");
@@ -61,7 +64,9 @@ namespace Common.Configuration.web.tests
         [Fact]
         public void local_config_works()
         {
-            var builder = ConfigFactory.CreateConfigSource(_env.ApplicationBasePath);
+            var basepath = System.IO.Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder");
+
+            var builder = ConfigFactory.CreateConfigSource(basepath);
             builder.AddEnvJson(optional: false);
             builder.AddJsonFile("config.json", optional: false);
             builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: false);
@@ -72,7 +77,7 @@ namespace Common.Configuration.web.tests
             var cfg = builder.Build();
 
             cfg.BasePath().ShouldNotBeNull();
-            cfg.BasePath().ShouldEqual(_env.ApplicationBasePath);
+            cfg.BasePath().ShouldEqual(basepath);
 
             cfg.EnvironmentName().ShouldEqual("test-env");
             cfg.Get("test").ShouldEqual("local-config-value");
@@ -82,7 +87,9 @@ namespace Common.Configuration.web.tests
         [Obsolete("extracting connection strings is not supported in aspnet5 anymore")]
         public void extract_connection_strings()
         {
-            var builder = ConfigFactory.CreateConfigSource(_env.ApplicationBasePath);
+            var basepath = System.IO.Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder");
+
+            var builder = ConfigFactory.CreateConfigSource(basepath);
             builder.AddEnvJson(optional: false);
             builder.AddJsonFile("config.json", optional: false);
             builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: false);
@@ -104,7 +111,9 @@ namespace Common.Configuration.web.tests
         [Fact]
         public void traverse_config_tree_no_env_vars()
         {
-            var builder = ConfigFactory.CreateConfigSource(_env.ApplicationBasePath, addEnvVariables: false);
+            var basepath = System.IO.Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder");
+
+            var builder = ConfigFactory.CreateConfigSource(basepath, addEnvVariables: false);
 
             builder.AddEnvJson(optional: false);
             builder.AddJsonFile("config.json", optional: false);

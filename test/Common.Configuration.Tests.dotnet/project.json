@@ -3,9 +3,9 @@
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": true,
-    "copyToOutput": [
-      "input"
-    ]
+    "copyToOutput": {
+      "include": "input"
+    }
   },
   "testRunner": "xunit",
   "dependencies": {

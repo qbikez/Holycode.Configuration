@@ -1,0 +1,124 @@
+syntax: glob
+bin/*
+Bin/*
+obj/*
+moc_*.cpp
+*~
+*.o
+*.ncb
+*.suo
+*.bak
+*.user
+*.mergebackup
+*.orig
+BuildLog*
+*.rej
+Platform/rel/*
+log.txt*
+*.exe
+glob:*.patch
+glob:TestResults/*
+glob:*.sqlsuo
+glob:patches/*
+glob:*.vs10x
+glob:*.filters
+glob:**/_UpgradeReport_Files/*
+relre:.*UpgradeLog.*\.XML
+glob:*.sdf
+glob:*.opensdf
+glob:*.pidb
+glob:**biniPhoneSimulatorDebug/*
+glob:**.DS_Store
+glob:**.userprefs
+glob:*.aux
+glob:*.synctex.gz
+glob:*.toc
+glob:*Publish.xml
+glob:Backup/*
+glob:Debug/*
+*.backup
+glob:*.bak2
+glob:Backup/*
+glob:Backup*/*
+glob:*.sln.cache
+glob:*.tmp
+glob:*.msi
+glob:*.userprefs
+_ReSharper.*/**
+*.vsp
+NDependOut*/*
+*.vsp*
+*.backup
+version.txt
+*.jar
+*.sln.docstates
+_ReSharper.*/*
+backup-*/
+backup/*
+*.pdb
+backup-*/**
+backup/**
+.git
+.svn
+Web References/**/*.wsdl
+Web References/**/*.xsd
+Web References/**/*.disco
+test-results
+biniPhoneDebug/*
+priv/*
+version.txt
+*.backup
+[a|A]pp.config
+Service References/**/*.xsd
+Service References/**/*.wsdl
+Service References/**/*.disco
+Service References/**/*.svcinfo
+Web References/**/*.disco
+Web References/**/*.xsd
+Web References/**/*.[wsdl|datasource]
+Web References/**/*.wsdl
+aspnet_client/*
+Web References/**/*.datasource
+Service References/**/*.datasource
+App_Data/Database/Data
+App_Data/Database/*
+docgen/
+App_Data/Database
+*.gitignore
+backup*/*
+cmd.exe.lnk
+Info.plist
+*.gitignore
+.git
+*.disco
+*.wsdl
+test-results/*
+biniPhoneDebug/*
+_.hg/
+docgen/*
+packages/*
+packages/
+**/packages/
+*.ipa
+App_Data/error-*
+*.webtestresult
+App_Data/error-*
+publish/*
+m-*.sln
+.nuget/*
+log/*
+publish/*
+UpgradeLog*.htm
+*_vti_*
+Platform/src/Server/Subclub.Server.Website.Mock/img/src/*
+Platform/src/Server/Subclub.Server.Website/Content/styles/[default|bootstrap]*.css
+sample/Common.Samples.Payu.Web/Publish/*
+*_CreateAssemblyMeta.cs
+*.nupkg
+node_modules/
+.vs/
+project.lock.json
+test/Common.Storage.Tests/amazon.xml
+dnx-packages-beta4/
+dnx-packages/
+dn-packages/
