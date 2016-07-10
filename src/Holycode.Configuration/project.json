@@ -1,0 +1,116 @@
+﻿{
+  "version": "2.1.6-default008-2e21b",
+  "description": "Tools for managing configuration",
+  "authors": [
+    "Holycode"
+  ],
+  "tags": [
+    ""
+  ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "configurations": {
+    "cmd": {
+      "buildOptions": {
+        "emitEntryPoint": true,
+        "outputName": "cfg"
+      }
+    }
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final"
+  },
+  "releaseNotes": "v2.1.2 - add dnxcore50 support",
+  "commands": {
+    "cfg": "Holycode.Configuration"
+  },
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "Microsoft.Owin": "3.0.1"
+      },
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0"
+      }
+    },
+    "dnx451": {
+      "compilationOptions": {
+        "define": [
+          "DNX451"
+        ]
+      },
+      "dependencies": {},
+      "frameworkAssemblies": {}
+    },
+    "netcoreapp1.0": {
+      "buildOptions": {
+        "define": [
+          "CORECLR"
+        ]
+      },
+      "imports": [
+        "netcore50"
+      ],
+      "dependencies": {
+        "System.Text.RegularExpressions": "4.1.0",
+        "System.Console": "4.0.0",
+        "System.Reflection": "4.1.0",
+        "System.Runtime.Extensions": "4.1.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1",
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      }
+    }
+  },
+  "__commented": {
+    "frameworks": {
+      "_dnx451": {
+        "compilationOptions": {
+          "define": [
+            "DNX451"
+          ]
+        },
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final"
+        },
+        "frameworkAssemblies": {}
+      },
+      "net45": {
+        "dependencies": {
+          "Microsoft.Owin": "3.0.1"
+        },
+        "frameworkAssemblies": {
+          "System.Configuration": "4.0.0.0"
+        }
+      },
+      "dnxcore50": {
+        "compilationOptions": {
+          "define": [
+            "DNX451",
+            "DNXCORE50",
+            "CORECLR"
+          ]
+        },
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
+          "System.Text.RegularExpressions": "4.0.11-beta-23516"
+        }
+      }
+    }
+  },
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "bower_components",
+    "log"
+  ]
+}

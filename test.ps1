@@ -1,6 +1,6 @@
 pushd 
 try {
-	cd test\common.configuration.tests.dotnet
+	cd test\holycode.configuration.tests.dotnet
 	dotnet restore
 	dotnet test
 } finally {
@@ -9,8 +9,9 @@ popd
 
 pushd 
 try {
-	cd test\Common.Configuration.Tests.dnx
+	cd test\holycode.Configuration.Tests.dnx
 	dnu restore
+    dnu build
 	dnx test
 } finally {
 popd

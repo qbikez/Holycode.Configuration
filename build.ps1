@@ -1,1 +1,1 @@
-msbuild common.configuration.sln
+msbuild Holycode.Configuration.sln

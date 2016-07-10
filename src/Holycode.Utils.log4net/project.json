@@ -1,0 +1,38 @@
+﻿{
+  "version": "2.0.5-default001-87ae2",
+  "description": "Holycode.Utils.log4net Class Library",
+  "authors": [
+    "jakub.pawlowski"
+  ],
+  "tags": [
+    ""
+  ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "dependencies": {
+    "log4net": "2.0.5"
+  },
+  "frameworks": {
+    "dnx451": {},
+    "net451": {}
+  },
+  "//frameworks": {
+    "netcoreapp1.0 // no log4net for netcoreapp or portable": {
+      "imports": [
+        "netcore50"
+      ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      }
+    },
+    "exclude": [
+      "wwwroot",
+      "node_modules",
+      "bower_components",
+      "log"
+    ]
+  }
+}
