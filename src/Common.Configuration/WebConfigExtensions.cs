@@ -1,4 +1,4 @@
-﻿#if !DNX451
+﻿#if NETFX
 
 using System;
 using System.Collections.Generic;

@@ -1,0 +1,1 @@
+msbuild common.configuration.sln

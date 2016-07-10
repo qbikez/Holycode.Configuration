@@ -1,0 +1,1 @@
+cmd /c mklink dnx-packages $env:userprofile\.nuget\packages /J

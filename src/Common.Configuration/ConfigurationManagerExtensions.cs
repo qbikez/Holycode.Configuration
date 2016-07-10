@@ -2,15 +2,12 @@
 using System;
 using System.Collections.Generic;
 
-#if !DNX451
-using System;
-using System.Collections.Generic;
+#if NETFX
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using System.Configuration;
 
 namespace System.Configuration
 {
