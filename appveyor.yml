@@ -4,6 +4,7 @@ install:
 - ps: .\init.ps1
 
 build_script:
+- ps: .\restore.ps1
 - ps: .\build.ps1
 
 test_script:

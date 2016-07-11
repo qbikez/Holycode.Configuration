@@ -16,6 +16,11 @@ try {
     wget "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1" -UseBasicParsing -OutFile ".scripts/dotnet-install.ps1" 
     ./.scripts/dotnet-install.ps1 -Version $dotnetver
 
+    wget "https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1" -UseBasicParsing -OutFile ".scripts/dnvm-install.ps1" 
+    ./.scripts/dnvm-install.ps1
+    dnvm install 1.0.0-rc1-update1 -alias default
+    dnvm use default
+
 
 } finally {
 	popd
