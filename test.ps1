@@ -13,6 +13,8 @@ try {
 	dnu restore
     dnu build
 	dnx test
+	
+	if ($lastexitcode -ne 0) { exit $lastexitcode }
 } finally {
 popd
 }
