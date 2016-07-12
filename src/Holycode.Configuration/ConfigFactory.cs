@@ -45,7 +45,7 @@ namespace Holycode.Configuration
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
             if (addEnvVariables) builder.AddEnvironmentVariables();
             builder.AddInMemoryCollection();
-            builder.SetBasePath(applicationBasePath);
+            //builder.SetBasePath(applicationBasePath);
 
 
             if (builder.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
@@ -64,7 +64,7 @@ namespace Holycode.Configuration
 
             var config = CreateConfigSource(applicationBasePath, addEnvVariables);
 
-            applicationBasePath = config.GetBasePath();
+            applicationBasePath = config.BasePath();
             if (applicationBasePath == null)
             {
 #if !CORECLR
@@ -78,7 +78,7 @@ namespace Holycode.Configuration
                 config.SetBasePath(applicationBasePath);
             }
 
-            config = config.AddEnvJson(config.GetBasePath(), optional: false, environment: environment);
+            config = config.AddEnvJson(config.BasePath(), optional: false, environment: environment);
 
             return config.Build();
         }
