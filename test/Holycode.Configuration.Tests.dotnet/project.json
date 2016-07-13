@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0",
+  "version": "1.0.1-dotnet-10-001-c9224",
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": true,

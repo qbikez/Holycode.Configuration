@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -45,11 +45,10 @@
     "dnx451": {
       "buildOptions": {
         "debugType": "full",
-          "define": [
+        "define": [
           "DNX451"
         ]
       },
-     
       "dependencies": {},
       "frameworkAssemblies": {}
     },
