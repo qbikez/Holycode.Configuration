@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.Configuration
         internal const string EnvConfigPathKey = "env:config:path";
         internal const string ApplicationBasePathKey = "application:basePath";
         internal const string EnvironmentNameKey = "ASPNET_ENV";
+        private static readonly string DefaultEnvironment = "development";
 
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
@@ -52,15 +53,10 @@ namespace Microsoft.Extensions.Configuration
                 src.Set(EnvConfigPathKey, path);
                 src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
 
-                if (environment == null)
-                {
-                    environment = src.Get(EnvironmentNameKey);
-                }
-                else
-                {
-                    // force env
-                    src.Set(EnvironmentNameKey, environment);
-                }
+                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvironment;
+
+                // force env
+                src.Set(EnvironmentNameKey, environment);
 
                 /// add env.qa.json, etc
                 if (!string.IsNullOrEmpty(environment))
@@ -109,6 +105,7 @@ namespace Microsoft.Extensions.Configuration
             if (mem != null)
             {
                 var data = mem.InitialData?.ToList() ?? new List<KeyValuePair<string, string>>();
+                data.RemoveAll(d => d.Key == key);
                 data.Add(new KeyValuePair<string, string>(key, value));
                 mem.InitialData = data;
             }
@@ -122,16 +119,16 @@ namespace Microsoft.Extensions.Configuration
             {
                 return val.ToString();
             }
-            foreach (var src in builder.Sources)
-            {
-                string strVal;
-                
-                if (src.Build(builder).TryGet(key, out strVal))
-                {
-                    return strVal;
-                }
-            }
-            return null;
+            //foreach (var src in builder.Sources)
+            //{
+            //    string strVal;
+
+            //    if (src.Build(builder).TryGet(key, out strVal))
+            //    {
+            //        return strVal;
+            //    }
+            //}
+            return builder.Build().Get(key);
         }
 
         public static T? GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
@@ -332,12 +329,12 @@ namespace Microsoft.Extensions.Configuration
             return cfg.Get(ApplicationBasePathKey);
         }
 
-          public static string BasePath(this IConfigurationBuilder cfg)
+        public static string BasePath(this IConfigurationBuilder cfg)
         {
             return cfg.Get(ApplicationBasePathKey);
         }
 
-        
+
         /*
 
         public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)

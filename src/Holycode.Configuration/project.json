@@ -17,6 +17,9 @@
       }
     }
   },
+  "buildOptions": {
+    "debugType": "portable"
+  },
   "dependencies": {
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
@@ -29,6 +32,9 @@
   },
   "frameworks": {
     "net451": {
+      "buildOptions": {
+        "debugType": "full"
+      },
       "dependencies": {
         "Microsoft.Owin": "3.0.1"
       },
@@ -37,11 +43,13 @@
       }
     },
     "dnx451": {
-      "compilationOptions": {
-        "define": [
+      "buildOptions": {
+        "debugType": "full",
+          "define": [
           "DNX451"
         ]
       },
+     
       "dependencies": {},
       "frameworkAssemblies": {}
     },

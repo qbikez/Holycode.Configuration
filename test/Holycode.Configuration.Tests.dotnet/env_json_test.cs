@@ -42,5 +42,29 @@ namespace Holycode.Configuration.Tests.dotnet
             envPaths.Last().Source.ShouldEqual(@"input\reporoot1");
         }
 
+        [Fact]
+        public void should_include_env_specific_config()
+        {
+            var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
+            src.AddEnvJson(optional: false);
+
+            var val = src.Get("test_devel");
+
+            src.EnvironmentName().ShouldEqual("development");
+            val.ShouldNotBeNull();
+            val.ShouldEqual("test_from_devel");
+        }
+
+        [Fact]
+        public void should_include_env_local_config()
+        {
+            var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
+            src.AddEnvJson(optional: false);
+
+            var val = src.Get("test_local");
+
+            val.ShouldNotBeNull();
+            val.ShouldEqual("test_from_local");
+        }
     }
 }
