@@ -17,7 +17,8 @@ namespace Microsoft.Extensions.Configuration
         internal const string EnvConfigPathKey = "env:config:path";
         internal const string ApplicationBasePathKey = "application:basePath";
         internal const string EnvironmentNameKey = "ASPNET_ENV";
-    
+        private static readonly string DefaultEnvironment = "development";
+
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
@@ -33,7 +34,7 @@ namespace Microsoft.Extensions.Configuration
         /// <returns></returns>
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional, string environment = null)
         {
-            
+
             if (src.Get(ApplicationBasePathKey) == null)
                 src.Set(ApplicationBasePathKey, applicationBasePath);
 
@@ -52,15 +53,10 @@ namespace Microsoft.Extensions.Configuration
                 src.Set(EnvConfigPathKey, path);
                 src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
 
-                if (environment == null)
-                {
-                    environment = src.Get(EnvironmentNameKey);
-                }
-                else
-                {
-                    // force env
-                    src.Set(EnvironmentNameKey, environment);
-                }
+                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvironment;
+
+                // force env
+                src.Set(EnvironmentNameKey, environment);
 
                 /// add env.qa.json, etc
                 if (!string.IsNullOrEmpty(environment))
@@ -76,7 +72,7 @@ namespace Microsoft.Extensions.Configuration
                         {
                             throw new FileLoadException($"Failed to load config file {path}", ex);
                         }
-                        
+
                         src.Set(EnvConfigPathKey, path);
                         src.Set(EnvConfigFoundKey, "true");
                     }
@@ -91,7 +87,7 @@ namespace Microsoft.Extensions.Configuration
                 {
                     throw new FileLoadException($"Failed to load config file {path}", ex);
                 }
-                
+
             }
             else
             {
@@ -105,10 +101,13 @@ namespace Microsoft.Extensions.Configuration
         public static IConfigurationBuilder Set(this IConfigurationBuilder builder, string key, string value)
         {
             builder.Properties[key] = value;
-            var mem = builder.Providers.Where(p => p is MemoryConfigurationProvider).FirstOrDefault();
+            var mem = builder.Sources.Where(p => p is MemoryConfigurationSource).FirstOrDefault() as MemoryConfigurationSource;
             if (mem != null)
             {
-                 mem.Set(key, value);
+                var data = mem.InitialData?.ToList() ?? new List<KeyValuePair<string, string>>();
+                data.RemoveAll(d => d.Key == key);
+                data.Add(new KeyValuePair<string, string>(key, value));
+                mem.InitialData = data;
             }
             return builder;
         }
@@ -120,15 +119,16 @@ namespace Microsoft.Extensions.Configuration
             {
                 return val.ToString();
             }
-            foreach (var provider in builder.Providers)
-            {
-                string strVal;
-                if (provider.TryGet(key, out strVal))
-                {
-                    return strVal;
-                }
-            }
-            return null;
+            //foreach (var src in builder.Sources)
+            //{
+            //    string strVal;
+
+            //    if (src.Build(builder).TryGet(key, out strVal))
+            //    {
+            //        return strVal;
+            //    }
+            //}
+            return builder.Build().Get(key);
         }
 
         public static T? GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
@@ -167,8 +167,8 @@ namespace Microsoft.Extensions.Configuration
             else return cfg.Get<T>(key);
         }
 
-        public static string Get(this IConfiguration configuration,string key)
-        {            
+        public static string Get(this IConfiguration configuration, string key)
+        {
             return configuration[key];
         }
 
@@ -182,7 +182,7 @@ namespace Microsoft.Extensions.Configuration
             return (T)Convert.ChangeType(configuration[key], typeof(T));
         }
 
-        
+
         public static void Traverse(this IConfiguration configuration, Action<string, string> action, string rootNs = "")
         {
             var keys = configuration.GetChildren();
@@ -190,7 +190,7 @@ namespace Microsoft.Extensions.Configuration
             string val = null;
             if (configuration is IConfigurationSection)
             {
-                val = ((IConfigurationSection) configuration).Value;
+                val = ((IConfigurationSection)configuration).Value;
             }
             if (keys != null)
             {
@@ -215,16 +215,16 @@ namespace Microsoft.Extensions.Configuration
         private static TResult Aggregate<TResult>(this IConfiguration configuration, Func<TResult, string, object, TResult> action, string rootNs = "")
         {
             var keys = configuration.GetChildren();
-            
+
 
             string val = null;
-           
+
             TResult ag = default(TResult);
             if (keys != null)
             {
                 foreach (var key in keys)
                 {
-                    val = key.Value;                   
+                    val = key.Value;
                     if (val != null)
                     {
                         ag = action(ag, rootNs + ":" + key.Key, val);
@@ -236,19 +236,19 @@ namespace Microsoft.Extensions.Configuration
                     }
                 }
             }
-            
+
 
             return ag;
         }
-        
 
-            
+
+
         public static Dictionary<string, string> AsDictionaryPlain(this IConfiguration config)
         {
             var dict = new Dictionary<string, string>();
             config.Traverse((s, s1) =>
             {
-                dict.Add(s,s1);
+                dict.Add(s, s1);
             });
 
             return dict;
@@ -265,7 +265,7 @@ namespace Microsoft.Extensions.Configuration
                     return dict;
                 });
         }
-        
+
 
         /// <summary>
         /// Gets the secure service URL.
@@ -283,7 +283,7 @@ namespace Microsoft.Extensions.Configuration
                 if (uri.Port == 80) sslPort = 443;
                 else throw new ArgumentException($"base url uses non-standard port {uri.Port}. Cannot determine ssl port - no sslPort given and 'sslPort' key not found in config");
             }
-            
+
             if (!url.StartsWith("https://"))
             {
                 // do not use https for localhost development
@@ -328,6 +328,13 @@ namespace Microsoft.Extensions.Configuration
         {
             return cfg.Get(ApplicationBasePathKey);
         }
+
+        public static string BasePath(this IConfigurationBuilder cfg)
+        {
+            return cfg.Get(ApplicationBasePathKey);
+        }
+
+
         /*
 
         public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)

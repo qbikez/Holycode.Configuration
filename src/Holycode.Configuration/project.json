@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.1.7",
+  "version": "2.2.1",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -17,11 +17,14 @@
       }
     }
   },
+  "buildOptions": {
+    "debugType": "portable"
+  },
   "dependencies": {
-    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final"
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0"
   },
   "releaseNotes": "v2.1.2 - add dnxcore50 support",
   "commands": {
@@ -29,6 +32,9 @@
   },
   "frameworks": {
     "net451": {
+      "buildOptions": {
+        "debugType": "full"
+      },
       "dependencies": {
         "Microsoft.Owin": "3.0.1"
       },
@@ -37,7 +43,8 @@
       }
     },
     "dnx451": {
-      "compilationOptions": {
+      "buildOptions": {
+        "debugType": "full",
         "define": [
           "DNX451"
         ]
