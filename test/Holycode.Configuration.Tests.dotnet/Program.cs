@@ -14,8 +14,11 @@ namespace Holycode.Configuration.Tests.dotnet
                 args = args.Where(a => a != "--debug").ToArray();                
             }
             Console.WriteLine("starting Xunit tests");
-            if (args.Length == 0) {
-                args = new [] { "HolyCode.Configuration.Tests.dotnet.exe" };
+            if (args.Count(a => !a.StartsWith("-")) == 0) {
+                var l = args.ToList();
+                l.Add("HolyCode.Configuration.Tests.dotnet.exe");
+                args = l.ToArray();
+
             }
             using (var program = new  Xunit.Runner.DotNet.Program()) {
                 return program.Run(args);

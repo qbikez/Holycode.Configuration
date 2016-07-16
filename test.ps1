@@ -4,9 +4,12 @@ import-module pathutils
 
 pushd 
 try {
+    if (!(test-path "test\.results")) {
+        mkdir "test\.results"
+    }
 	cd test\holycode.configuration.tests.dotnet
 	dotnet restore
-	dotnet test
+	dotnet test -xml ..\.results\Holycode.Configuration.Tests.dotnet.xml
 } finally {
 popd
 }
