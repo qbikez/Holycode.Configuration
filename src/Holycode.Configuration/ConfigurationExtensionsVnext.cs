@@ -8,16 +8,7 @@ using Microsoft.Extensions.Configuration;
 namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensionsVnext
-    {
-
-
-
-        //public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, IApplicationEnvironment env)
-        //{
-        //    var envPath = env.ApplicationBasePath;
-        //    return src.AddEnvJson(envPath);
-        //}
-
+    {        
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true, string environment = null)
         {
             var envPath = src.BasePath();

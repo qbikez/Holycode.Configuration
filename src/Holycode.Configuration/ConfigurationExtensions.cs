@@ -88,6 +88,19 @@ namespace Microsoft.Extensions.Configuration
                     throw new FileLoadException($"Failed to load config file {path}", ex);
                 }
 
+                if (!string.IsNullOrEmpty(environment))
+                {
+                    try
+                    {
+                        path = Path.Combine(envPath.Source, $"env.{environment}.local.json");
+                        src = src.AddJsonFile(path, optional: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new FileLoadException($"Failed to load config file {path}", ex);
+                    }
+                }
+
             }
             else
             {
