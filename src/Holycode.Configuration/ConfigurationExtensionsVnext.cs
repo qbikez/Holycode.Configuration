@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Configuration
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true, string environment = null)
         {
             var envPath = src.BasePath();
-            return src.AddEnvJson(envPath, optional: optional, environment: environment = null);
+            return src.AddEnvJson(envPath, optional: optional, environment: environment);
         }
 
     }

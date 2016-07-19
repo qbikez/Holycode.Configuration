@@ -56,6 +56,22 @@ namespace Holycode.Configuration.Tests.dotnet
         }
 
         [Fact]
+        public void should_load_specified_env()
+        {
+            var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
+            src.AddEnvJson(optional: false, environment: "test");
+
+            var val = src.Get("test_local");
+            var isTest = src.Get("is_test_env");
+
+            val.ShouldNotBeNull();
+            val.ShouldEqual("test_from_local");
+            isTest.ShouldNotBeNull();
+            isTest.ShouldEqual("true");
+        }
+
+
+        [Fact]
         public void should_include_local_config()
         {
             var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
