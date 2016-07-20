@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.2",
+  "version": "2.2.3-master002-5a403",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -33,7 +33,10 @@
   "frameworks": {
     "net451": {
       "buildOptions": {
-        "debugType": "full"
+        "debugType": "full",
+        "define": [
+          "NETFX"
+        ]
       },
       "dependencies": {
         "Microsoft.Owin": "3.0.1"
