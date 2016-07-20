@@ -4,7 +4,9 @@ Holycode.Configuration
 Installation
 ------------
 
+```shell
     > Install-Package Common.Configuration
+```
 
 Concept
 -------
@@ -16,6 +18,7 @@ Basic Usage
 
 Create IConfiguration:
 
+```csharp
     // create configBuilder
     var builder = ConfigFactory.CreateConfigSource(applicationBasePath);
     
@@ -28,20 +31,23 @@ Create IConfiguration:
 
     // build the configuration, so it's ready to use
     IConfiguration config = builder.Build();
-
+```
 
 Sample `config.json` file:
 
+```json
     {
         "services": { 
             "myapi": "http://my.org/api/v1"
         }
     }
+```
 
 Get values from config:
 
+```csharp
     var url = config.Get("services:myapi"); 
-
+```
 
 Environments
 ------------
@@ -55,7 +61,9 @@ env.json
 
 `env.json` is a global configuration file that is intended to be shared by different projects. This line:
 
+```csharp
     builder.AddEnvJson(applicationBasePath);
+```
 
 Causes the configuration system to look for `env.json` file. The search algorithm is following:
 
@@ -68,9 +76,11 @@ Causes the configuration system to look for `env.json` file. The search algorith
 
 In most cases, `env.json` will contain configuration that is common to all environment. It can also be empty or contain only current environment name, like this:
 
+```json
     {
         "ASPNET_ENV": "development"
     }
+```
   
 Environment-specific configuration should stored in `env.{builder.EnvironmentName()}.json` files (e.g. `env.development.json`). 
 
@@ -109,10 +119,13 @@ Connection strings
 
 There are some extension methods to deal with connection strings:
 
+```csharp
     Configuration.GetConnectionStringValue(connectionStringName)
+```
 
 Connection strings are assumed to be stored in `connectionStrings` key:
 
+```json
     { 
         "connectionStrings": {  
             "MyDb": {
@@ -122,6 +135,7 @@ Connection strings are assumed to be stored in `connectionStrings` key:
             "elastic-search": "searchserver:9200"
         }
     }
+```
 
 Integrating with System.Configuration
 -------------------------------------
@@ -132,7 +146,9 @@ If you want to start using json configs in old asp.net project that uses `System
 
 In most cases, default `DbContext` constructor will search for it's connection string in `<connectionStrings>` section of `app/web.config`. To make it use connection strings from json config, call this:
 
+```csharp
     config.ExtractConnectionStrings(ConfigurationManager.ConnectionStrings);
+```
 
 This will extract all connection strings from `IConfiguration` object and inject them into `System.Configuration`. This way, you can remove all connection strings from `app/web.config` without modifications to rest of the codebase.
 
@@ -140,8 +156,12 @@ This will extract all connection strings from `IConfiguration` object and inject
 
 If you want to use the new configuration model, but don't want to convert old `app/web.config` files, you can add all `<appSettings>` keys into `IConfiguration`:
 
+```csharp
     config.AddWebConfig();
+```
 
 If you want to do the other way around - fill `AppSettings` with values from `IConfiguration` object, call this:
 
+```csharp
     System.Configuration.ConfigurationManager.AppSettings.Fill(config); 
+```
