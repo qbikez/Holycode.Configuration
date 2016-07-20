@@ -13,73 +13,31 @@ namespace log4net
     public static class LogAppenderExtensions
     {
 
-        public static void AddTapAppender(this ILog log)
-        {
-            log.AddAppender(LogManagerTools.CreateTapAppender());
-        }
+        public static void AddTapAppender(this ILog log) => log.AddAppender(AppenderFactory.CreateTapAppender());
 
-        public static void AddTraceAppender(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "TraceAppender"))
-                return;
-            LogManagerTools.AddTraceAppender();
-        }
+        public static void AddTraceAppender(this ILog log) => log.AddAppender(AppenderFactory.CreateTraceAppender());
 
-        public static void AddFileAppender(this ILog log, string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
+        public static void AddFileAppender(this ILog log,
+            string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
             Action<RollingFileAppender> config = null)
-        {
-            var appender = LogManagerTools.CreateFileAppender(filename, appenderName, minimalLock, config);
-            log.AddAppender(appender);
-        }
+            => log.AddAppender(AppenderFactory.CreateFileAppender(filename, appenderName, minimalLock, config));
 
-        public static void AddConsoleAppender(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "ConsoleAppender"))
-                return;
-            LogManagerTools.AddConsoleAppender();
-        }
+        public static void AddConsoleAppender(this ILog log) => log.AddAppender(AppenderFactory.CreateConsoleAppender());
 
-        public static void AddConsoleAppenderColored(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "ConsoleAppender"))
-                return;
-            LogManagerTools.AddConsoleAppenderColored();
-        }
+        public static void AddConsoleAppenderColored(this ILog log) => log.AddAppender(AppenderFactory.CreateConsoleAppenderColored());
 
         public static void AddTerminalAppenderColored(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "TerminalAppender"))
-                return;
-            LogManagerTools.AddTerminalAppenderColored();
-        }
+            => log.AddAppender(AppenderFactory.CreateAnsiColorTerminalAppender());
 
 
         public static void AddSmtpAppender(this ILog log, string sendTo, string programName = "", Level levelMin = null)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "SmtpAppender"))
-                return;
-            LogManagerTools.AddSmtpAppender(sendTo, programName);
-        }
+            => log.AddAppender(AppenderFactory.CreateSmtpAppender(sendTo, programName, levelMin));
 
 
         public static void AddCallbackAppender(this ILog log, Action<string, LoggingEvent> callback)
-        {
-            var layout = LogManagerTools.CreateLayout(LogManagerTools.DefaultLayoutPattern);
-            var appender = new Appender.CallbackAppender(callback)
-            {
-                Name = "CallbackAppender"
-            };
-            log.AddAppender(appender);
-        }
+            => log.AddAppender(AppenderFactory.CreateCallbackAppender(callback));
 
         public static void AddCallbackAppender(this ILog log, Action<string> callback)
-        {
-            var layout = LogManagerTools.CreateLayout(LogManagerTools.DefaultLayoutPattern);
-            var appender = new Appender.CallbackAppender(callback)
-            {
-                Name = "CallbackAppender"
-            };
-            log.AddAppender(appender);
-        }
+            => log.AddAppender(AppenderFactory.CreateCallbackAppender(callback));
     }
 }

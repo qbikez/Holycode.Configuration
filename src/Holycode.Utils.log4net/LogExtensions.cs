@@ -15,31 +15,17 @@ namespace log4net
 
 
         // Set the level for a named logger
-        public static void SetLevel(this ILog log, Level level)
-        {
-            var l = (Logger)log.Logger;
-
-            l.Level = level;//l.Hierarchy.LevelMap[levelName];
-        }
+        public static void SetLevel(this ILog log, Level level) => ((Logger)log.Logger).Level = level;
 
 
         // Set the level for a named logger
-        public static void SetLevel(this ILog log, string levelName)
-        {
-            var l = (Logger)log.Logger;
+        public static void SetLevel(this ILog log, string levelName) => ((Logger)log.Logger).SetLevel(levelName);
 
-            l.SetLevel(levelName);
-        }
-
-        public static void SetLevel(this Logger l, string levelName)
-        {
-            l.Level = l.Hierarchy.LevelMap[levelName];
-        }
+        public static void SetLevel(this Logger l, string levelName) => l.Level = l.Hierarchy.LevelMap[levelName];
 
         public static ILog SetAdditivity(this ILog log, bool val)
         {
-            Logger l = (Logger)log.Logger;
-            l.Additivity = val;
+            ((Logger)log.Logger).Additivity = val;
             return log;
         }
 
