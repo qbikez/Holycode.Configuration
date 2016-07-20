@@ -11,8 +11,6 @@ using log4net.Filter;
 using log4net.Layout;
 using log4net.Util;
 using log4net.Repository.Hierarchy;
-using log4net.ObjectRenderer;
-using System.IO;
 
 namespace log4net
 {
@@ -39,19 +37,26 @@ namespace log4net
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="repository"></param>
-        /// <param name="level">level of inner exceptions to show. default = null. 0 - don't show inner exceptions, 1 - show only the first inner exception, etc.</param>
-        /// <param name="showStackTrace">should the stacktrace be printed</param>
-        public static void AddExceptionRenderer(this ILoggerRepository repository, int? level = null, bool showStackTrace = true)
+
+        public static void AddAppender(IAppender appender)
         {
-            repository.RendererMap.Put(typeof(Exception), new ExceptionRenderer()
-            {
-                InnerExceptionLevel = level,
-                ShowStackTrace = showStackTrace
-            });
+            AddGlobalAppender(appender);
+        }
+
+        public static void AddAppender(AppenderSkeleton appender) {
+            appender.ActivateOptions();
+            AddAppender((IAppender)appender);
+        }
+
+        internal static void AddGlobalAppender(IAppender appender)
+        {
+            AddGlobalAppender(LogManager.GetRepository(), appender);
+        }
+
+        internal static void AddGlobalAppender(ILoggerRepository repository, IAppender appender)
+        {
+            if (repository.GetAppenders().Any(a => a.Name == appender.Name)) return;
+            log4net.Config.BasicConfigurator.Configure(repository, appender);
         }
 
         public static void AddTraceAppender()
@@ -64,18 +69,20 @@ namespace log4net
                 ImmediateFlush = true,
             };
             appender.ActivateOptions();
-            log4net.Config.BasicConfigurator.Configure(appender);
+            
         }
 
-        public static void AddTapAppender()
+        public static void AddTapAppender() => AddAppender(CreateTapAppender());
+        
+
+        internal static LogTapAppender CreateTapAppender()
         {
             var layout = CreateLayout(DefaultLayoutPattern);
             var appender = new log4net.Appender.LogTapAppender()
             {
                 Name = "LogTapAppender"
             };
-
-            log4net.Config.BasicConfigurator.Configure(appender);
+            return appender;
         }
 
         public static void AddConsoleAppender()
@@ -89,7 +96,7 @@ namespace log4net
 
             };
             appender.ActivateOptions();
-            log4net.Config.BasicConfigurator.Configure(appender);
+            AddAppender(appender);
         }
         public static void AddConsoleAppenderColored()
         {
@@ -107,7 +114,7 @@ namespace log4net
 
             appender.ActivateOptions();
 
-            log4net.Config.BasicConfigurator.Configure(appender);
+            AddAppender(appender);
         }
 
         public static void AddTerminalAppenderColored()
@@ -125,7 +132,7 @@ namespace log4net
             appender.AddMapping(new AnsiColorTerminalAppender.LevelColors() { Level = Level.Error, ForeColor = AnsiColorTerminalAppender.AnsiColor.Red });
 
             appender.ActivateOptions();
-            log4net.Config.BasicConfigurator.Configure(appender);
+            AddAppender(appender);
         }
 
         public static RollingFileAppender CreateFileAppender(string filename,
@@ -189,68 +196,37 @@ namespace log4net
 
             appender.ActivateOptions();
 
-            log4net.Config.BasicConfigurator.Configure(appender);
-        }
-
-        public static void AddTapAppender(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "LogTapAppender"))
-                return;
-            LogManagerTools.AddTapAppender();
-        }
-
-        public static void AddTraceAppender(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "TraceAppender"))
-                return;
-            LogManagerTools.AddTraceAppender();
-        }
-
-        public static void AddFileAppender(this ILog log, string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
-            Action<RollingFileAppender> config = null)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == appenderName))
-                return;
-            var appender = CreateFileAppender(filename, appenderName, minimalLock, config);
-            AddAppender(log, appender);
+            AddAppender(appender);
         }
 
         public static void AddFileAppender(string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
         Action<RollingFileAppender> config = null)
         {
             var appender = CreateFileAppender(filename, appenderName, minimalLock: minimalLock, config: config);
-            log4net.Config.BasicConfigurator.Configure(appender);
-        }
-
-
-        public static void AddConsoleAppender(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "ConsoleAppender"))
-                return;
-            LogManagerTools.AddConsoleAppender();
-        }
-
-        public static void AddConsoleAppenderColored(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "ConsoleAppender"))
-                return;
-            LogManagerTools.AddConsoleAppenderColored();
-        }
-
-        public static void AddTerminalAppenderColored(this ILog log)
-        {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "TerminalAppender"))
-                return;
-            LogManagerTools.AddTerminalAppenderColored();
+            AddAppender(appender);
         }
 
 
 
-        public static void AddSmtpAppender(this ILog log, string sendTo, string programName = "", Level levelMin = null)
+
+        public static void AddCallbackAppender(Action<string, LoggingEvent> callback)
         {
-            if (log.Logger.Repository.GetAppenders().Any(a => a.Name == "SmtpAppender"))
-                return;
-            LogManagerTools.AddSmtpAppender(sendTo, programName);
+            var layout = CreateLayout(DefaultLayoutPattern);
+            var appender = new log4net.Appender.CallbackAppender(callback)
+            {
+                Name = "CallbackAppender"
+            };
+            AddAppender(appender);
+        }
+
+        public static void AddCallbackAppender(Action<string> callback)
+        {
+            var layout = CreateLayout(DefaultLayoutPattern);
+            var appender = new log4net.Appender.CallbackAppender(callback)
+            {
+                Name = "CallbackAppender"
+            };
+            AddAppender(appender);
         }
 
 
@@ -263,62 +239,17 @@ namespace log4net
 
             l.Level = level;//l.Hierarchy.LevelMap[levelName];
         }
-
-
-        // Set the level for a named logger
-        public static void SetLevel(this ILog log, Level level)
-        {
-            var l = (Logger)log.Logger;
-
-            l.Level = level;//l.Hierarchy.LevelMap[levelName];
-        }
-
-
-        // Set the level for a named logger
-        public static void SetLevel(this ILog log, string levelName)
-        {
-            var l = (Logger)log.Logger;
-
-            l.SetLevel(levelName);
-        }
-
-        public static void SetLevel(this Logger l, string levelName)
-        {
-            l.Level = l.Hierarchy.LevelMap[levelName];
-        }
-
-
-
-        // Add an appender to a logger
-        public static void AddAppender(this ILog log, AppenderSkeleton appender)
-        {
-            appender.ActivateOptions();
-            log4net.Config.BasicConfigurator.Configure(appender);
-        }
+ 
 
         // Add an appender to a logger
         public static void AddConfiguredAppender(string loggerName, IAppender appender)
         {
-            ILog log = LogManager.GetLogger(loggerName);
-            Logger l = (Logger)log.Logger;
-
-            l.AddAppender(appender);
+            ILog log = LogManager.GetLogger(loggerName);            
+            log.AddAppender(appender);
         }
 
-        // Add an appender to a logger
-        public static void AddConfiguredAppender(this ILog log, IAppender appender)
-        {
-            Logger l = (Logger)log.Logger;
 
-            l.AddAppender(appender);
-        }
-
-        public static ILog SetAdditivity(this ILog log, bool val)
-        {
-            Logger l = (Logger)log.Logger;
-            l.Additivity = val;
-            return log;
-        }
+        
 
         //// Create a new file appender
         //public static IAppender CreateFileAppender(string name, string fileName)
@@ -339,37 +270,11 @@ namespace log4net
         //    return appender;
         //}
 
-        private static ILayout CreateLayout(string layout)
+        internal static ILayout CreateLayout(string layout)
         {
             var l = new PatternLayout(layout) { IgnoresException = true };
             l.ActivateOptions();
             return l;
         }
     }
-
-    class ExceptionRenderer : IObjectRenderer
-    {
-        public int? InnerExceptionLevel = null;
-        public bool ShowStackTrace = true;
-
-        public void RenderObject(RendererMap rendererMap, object obj, TextWriter writer)
-        {
-            if (!(obj is Exception)) return;
-            var ex = obj as Exception;
-            var curLevel = 0;
-
-            while (ex != null && (InnerExceptionLevel == null || InnerExceptionLevel.Value >= curLevel))
-            {
-                writer.WriteLine(ex.Message);
-                if (ShowStackTrace)
-                {
-                    writer.WriteLine(ex.StackTrace);
-                }
-                ex = ex.InnerException;
-                if (ex != null) writer.WriteLine("--- Inner Exception:");
-                curLevel++;
-            }
-        }
-    }
-
 }

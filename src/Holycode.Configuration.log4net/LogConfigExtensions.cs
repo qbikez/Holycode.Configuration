@@ -93,14 +93,16 @@ namespace Microsoft.Extensions.Configuration
             }
         }
 
+        private const string StatsLoggerName = "req-stats";
+        private const string ReqLoggerName = "req";
         public static ILog ConfigureStatsLogs(this IConfiguration config, string appName, string logdir)
         {
-            var statsLog = log4net.LogManager.GetLogger("req-stats");
+            var statsLog = log4net.LogManager.GetLogger(StatsLoggerName);
             statsLog.SetLevel(Level.Info);
             statsLog.SetAdditivity(false);
             statsLog.AddFileAppender($"{logdir}/stats/{appName}-stats.csv", "stats", minimalLock: false);
 
-            var reqLog = log4net.LogManager.GetLogger("req");
+            var reqLog = log4net.LogManager.GetLogger(ReqLoggerName);
             reqLog.SetAdditivity(false);
             reqLog.AddFileAppender($"{logdir}/reqs/{appName}-req.log", "reqs", minimalLock: false);
             return statsLog;

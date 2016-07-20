@@ -13,6 +13,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.Utils.log4net", "s
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.Configuration", "src\Holycode.Configuration\Holycode.Configuration.xproj", "{10B8019C-FC26-4AD5-ACA8-0274DDC610B0}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.Configuration.log4net.Tests", "test\Holycode.Configuration.log4net.Tests\Holycode.Configuration.log4net.Tests.xproj", "{81A03123-DBBA-4D7B-99D1-959FEF52404D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		cmd|Any CPU = cmd|Any CPU
@@ -44,11 +46,18 @@ Global
 		{10B8019C-FC26-4AD5-ACA8-0274DDC610B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10B8019C-FC26-4AD5-ACA8-0274DDC610B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10B8019C-FC26-4AD5-ACA8-0274DDC610B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D}.cmd|Any CPU.ActiveCfg = Debug|Any CPU
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D}.cmd|Any CPU.Build.0 = Debug|Any CPU
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8E2A6AF0-A551-43F2-8DB0-01DECA30C26E} = {0420695C-3739-4B38-B52E-3E4F26AE191B}
+		{81A03123-DBBA-4D7B-99D1-959FEF52404D} = {0420695C-3739-4B38-B52E-3E4F26AE191B}
 	EndGlobalSection
 EndGlobal
