@@ -2,16 +2,23 @@ import-module pathutils
 (get-item "./.tools/dotnet").FullName | add-topath
 
 
-pushd 
-try {
-    if (!(test-path "test\.results")) {
-        mkdir "test\.results"
-    }
-	cd test\holycode.configuration.tests.dotnet
-	dotnet restore
-	dotnet test -xml ..\.results\Holycode.Configuration.Tests.dotnet.xml
-} finally {
-popd
+if (!(test-path "test\.results")) {
+    mkdir "test\.results"
 }
 
-pushd 
+$tests = @(
+    "Holycode.Configuration.Tests.dotnet"
+    "Holycode.Configuration.log4net.Tests"
+)
+
+foreach($test in $tests) {
+    pushd 
+    try {
+    
+        cd "test\$test"
+        dotnet restore
+        dotnet test -xml "..\.results\$($test).xml"
+    } finally {
+        popd
+    }
+}
