@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.1",
+  "version": "2.2.2-master001-97924",
   "summary": "Tools for configuring log4net using Holycode.Configuration model",
   "authors": [
     "Holycode"
