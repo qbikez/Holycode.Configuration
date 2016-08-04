@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if !COREFX
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -23,3 +25,5 @@ namespace Holycode.Extensions.log4net
         }
     }
 }
+
+#endif

@@ -6,8 +6,9 @@ using log4net.Layout;
 
 namespace log4net
 {
-    public static class AppenderFactory
+    public class AppenderFactory
     {
+        public AppenderFactory Instance { get; } = new AppenderFactory();
         public static string DefaultLayoutPattern =
             @"%date [%-5.5thread] %-5level: [ %-30.30logger ] %-100message%newline";
 
@@ -16,13 +17,7 @@ namespace log4net
 
         public static string DefaultConsoleLayoutPattern = @"%date [%-2thread] %-5level: [%-10.10logger] %message%newline";
 
-        internal static AzureTraceAppender CreateTraceAppender() => new AzureTraceAppender()
-        {
-            Layout = CreateLayout(DefaultTracceLayoutPattern),
-            Name = "TraceAppender",
-            ImmediateFlush = true,
-        };
-
+     
         internal static LogTapAppender CreateTapAppender() => new LogTapAppender()
         {
             Name = "LogTapAppender",
@@ -36,67 +31,6 @@ namespace log4net
 
         };
 
-        internal static ColoredConsoleAppender CreateConsoleAppenderColored()
-        {
-            var appender = new ColoredConsoleAppender()
-            {
-                Layout = CreateLayout(DefaultConsoleLayoutPattern),
-                Threshold = Level.Debug,
-                Name = "ConsoleAppender",
-            };
-            appender.AddMapping(new ColoredConsoleAppender.LevelColors()
-            {
-                Level = Level.Debug,
-                ForeColor = ColoredConsoleAppender.Colors.Green
-            });
-            appender.AddMapping(new ColoredConsoleAppender.LevelColors()
-            {
-                Level = Level.Info,
-                ForeColor = ColoredConsoleAppender.Colors.White
-            });
-            appender.AddMapping(new ColoredConsoleAppender.LevelColors()
-            {
-                Level = Level.Warn,
-                ForeColor = ColoredConsoleAppender.Colors.Yellow
-            });
-            appender.AddMapping(new ColoredConsoleAppender.LevelColors()
-            {
-                Level = Level.Error,
-                ForeColor = ColoredConsoleAppender.Colors.Red
-            });
-            return appender;
-        }
-
-        internal static AnsiColorTerminalAppender CreateAnsiColorTerminalAppender()
-        {
-            var appender = new AnsiColorTerminalAppender()
-            {
-                Layout = CreateLayout(AppenderFactory.DefaultConsoleLayoutPattern),
-                Threshold = Level.Debug,
-                Name = "TerminalAppender",
-            };
-            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors()
-            {
-                Level = Level.Debug,
-                ForeColor = AnsiColorTerminalAppender.AnsiColor.Green
-            });
-            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors()
-            {
-                Level = Level.Info,
-                ForeColor = AnsiColorTerminalAppender.AnsiColor.White
-            });
-            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors()
-            {
-                Level = Level.Warn,
-                ForeColor = AnsiColorTerminalAppender.AnsiColor.Yellow
-            });
-            appender.AddMapping(new AnsiColorTerminalAppender.LevelColors()
-            {
-                Level = Level.Error,
-                ForeColor = AnsiColorTerminalAppender.AnsiColor.Red
-            });
-            return appender;
-        }
 
         public static RollingFileAppender CreateFileAppender(string filename,
             string appenderName = "RollingFileAppender",
@@ -131,37 +65,6 @@ namespace log4net
             var l = new PatternLayout(layout) { IgnoresException = true };
             l.ActivateOptions();
             return l;
-        }
-
-        internal static SmtpAppenderWithSubjectLayout CreateSmtpAppender(string sendto, string programName, Level levelMin)
-        {
-            const string layout =
-                "%newline[%property{log4net:HostName}]%newline%date [%thread] %-5level %logger [%property{Username}] - %message%newline%newline%newline";
-            string subjectLayout = "[%property{log4net:HostName}] Error @ " + programName;
-
-            var appender = new SmtpAppenderWithSubjectLayout()
-            {
-                Name = "SmtpAppender",
-                SmtpHost = "my.domain.com",
-                Port = 25,
-                Authentication = SmtpAppender.SmtpAuthentication.Basic,
-                Username = "me@my.domain.com",
-                Password = "secret",
-                BufferSize = 512,
-                Lossy = false,
-                Layout = AppenderFactory.CreateLayout(layout),
-                SubjectLayout = new PatternLayout(subjectLayout),
-                Evaluator = new LevelEvaluator(threshold: levelMin ?? Level.Error),
-                To = sendto,
-                From = "me@my.domain.com",
-            };
-
-            appender.AddFilter(new LevelRangeFilter()
-            {
-                AcceptOnMatch = true,
-                LevelMin = levelMin ?? Level.Error
-            });
-            return appender;
         }
 
         internal static CallbackAppender CreateCallbackAppender(Action<string> callback)

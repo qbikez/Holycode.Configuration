@@ -9,12 +9,38 @@
   ],
   "projectUrl": "",
   "licenseUrl": "",
+  "buildOptions": {
+    "define": [
+      "//SMTP_APPENDER"
+    ]
+  },
   "dependencies": {
-    "log4net": "2.0.5"
+    "log4net": "3.0.0-*"
   },
   "frameworks": {
-    "dnx451": {},
-    "net451": {}
+    "net451": {
+      "buildOptions": {
+        "define": [
+          "NET",
+          "NET_451"
+        ]
+      }
+    },
+    "netstandard1.6": {
+      "buildOptions": {
+        "define": [
+          "COREFX",
+          "NETSTANDARD",
+          "NETSTANDARD_1_6"
+        ]
+      },
+      "imports": [
+        "netcore50"
+      ],
+      "dependencies": {
+        "System.Diagnostics.Tracing": "4.0.20"
+      }
+    }
   },
   "//frameworks": {
     "netcoreapp1.0 // no log4net for netcoreapp or portable": {

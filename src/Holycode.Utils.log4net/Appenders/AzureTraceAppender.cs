@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !COREFX
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace log4net.Appender
         {
             var level = loggingEvent.Level;
             var message = RenderLoggingEvent(loggingEvent);
-            
+
             if (level >= Level.Error)
                 Trace.TraceError(message);
             else if (level >= Level.Warn)
@@ -28,3 +29,4 @@ namespace log4net.Appender
         }
     }
 }
+#endif

@@ -5,7 +5,6 @@ using log4net.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting;
 using System.Text;
 using log4net.Filter;
 using log4net.Layout;
@@ -47,20 +46,6 @@ namespace log4net
             if (repository.GetAppenders().Any(a => a.Name == appender.Name)) return;
             log4net.Config.BasicConfigurator.Configure(repository, appender);
         }
-
-        public static void AddTraceAppender() => AddGlobalAppender(AppenderFactory.CreateTraceAppender());
-
-        public static void AddTapAppender() => AddAppender(AppenderFactory.CreateTapAppender());
-
-        public static void AddConsoleAppender() => AddAppender(AppenderFactory.CreateConsoleAppender());
-
-        public static void AddConsoleAppenderColored() => AddAppender(AppenderFactory.CreateConsoleAppenderColored());
-
-        public static void AddTerminalAppenderColored() => AddAppender(AppenderFactory.CreateAnsiColorTerminalAppender());
-
-
-        public static void AddSmtpAppender(string sendto, string programName = "", Level levelMin = null) 
-            => AddAppender(AppenderFactory.CreateSmtpAppender(sendto, programName, levelMin));
 
         public static void AddFileAppender(string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
         Action<RollingFileAppender> config = null) 

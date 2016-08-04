@@ -79,7 +79,7 @@ namespace Microsoft.Extensions.Configuration
             var consoleEnabled = config.GetNullable<bool>("log4net:appenders:console:enabled") ?? true;
             if (consoleEnabled)
             {
-                log.AddConsoleAppenderColored();
+                log.AddConsoleAppender();
             }
         }
 
@@ -122,6 +122,10 @@ namespace Microsoft.Extensions.Configuration
             }
             if (solrEnabled)
             {
+                
+                // TODO: update qlogger.solr to use log4net 3
+                log.Info($"SOLR temporarly disabled");
+                /*
                 log.Info($"enabling solr log. connectionstring={solrConnectionString}");
                 log.AddSolrLog(options =>
                 {
@@ -129,6 +133,7 @@ namespace Microsoft.Extensions.Configuration
                     options.LogLogLevel = Level.All;         
                 },
                     domain: appName);
+                    */
             }
             else
             {

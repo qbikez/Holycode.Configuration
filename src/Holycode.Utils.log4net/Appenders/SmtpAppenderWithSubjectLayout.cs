@@ -1,4 +1,4 @@
-﻿
+﻿#if SMTP_APPENDER
 namespace log4net.Appender
 {
     using log4net.Core;
@@ -54,3 +54,4 @@ namespace log4net.Appender
         }
     }
 }
+#endif
