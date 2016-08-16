@@ -13,8 +13,10 @@
     "cmd": {
       "buildOptions": {
         "emitEntryPoint": true,
-        "outputName": "cfg"
-      }
+        "outputName": "hcfg",
+        "copyToOutput": 
+          "scripts/**"
+      },
     }
   },
   "buildOptions": {
@@ -115,6 +117,10 @@
           "System.Text.RegularExpressions": "4.0.11-beta-23516"
         }
       }
+    }
+  },
+  "runtimes": {
+    "win": {
     }
   },
   "exclude": [

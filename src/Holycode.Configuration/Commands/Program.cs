@@ -55,6 +55,7 @@ namespace Holycode.Configuration.Commands
                 {
                     Console.WriteLine("Available commands:");
                     Console.WriteLine(" get              returns whole configuration, serialized as JSON");
+                    Console.WriteLine(" list             list configuration keys");
                     Console.WriteLine(" get {key}        returns config value for key {key}");
                     Console.WriteLine(" connstr {name}   returns connection string with name {name}");
                     return 0;
@@ -70,17 +71,29 @@ namespace Holycode.Configuration.Commands
                 {
                     if (path == null)
                     {
-                        var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(conf.AsDictionaryPlain());
-                        Console.WriteLine(serialized);
+                        ListConfigValues(conf);
                     }
                     else
                     {
                         var val = conf.Get(path);
+                        if (val == null)
+                        {
+                            var sub = conf.GetSection(path);
+                            if (sub != null)
+                            {
+                                ListConfigValues(sub);
+                            }
+                        }
                         Console.WriteLine(val);
                     }
 
                     return 0;
                 }
+                else if (cmd == "list")
+                {
+                    ListConfigKeys(conf);
+                }
+
                 if (cmd.Equals("connstr", StringComparison.OrdinalIgnoreCase)
                 || cmd.Equals("getconnstr", StringComparison.OrdinalIgnoreCase)
                 || cmd.Equals("conn", StringComparison.OrdinalIgnoreCase))
@@ -106,6 +119,23 @@ namespace Holycode.Configuration.Commands
             }
 
             return 0;
+        }
+
+
+        private static void ListConfigKeys(IConfiguration conf)
+        {
+            var dict = conf.AsDictionaryPlain();
+            foreach (var k in dict.Keys)
+            {
+                Console.WriteLine(k);
+            }
+        }
+
+        private static void ListConfigValues(IConfiguration conf)
+        {
+            var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(conf.AsDictionaryPlain(),
+                Newtonsoft.Json.Formatting.Indented);
+            Console.WriteLine(serialized);
         }
     }
 }
