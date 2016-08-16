@@ -53,7 +53,18 @@ namespace Microsoft.Extensions.Configuration
                 src.Set(EnvConfigPathKey, path);
                 src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
 
-                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvironment;
+                try
+                {
+                    path = Path.Combine(envPath.Source, $"env.local.json");
+                    src = src.AddJsonFile(path, optional: true);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException($"Failed to load config file {path}", ex);
+                }
+
+
+                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvir    onment;
 
                 // force env
                 src.Set(EnvironmentNameKey, environment);
@@ -78,16 +89,7 @@ namespace Microsoft.Extensions.Configuration
                     }
                 }
 
-                try
-                {
-                    path = Path.Combine(envPath.Source, $"env.local.json");
-                    src = src.AddJsonFile(path, optional: true);
-                }
-                catch (Exception ex)
-                {
-                    throw new FileLoadException($"Failed to load config file {path}", ex);
-                }
-
+              
                 if (!string.IsNullOrEmpty(environment))
                 {
                     try
