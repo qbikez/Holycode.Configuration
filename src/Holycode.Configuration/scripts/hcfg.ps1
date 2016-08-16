@@ -9,7 +9,7 @@ try {
             new-object -type PSCustomObject -property @{ Name = $_.Name; Value = $_.Value }
         }
     } 
-    $list | Select Name,Source,Value
+    $list 
     
 } catch {
     return $o

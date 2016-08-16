@@ -76,7 +76,7 @@ namespace Holycode.Configuration.Commands
                 builder.AddEnvJson(environment: env, optional: false);
                 builder.AddJsonFile("config.json", optional: true);
                 builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: true);
-                 
+
                 var conf = builder.Build();
 
                 if (cmd == "get")
@@ -143,65 +143,83 @@ namespace Holycode.Configuration.Commands
             }
         }
 
-        private static Dictionary<TKey, TVal> BuildAnonymousDict<TKey, TVal>(Func<TVal> factory) {
+        private static Dictionary<TKey, TVal> BuildAnonymousDict<TKey, TVal>(Func<TVal> factory)
+        {
             return new Dictionary<TKey, TVal>();
         }
-        private static Dictionary<string, TVal> BuildAnonymousDict<TVal>(Func<TVal> factory) {
+        private static Dictionary<string, TVal> BuildAnonymousDict<TVal>(Func<TVal> factory)
+        {
             return new Dictionary<string, TVal>();
         }
+        private static Dictionary<TKey, TVal> BuildDict<TKey, TVal>(IEnumerable<KeyValuePair<TKey, TVal>> list)
+        {
+            return list.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+
+
         private static void ListConfigValues(IConfiguration conf, IConfigurationBuilder builder)
         {
-            var result = BuildAnonymousDict(() => new {Value = "", Source = "" });
+            var result = BuildAnonymousDict(() => new { Value = "", Source = "" });
             var dict = conf.AsDictionaryPlain();
-            if (verbose) {
-                foreach(var src in builder.Sources.Reverse())
-                {
-                    var srcName = src.ToString();
-                    if (src is Microsoft.Extensions.Configuration.Json.JsonConfigurationSource)
-                    {
-                        var json = (src as Microsoft.Extensions.Configuration.Json.JsonConfigurationSource);
-                        srcName = $"{json.Path} ({json.FileProvider.GetFileInfo(json.Path).PhysicalPath})";
-                    }
-                    if (
-                        src is
-                            Microsoft.Extensions.Configuration.EnvironmentVariables.
-                                EnvironmentVariablesConfigurationSource)
-                    {
-                        srcName = "ENV";
-                        if (noEnvVar)
-                        {
-                            continue;
-                        }
-                    }
-                    if (src is Microsoft.Extensions.Configuration.Memory.MemoryConfigurationSource)
-                    {
-                        srcName = "in-mem";
-                    }
 
-                    var count = 0;
-                    //Console.WriteLine($"examining source '{srcName}'");
-                    var srcCfg = src.Build(builder);
-                    srcCfg.Load();
-                    foreach(var key in dict.Keys) {
-                        string v = null;
-                        if (srcCfg.TryGet(key, out v))
+            foreach (var src in builder.Sources.Reverse())
+            {
+                var srcName = src.ToString();
+                if (src is Microsoft.Extensions.Configuration.Json.JsonConfigurationSource)
+                {
+                    var json = (src as Microsoft.Extensions.Configuration.Json.JsonConfigurationSource);
+                    srcName = $"{json.Path} ({json.FileProvider.GetFileInfo(json.Path).PhysicalPath})";
+                }
+                if (
+                    src is
+                        Microsoft.Extensions.Configuration.EnvironmentVariables.
+                            EnvironmentVariablesConfigurationSource)
+                {
+                    srcName = "ENV";
+                }
+                if (src is Microsoft.Extensions.Configuration.Memory.MemoryConfigurationSource)
+                {
+                    srcName = "in-mem";
+                }
+
+                var count = 0;
+                //Console.WriteLine($"examining source '{srcName}'");
+                var srcCfg = src.Build(builder);
+                srcCfg.Load();
+                foreach (var key in dict.Keys)
+                {
+                    string v = null;
+                    if (srcCfg.TryGet(key, out v))
+                    {
+                        count++;
+                        if (!result.ContainsKey(key))
                         {
-                            count++;
-                            if (!result.ContainsKey(key)) {
-                                result.Add(key, new { Value = v, Source = srcName });
-                            }                            
+                            result.Add(key, new { Value = v, Source = srcName });
                         }
                     }
-                    //Console.WriteLine($"source '{srcName}' has {count} entries");
                 }
-                var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(result,
-                    Newtonsoft.Json.Formatting.Indented);
-                Console.WriteLine(serialized);
-            } else {
-            var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(dict,
-                Newtonsoft.Json.Formatting.Indented);
-            Console.WriteLine(serialized);
+                //Console.WriteLine($"source '{srcName}' has {count} entries");
             }
+
+            if (noEnvVar)
+            {
+                result = BuildDict(result.Where(kvp => kvp.Value.Source != "ENV"));
+            }
+
+            string serialized = null;
+            if (verbose)
+            {
+                serialized = Newtonsoft.Json.JsonConvert.SerializeObject(result,
+                    Newtonsoft.Json.Formatting.Indented);
+            }
+            else
+            {
+                var r2 = BuildDict(result.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value.Value)));
+                serialized = Newtonsoft.Json.JsonConvert.SerializeObject(r2,
+                    Newtonsoft.Json.Formatting.Indented);
+            }
+            Console.WriteLine(serialized);
         }
+
     }
 }
