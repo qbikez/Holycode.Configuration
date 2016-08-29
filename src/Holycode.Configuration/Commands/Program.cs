@@ -110,12 +110,16 @@ namespace Holycode.Configuration.Commands
                         if (val == null)
                         {
                             var sub = conf.GetSection(cfgPath);
+                            
                             if (sub != null)
                             {
                                 ListConfigValues(sub, builder);
+                            } else {
+                                return 1;
                             }
+                        } else {
+                            Console.WriteLine(val);
                         }
-                        Console.WriteLine(val);
                     }
 
                     return 0;
@@ -271,7 +275,7 @@ namespace Holycode.Configuration.Commands
         {
             var result = BuildAnonymousDict(() => new { Value = "", Source = "" });
             var dict = conf.AsDictionaryPlain();
-
+            
             foreach (var src in builder.Sources.Reverse())
             {
                 var srcName = GetConfigSourceInfo(src).Name;
@@ -280,9 +284,13 @@ namespace Holycode.Configuration.Commands
                 //Console.WriteLine($"examining source '{srcName}'");
                 var srcCfg = src.Build(builder);
                 srcCfg.Load();
-                foreach (var key in dict.Keys)
+                foreach (var k in dict.Keys)
                 {
+                    var key = k;
                     string v = null;
+                    if (conf is IConfigurationSection) {
+                        key = (conf as IConfigurationSection).Path + ":" + key;
+                    }
                     if (srcCfg.TryGet(key, out v))
                     {
                         count++;
