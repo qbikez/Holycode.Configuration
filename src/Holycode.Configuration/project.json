@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.3-master002-5a403",
+  "version": "2.2.3",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -14,9 +14,8 @@
       "buildOptions": {
         "emitEntryPoint": true,
         "outputName": "hcfg",
-        "copyToOutput": 
-          "scripts/**"
-      },
+        "copyToOutput": "scripts/**"
+      }
     }
   },
   "buildOptions": {
@@ -120,8 +119,7 @@
     }
   },
   "runtimes": {
-    "win": {
-    }
+    "win": {}
   },
   "exclude": [
     "wwwroot",

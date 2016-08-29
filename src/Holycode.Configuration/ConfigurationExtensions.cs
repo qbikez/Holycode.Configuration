@@ -64,7 +64,7 @@ namespace Microsoft.Extensions.Configuration
                 }
 
 
-                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvir    onment;
+                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvironment;
 
                 // force env
                 src.Set(EnvironmentNameKey, environment);
