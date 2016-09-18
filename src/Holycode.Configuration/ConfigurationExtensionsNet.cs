@@ -13,7 +13,11 @@ namespace Microsoft.Extensions.Configuration
     {
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true, string environment = null)
         {
-            var path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+            var path = src.BasePath();
+            if (path == null)
+            {
+                path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+            }
             return src.AddEnvJson(path, optional: optional, environment: environment);
         }
 
