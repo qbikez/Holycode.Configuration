@@ -26,10 +26,16 @@ namespace Microsoft.Extensions.Configuration
         public static string GetConnectionStringSecureValue(this IConfiguration cfg, string name)
         {
             var connStr = cfg.GetConnectionStringValue(name);
-            if (connStr == null) return null;
+            return connStr.GetSecureValue();
+        }
+        
+        public static string GetSecureValue(this string connStr) {
+			if (connStr == null) return null;
             connStr = Regex.Replace(connStr, @"User Id\s*=.*?(;|$)", "User Id=***", RegexOptions.IgnoreCase);
             connStr = Regex.Replace(connStr, @"Password\s*=.*?(;|$)", "Password=***", RegexOptions.IgnoreCase);
             return connStr;
         }
+        
     }
 }
+
