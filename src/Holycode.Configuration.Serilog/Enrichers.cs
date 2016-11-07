@@ -5,6 +5,7 @@ using Serilog.Core;
 using Serilog.Events;
 using System;
 using Serilog.Sinks.Elasticsearch;
+using System.Collections.Generic;
 
 namespace Holycode.Configuration.Serilog
 {
@@ -18,16 +19,30 @@ namespace Holycode.Configuration.Serilog
     }
 
 
-    class LoggerDomainEnricher : ILogEventEnricher
+    class StaticPropertiesEnricher : ILogEventEnricher
     {
-        private string _appname;
-        public LoggerDomainEnricher(string appname)
+        private Dictionary<string, object> _values;
+        private Dictionary<string, LogEventProperty> _cachedProperties = new Dictionary<string, LogEventProperty>();
+
+        public StaticPropertiesEnricher(Dictionary<string, object> values)
         {
-            _appname = appname;
+            _values = values;
         }
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("domain", _appname));
+            foreach (var kvp in _values)
+            {
+                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(kvp.Key, kvp.Value));
+
+                LogEventProperty cachedProperty = null;
+                if (!_cachedProperties.TryGetValue(kvp.Key, out cachedProperty))
+                {
+                    cachedProperty = propertyFactory.CreateProperty(kvp.Key, kvp.Value);
+                    _cachedProperties[kvp.Key] = cachedProperty;
+                }
+
+                logEvent.AddPropertyIfAbsent(cachedProperty);
+            }
         }
     }
 

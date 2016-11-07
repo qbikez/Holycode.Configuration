@@ -47,7 +47,13 @@ namespace Holycode.Configuration.Serilog
                         .MinimumLevel.Override("System", LogEventLevel.Warning)
                         .Enrich.FromLogContext()
                         .Enrich.With(new ThreadIdEnricher())
-                        .Enrich.With(new LoggerDomainEnricher(appname))
+                        .Enrich.With(new StaticPropertiesEnricher(new System.Collections.Generic.Dictionary<string, object>()
+                        {
+                            { "domain", appname },
+                            { "env", env },
+                            { "MachineName", Environment.GetEnvironmentVariable("COMPUTERNAME") },
+                            { "prefix", prefix }
+                        } ))
                         .Filter.With(ipfilter);
             //.Filter.ByExcluding(ev => ExcludeLogByContext(ev, "Microsoft", LogEventLevel.Warning))                            
             //.WriteTo.Logger(inner => 
