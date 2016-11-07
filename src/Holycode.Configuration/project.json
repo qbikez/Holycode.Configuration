@@ -76,6 +76,23 @@
           "version": "1.0.0"
         }
       }
+    },
+    "netstandard1.6": {
+      "buildOptions": {
+        "define": [
+          "CORECLR"
+        ]
+      },
+      "imports": [
+        "netcore50"
+      ],
+      "dependencies": {
+        "System.Text.RegularExpressions": "4.1.0",
+        "System.Console": "4.0.0",
+        "System.Reflection": "4.1.0",
+        "System.Runtime.Extensions": "4.1.0",
+        "System.Runtime.Serialization.Primitives": "4.1.1"   
+      }
     }
   },
   "__commented": {

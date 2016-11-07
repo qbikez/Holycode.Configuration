@@ -1,0 +1,28 @@
+﻿{
+  "version": "1.0.0-master013-013f8",
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": false
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.0.0",
+    "Serilog.Sinks.Literate": "2.0.0",
+    "Serilog.Sinks.RollingFile": "3.1.0",
+    "Serilog.Sinks.RollingFileAlternate": "2.0.4",
+    "Serilog.Sinks.Elasticsearch": "4.1.1",
+    "Holycode.Configuration": {
+      "target": "project"
+    }
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {}
+    },
+    "net451": {
+      "dependencies": {}
+    }
+  },
+  "description": "no description"
+}
