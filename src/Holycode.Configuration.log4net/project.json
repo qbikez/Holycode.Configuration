@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.2",
+  "version": "2.2.3-master000-cc49f",
   "summary": "Tools for configuring log4net using Holycode.Configuration model",
   "authors": [
     "Holycode"
@@ -47,5 +47,6 @@
     "node_modules",
     "bower_components",
     "log"
-  ]
+  ],
+  "description": "no description"
 }

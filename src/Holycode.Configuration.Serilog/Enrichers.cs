@@ -7,9 +7,9 @@ using System;
 using Serilog.Sinks.Elasticsearch;
 using System.Collections.Generic;
 
-namespace Holycode.Configuration.Serilog
+namespace Holycode.Configuration.Serilog.Enrichers
 {
-    class ThreadIdEnricher : ILogEventEnricher
+    public class ThreadIdEnricher : ILogEventEnricher
     {
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
@@ -19,7 +19,7 @@ namespace Holycode.Configuration.Serilog
     }
 
 
-    class StaticPropertiesEnricher : ILogEventEnricher
+    public class StaticPropertiesEnricher : ILogEventEnricher
     {
         private Dictionary<string, object> _values;
         private Dictionary<string, LogEventProperty> _cachedProperties = new Dictionary<string, LogEventProperty>();
@@ -32,8 +32,6 @@ namespace Holycode.Configuration.Serilog
         {
             foreach (var kvp in _values)
             {
-                logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(kvp.Key, kvp.Value));
-
                 LogEventProperty cachedProperty = null;
                 if (!_cachedProperties.TryGetValue(kvp.Key, out cachedProperty))
                 {
@@ -46,28 +44,6 @@ namespace Holycode.Configuration.Serilog
         }
     }
 
-    class IpFilter : ILogEventFilter
-    {
-        private LoggingLevelSwitch logLevel;
-        public string Ip { get; set; }
 
-        public IpFilter(LoggingLevelSwitch logLevel, string ip)
-        {
-            this.logLevel = logLevel;
-            this.Ip = ip;
-        }
-        public bool IsEnabled(LogEvent ev)
-        {
-            if (Ip != null)
-            {
-                LogEventPropertyValue ctx;
-                if (ev.Properties.TryGetValue("ClientIp", out ctx))
-                {
-                    if (((ScalarValue)ctx).Value.ToString() == Ip) return true;
-                }
-            }
-            return ev.Level >= logLevel.MinimumLevel;
-        }
-    }
 
 }

@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0-master022-cc49f",
+  "version": "1.0.0-master029-cc49f",
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": false
@@ -9,24 +9,21 @@
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0",
     "Serilog": "2.3.0",
-    "Serilog.Sinks.Literate": "2.0.0",
-    "Serilog.Sinks.RollingFile": "3.1.0",
-    "Serilog.Sinks.CustomRollingFile": "2.0.7",
-    "Serilog.Sinks.Elasticsearch": "4.1.1",
-    "Serilog.Sinks.Trace": "2.1.0",
     "Holycode.Configuration": {
       "target": "project"
-    }
+    },
+    "Holycode.Configuration.Serilog": {
+      "target": "project"
+    },
+    "SerilogWeb.Classic": "2.0.10",
+    "Log4net.Appender.Serilog": "1.0.3-master000-f71fc"
   },
   "frameworks": {
-    "netstandard1.6": {
-      "dependencies": {
-        "system.diagnostics.process": "4.3.0"
-      },
-      "frameworkAssemblies": {}
-    },
     "net451": {
-      "dependencies": {}
+      "dependencies": {},
+      "frameworkAssemblies": {
+        "System.Web": "4.0.0.0"
+      }
     }
   },
   "description": "no description"

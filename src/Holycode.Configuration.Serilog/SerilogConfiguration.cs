@@ -5,6 +5,9 @@ using Serilog.Core;
 using Serilog.Events;
 using System;
 using Serilog.Sinks.Elasticsearch;
+using Serilog.Sinks.RollingFileAlternate;
+using Holycode.Configuration.Serilog.Filters;
+using Holycode.Configuration.Serilog.Enrichers;
 
 namespace Holycode.Configuration.Serilog
 {
@@ -13,19 +16,11 @@ namespace Holycode.Configuration.Serilog
         private static LoggingLevelSwitch logLevel = new LoggingLevelSwitch(LogEventLevel.Warning);
         static IpFilter ipfilter;
 
-        private static bool ExcludeLogByContext(LogEvent ev, string name, LogEventLevel minLevel)
-        {
-            LogEventPropertyValue ctx;
-            if (ev.Properties.TryGetValue("SourceContext", out ctx))
-            {
-                return ((ScalarValue)ctx).Value.ToString().StartsWith(name) && ev.Level < minLevel;
-            }
-            return false;
-        }
+      
 
-        public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null)
+        public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
         {
-            logLevel.MinimumLevel = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), configuration["Logging:LogLevel:Default"]);
+            logLevel.MinimumLevel = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), configuration["Logging:LogLevel:Default"] ?? "Debug");
             ipfilter = new IpFilter(logLevel, configuration["Logging:Filters:Ip"]);
 
             var env = configuration.EnvironmentName() ?? "env";
@@ -53,7 +48,7 @@ namespace Holycode.Configuration.Serilog
                             { "env", env },
                             { "MachineName", Environment.GetEnvironmentVariable("COMPUTERNAME") },
                             { "prefix", prefix }
-                        } ))
+                        }))
                         .Filter.With(ipfilter);
             //.Filter.ByExcluding(ev => ExcludeLogByContext(ev, "Microsoft", LogEventLevel.Warning))                            
             //.WriteTo.Logger(inner => 
@@ -70,20 +65,27 @@ namespace Holycode.Configuration.Serilog
                 }
                 var logDir = isAzureWebsite ? $"{baseDir}/../../LogFiles/application" : $"{baseDir}/log";
                 logbuilder = logbuilder.WriteTo.Logger(inner =>
-                    inner.WriteTo.RollingFile($"{logDir}/{appname}-{env}.log",
+                    inner
+                        .Filter.With(new LogContextFilter("SerilogWeb.Classic.ApplicationLifecycleModule", LogEventLevel.Warning))
+                        .WriteTo.RollingFileAlternate($"{logDir}",
+                        prefix: $"{appname}-{env}-{System.Diagnostics.Process.GetCurrentProcess().Id}",
                         outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level} {ThreadId}] [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}",
                         retainedFileCountLimit: 100, fileSizeLimitBytes: (5 << 20)
                     )
                 );
             }
-            var elasticSink = configuration["Logging:Sinks:Elastic"];
+            var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
             if (elasticSink != null)
             {
                 logbuilder = logbuilder.WriteTo.Logger(inner =>
-                                inner.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
-                                {
-                                    IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"                                    
-                                }));
+                {
+                    var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
+                    {
+                        IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"
+                    };
+                    if (configureElastic != null) configureElastic(elasticOpts);
+                    inner.WriteTo.Elasticsearch(elasticOpts);
+                });
             }
 
             ChangeToken.OnChange(

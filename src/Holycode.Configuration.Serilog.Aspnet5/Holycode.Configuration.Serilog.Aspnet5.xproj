@@ -6,11 +6,12 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>10b8019c-fc26-4ad5-aca8-0274ddc610b0</ProjectGuid>
-    <RootNamespace>Holycode.Configuration</RootNamespace>
+    <ProjectGuid>092ee19c-f19b-41e0-86e4-d7c47238df62</ProjectGuid>
+    <RootNamespace>Holycode.Configuration.Serilog.Aspnet5</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
   </PropertyGroup>
+
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>

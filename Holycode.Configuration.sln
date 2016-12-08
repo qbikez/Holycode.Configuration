@@ -19,6 +19,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.Configuration.Seri
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.AspNetCore.Middleware", "src\Holycode.AspNetCore.Middleware\Holycode.AspNetCore.Middleware.xproj", "{55E0AA9C-55AB-43EA-97C1-D13A8BE4F715}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.Configuration.Serilog.Aspnet5", "src\Holycode.Configuration.Serilog.Aspnet5\Holycode.Configuration.Serilog.Aspnet5.xproj", "{092EE19C-F19B-41E0-86E4-D7C47238DF62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		cmd|Any CPU = cmd|Any CPU
@@ -68,6 +70,12 @@ Global
 		{55E0AA9C-55AB-43EA-97C1-D13A8BE4F715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55E0AA9C-55AB-43EA-97C1-D13A8BE4F715}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55E0AA9C-55AB-43EA-97C1-D13A8BE4F715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{092EE19C-F19B-41E0-86E4-D7C47238DF62}.cmd|Any CPU.ActiveCfg = Debug|Any CPU
+		{092EE19C-F19B-41E0-86E4-D7C47238DF62}.cmd|Any CPU.Build.0 = Debug|Any CPU
+		{092EE19C-F19B-41E0-86E4-D7C47238DF62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{092EE19C-F19B-41E0-86E4-D7C47238DF62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{092EE19C-F19B-41E0-86E4-D7C47238DF62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{092EE19C-F19B-41E0-86E4-D7C47238DF62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
