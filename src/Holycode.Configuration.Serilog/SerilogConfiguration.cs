@@ -19,7 +19,7 @@ namespace Holycode.Configuration.Serilog
         private readonly string baseDir = null;
         private readonly string appname;
         private readonly IConfiguration configuration;
-        private readonly string prefix;
+        private readonly string prefix = "x";
         private readonly bool isAzureWebsite;
         private readonly string env;
 
@@ -42,7 +42,6 @@ namespace Holycode.Configuration.Serilog
             var isAzureWebsite = configuration["WEBSITE_SITE_NAME"] != null;
 
             env = configuration.EnvironmentName() ?? "env";
-            prefix = "x";
 
             Initialize();
         }
