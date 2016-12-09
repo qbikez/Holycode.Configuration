@@ -11,20 +11,25 @@ using Holycode.Configuration.Serilog.Enrichers;
 
 namespace Holycode.Configuration.Serilog
 {
-    public class SerilogConfiguration
+    public class SerilogConfiguration : LoggerConfiguration
     {
         private static LoggingLevelSwitch logLevel = new LoggingLevelSwitch(LogEventLevel.Warning);
         static IpFilter ipfilter;
 
-      
+        private readonly string baseDir = null;
+        private readonly string appname;
+        private readonly IConfiguration configuration;
+        private readonly string prefix;
+        private readonly bool isAzureWebsite;
+        private readonly string env;
 
-        public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
+        SerilogConfiguration(IConfiguration configuration, string appname = null, string baseDir = null)
         {
-            logLevel.MinimumLevel = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), configuration["Logging:LogLevel:Default"] ?? "Debug");
-            ipfilter = new IpFilter(logLevel, configuration["Logging:Filters:Ip"]);
+            this.configuration = configuration;
 
-            var env = configuration.EnvironmentName() ?? "env";
-            var prefix = "x";
+            if (baseDir == null)baseDir = ".";
+            this.baseDir = baseDir;
+
             appname = appname ?? configuration["Logging:Domain"] ?? "some-app";
             var splits = appname.Split('/');
             if (splits.Length > 1)
@@ -32,10 +37,59 @@ namespace Holycode.Configuration.Serilog
                 prefix = splits[0];
                 appname = splits[1];
             }
+            this.appname = appname;
 
             var isAzureWebsite = configuration["WEBSITE_SITE_NAME"] != null;
 
-            var logbuilder = new LoggerConfiguration()
+            env = configuration.EnvironmentName() ?? "env";
+            prefix = "x";
+        }
+
+        private string LogDir => isAzureWebsite ? $"{baseDir}/../../LogFiles/application" : $"{baseDir}/log";
+
+
+        public LoggerConfiguration UseFileSink(string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level} {ThreadId}] [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}")
+        {
+            var logBuilder = this;
+          
+            
+
+            logBuilder.WriteTo.Logger(inner =>
+                inner
+                    .Filter.With(new LogContextFilter("SerilogWeb.Classic.ApplicationLifecycleModule", LogEventLevel.Warning))
+                    .WriteTo.RollingFileAlternate($"{LogDir}",
+                    prefix: $"{appname}-{env}-{System.Diagnostics.Process.GetCurrentProcess().Id}",
+                    outputTemplate: template,
+                    retainedFileCountLimit: 100, fileSizeLimitBytes: (5 << 20)
+                )
+            );
+
+            return this;
+        }
+
+        public LoggerConfiguration UseElasticSink(Action<ElasticsearchSinkOptions> configureElastic = null)
+        {
+            var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
+            this.WriteTo.Logger(inner =>
+            {
+                var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
+                {
+                    IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"
+                };
+                if (configureElastic != null) configureElastic(elasticOpts);
+                inner.WriteTo.Elasticsearch(elasticOpts);
+            });
+
+            return this;
+        }
+
+        private void Initialize()
+        {
+            logLevel.MinimumLevel = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), configuration["Logging:LogLevel:Default"] ?? "Debug");
+            ipfilter = new IpFilter(logLevel, configuration["Logging:Filters:Ip"]);
+
+            var logBuilder = this;
+            logBuilder
                         //.ReadFrom.Configuration(configuration)
                         .MinimumLevel.Debug()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -56,38 +110,6 @@ namespace Holycode.Configuration.Serilog
             //    outputTemplate: "[{Timestamp:HH:mm:ss} {Level} {ThreadId}] [{SourceContext}] {Message}{NewLine}{Exception}"))
 
 
-            var fileSink = configuration["Logging:Sinks:File"];
-            if (fileSink != "False")
-            {
-                if (baseDir == null)
-                {
-                    baseDir = ".";
-                }
-                var logDir = isAzureWebsite ? $"{baseDir}/../../LogFiles/application" : $"{baseDir}/log";
-                logbuilder = logbuilder.WriteTo.Logger(inner =>
-                    inner
-                        .Filter.With(new LogContextFilter("SerilogWeb.Classic.ApplicationLifecycleModule", LogEventLevel.Warning))
-                        .WriteTo.RollingFileAlternate($"{logDir}",
-                        prefix: $"{appname}-{env}-{System.Diagnostics.Process.GetCurrentProcess().Id}",
-                        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level} {ThreadId}] [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}",
-                        retainedFileCountLimit: 100, fileSizeLimitBytes: (5 << 20)
-                    )
-                );
-            }
-            var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
-            if (elasticSink != null)
-            {
-                logbuilder = logbuilder.WriteTo.Logger(inner =>
-                {
-                    var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
-                    {
-                        IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"
-                    };
-                    if (configureElastic != null) configureElastic(elasticOpts);
-                    inner.WriteTo.Elasticsearch(elasticOpts);
-                });
-            }
-
             ChangeToken.OnChange(
                  () => configuration.GetReloadToken(),
                  () =>
@@ -97,8 +119,29 @@ namespace Holycode.Configuration.Serilog
                      ipfilter.Ip = configuration["Logging:Filters:Ip"];
                  }
             );
+        }
 
-            return logbuilder;
+        public void ConfigureSinks(Action<ElasticsearchSinkOptions> configureElastic = null)
+        {
+            var fileSink = configuration["Logging:Sinks:File"];
+            if (fileSink != "False")
+            {
+                UseFileSink();
+            }
+            var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
+            if (elasticSink != null)
+            {
+                UseElasticSink(configureElastic);
+            }
+        }
+
+        public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
+        {
+            var builder = new SerilogConfiguration(configuration, appname, baseDir);
+            builder.ConfigureSinks(configureElastic);
+
+            return builder;
+
         }
 
         public static void ConfigureSerilog(IConfiguration configuration, string appname = null, string baseDir = null)
@@ -107,6 +150,8 @@ namespace Holycode.Configuration.Serilog
             Log.Logger = logbuilder.CreateLogger();
         }
 
+
+        
         // public static void ConfigureSerilog(IConfiguration configuration, IHttpContextAccessor ctxAccessor)
         // {
         //     var logbuilder = LoggerConfiguration(configuration);
@@ -114,5 +159,11 @@ namespace Holycode.Configuration.Serilog
 
         //     Log.Logger = logbuilder.CreateLogger();
         // }
+    }
+
+
+    public static class SerilogConfigurationExtensions
+    {
+
     }
 }
