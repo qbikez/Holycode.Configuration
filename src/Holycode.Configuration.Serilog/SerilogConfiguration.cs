@@ -23,11 +23,11 @@ namespace Holycode.Configuration.Serilog
         private readonly bool isAzureWebsite;
         private readonly string env;
 
-        SerilogConfiguration(IConfiguration configuration, string appname = null, string baseDir = null)
+        public SerilogConfiguration(IConfiguration configuration, string appname, string baseDir = null)
         {
             this.configuration = configuration;
 
-            if (baseDir == null)baseDir = ".";
+            if (baseDir == null) baseDir = ".";
             this.baseDir = baseDir;
 
             appname = appname ?? configuration["Logging:Domain"] ?? "some-app";
@@ -43,6 +43,8 @@ namespace Holycode.Configuration.Serilog
 
             env = configuration.EnvironmentName() ?? "env";
             prefix = "x";
+
+            Initialize();
         }
 
         private string LogDir => isAzureWebsite ? $"{baseDir}/../../LogFiles/application" : $"{baseDir}/log";
@@ -88,8 +90,7 @@ namespace Holycode.Configuration.Serilog
             logLevel.MinimumLevel = (LogEventLevel)Enum.Parse(typeof(LogEventLevel), configuration["Logging:LogLevel:Default"] ?? "Debug");
             ipfilter = new IpFilter(logLevel, configuration["Logging:Filters:Ip"]);
 
-            var logBuilder = this;
-            logBuilder
+            var logBuilder = this
                         //.ReadFrom.Configuration(configuration)
                         .MinimumLevel.Debug()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -121,7 +122,7 @@ namespace Holycode.Configuration.Serilog
             );
         }
 
-        public void ConfigureSinks(Action<ElasticsearchSinkOptions> configureElastic = null)
+        public LoggerConfiguration ConfigureSinks(Action<ElasticsearchSinkOptions> configureElastic = null)
         {
             var fileSink = configuration["Logging:Sinks:File"];
             if (fileSink != "False")
@@ -133,6 +134,8 @@ namespace Holycode.Configuration.Serilog
             {
                 UseElasticSink(configureElastic);
             }
+
+            return this;
         }
 
         public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
