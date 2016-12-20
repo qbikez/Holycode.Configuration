@@ -11,7 +11,7 @@ using Holycode.Configuration.Serilog.Enrichers;
 
 namespace Holycode.Configuration.Serilog
 {
-    public class SerilogConfiguration : LoggerConfiguration
+    public partial class SerilogConfiguration : LoggerConfiguration
     {
         private static LoggingLevelSwitch logLevel = new LoggingLevelSwitch(LogEventLevel.Warning);
         static IpFilter ipfilter;
@@ -49,40 +49,7 @@ namespace Holycode.Configuration.Serilog
         private string LogDir => isAzureWebsite ? $"{baseDir}/../../LogFiles/application" : $"{baseDir}/log";
 
 
-        public LoggerConfiguration UseFileSink(string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level} {ThreadId}] [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}")
-        {
-            var logBuilder = this;
-          
-            
-
-            logBuilder.WriteTo.Logger(inner =>
-                inner
-                    .Filter.With(new LogContextFilter("SerilogWeb.Classic.ApplicationLifecycleModule", LogEventLevel.Warning))
-                    .WriteTo.RollingFileAlternate($"{LogDir}",
-                    prefix: $"{appname}-{env}-{System.Diagnostics.Process.GetCurrentProcess().Id}",
-                    outputTemplate: template,
-                    retainedFileCountLimit: 100, fileSizeLimitBytes: (5 << 20)
-                )
-            );
-
-            return this;
-        }
-
-        public LoggerConfiguration UseElasticSink(Action<ElasticsearchSinkOptions> configureElastic = null)
-        {
-            var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
-            this.WriteTo.Logger(inner =>
-            {
-                var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
-                {
-                    IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"
-                };
-                if (configureElastic != null) configureElastic(elasticOpts);
-                inner.WriteTo.Elasticsearch(elasticOpts);
-            });
-
-            return this;
-        }
+        
 
         private void Initialize()
         {
@@ -136,6 +103,7 @@ namespace Holycode.Configuration.Serilog
 
             return this;
         }
+
 
         public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
         {
