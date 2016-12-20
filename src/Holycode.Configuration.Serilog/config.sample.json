@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "IncludeScopes": true,
+    "LogLevel": {
+      "Default": "Debug"
+    },
+    // global filters
+    "Filters": {
+      // requests from this ip will always be logged at Debug level
+      "Ip": "80.87.36.115"
+    },
+    "Sinks": {
+      "File": true,
+      "Elastic": "http://serilog:NFKPc4c8IeLdJdahQTn0Pmgk@10.0.0.13:9200"
+    }
+  }
+}
