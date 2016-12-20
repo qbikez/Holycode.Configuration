@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.1-master005-00813",
+  "version": "1.0.1",
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": false
@@ -29,5 +29,14 @@
       "dependencies": {}
     }
   },
-  "description": "no description"
+  "description": "Helper classes for serilog logger configuration",
+  "copyright": "Holycode 2016",
+  "iconUrl": "http://holy.co.de/wp-content/uploads/2016/01/ico-64x64.png",
+  "projectUrl": "https://bitbucket.org/hlcd/holycode.configuration/",
+  "licenseUrl": "https://bitbucket.org/hlcd/holycode.configuration/",
+  "releaseNotes": "v 1.0.1 - fixed prefix",
+  "releaseHistory": [
+    "v 1.0.1 - fixed prefix",
+    "v 1.0.0 - Initial release."
+  ]
 }
