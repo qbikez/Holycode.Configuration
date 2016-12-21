@@ -91,14 +91,20 @@ namespace Holycode.Configuration.Serilog
         public LoggerConfiguration ConfigureSinks(Action<ElasticsearchSinkOptions> configureElastic = null)
         {
             var fileSink = configuration["Logging:Sinks:File"];
-            if (fileSink != "False")
+            if (fileSink != "false")
             {
                 UseFileSink();
             }
             var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
-            if (elasticSink != null)
+            if (elasticSink != null && elasticSink != "false")
             {
                 UseElasticSink(configureElastic);
+            }
+
+            var graylogSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
+            if (graylogSink != null && graylogSink != "false")
+            {
+                UseGraylog();
             }
 
             return this;
