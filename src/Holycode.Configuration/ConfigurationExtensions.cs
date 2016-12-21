@@ -96,6 +96,8 @@ namespace Microsoft.Extensions.Configuration
                     {
                         path = Path.Combine(envPath.Source, $"env.{environment}.override.json");
                         src = src.AddJsonFile(path, optional: true);
+                        path = Path.Combine(envPath.Source, $"env.{environment}.local.json");
+                        if (File.Exists(path)) src = src.AddJsonFile(path, optional: true);
                     }
                     catch (Exception ex)
                     {
