@@ -11,10 +11,20 @@ namespace Holycode.Configuration.Serilog.Enrichers
 {
     public class ThreadIdEnricher : ILogEventEnricher
     {
+        private static readonly int _procId = System.Diagnostics.Process.GetCurrentProcess().Id;
+        public ThreadIdEnricher()
+        {
+
+        }
+
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
                     "ThreadId", System.Threading.Thread.CurrentThread.ManagedThreadId));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
+                    "ThreadName", System.Threading.Thread.CurrentThread.Name));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
+                    "ProcessId", _procId));
         }
     }
 

@@ -13,8 +13,12 @@ namespace Holycode.Configuration.Serilog
 {
     public partial class SerilogConfiguration 
     {
-        public LoggerConfiguration UseFileSink(string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level} {ThreadId}] [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}")
+        public readonly string DefaultMessageTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{ProcessId}:{ThreadId}] {Level}:  [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}";
+        //public static string DefaultLayoutPattern =
+        // @"%date [%-5.5thread] %-5level: [ %-30.30logger ] %-100message%newline";
+        public LoggerConfiguration UseFileSink(string template = null)
         {
+            template = template ?? configuration["Logging:Sinks:File:MessageTemplate"] ?? DefaultMessageTemplate;
             var logBuilder = this;
 
             logBuilder.WriteTo.Logger(inner =>
@@ -33,11 +37,13 @@ namespace Holycode.Configuration.Serilog
         public LoggerConfiguration UseElasticSink(Action<ElasticsearchSinkOptions> configureElastic = null)
         {
             var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
+            var indexFormat = configuration["Logging:Sinks:Elastic:IndexFormat"] ?? $"logstash-{prefix}-{env}-{appname}";
+            indexFormat = string.Format(indexFormat, prefix, env, appname);
             this.WriteTo.Logger(inner =>
             {
                 var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
                 {
-                    IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"
+                    IndexFormat = $"{indexFormat}-{{0:yyyy.MM.dd}}"
                 };
                 if (configureElastic != null) configureElastic(elasticOpts);
                 inner.WriteTo.Elasticsearch(elasticOpts);

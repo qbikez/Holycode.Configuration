@@ -10,8 +10,13 @@
       "Ip": "80.87.36.115"
     },
     "Sinks": {
-      "File": true,
-      "Elastic": "http://serilog:NFKPc4c8IeLdJdahQTn0Pmgk@10.0.0.13:9200"
+      "File": {
+        "MessageTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{ProcessId}:{ThreadId}] {Level}:  [{SourceContext}] ({ClientIp}) {Message}{NewLine}{Exception}"
+      },
+      "Elastic": {
+        "ConnectionString": "http://serilog:NFKPc4c8IeLdJdahQTn0Pmgk@10.0.0.13:9200",
+        "IndexFormat":  "logstash-{0}-{1}" //0:prefix 1:env 2:appname
+      }
     }
   }
 }

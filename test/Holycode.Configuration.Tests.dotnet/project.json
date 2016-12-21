@@ -24,6 +24,10 @@
       "buildOptions": {
         "debugType": "full"
       },
+      "dependencies": {
+        "log4net": "2.0.5",
+        "Log4net.Appender.Serilog": "1.0.3"
+      },
       "frameworkAssemblies": {
         "System.Configuration": "4.0.0.0"
       }
