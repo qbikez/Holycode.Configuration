@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.3",
+  "version": "2.2.3-master001-18e10",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -91,7 +91,7 @@
         "System.Console": "4.0.0",
         "System.Reflection": "4.1.0",
         "System.Runtime.Extensions": "4.1.0",
-        "System.Runtime.Serialization.Primitives": "4.1.1"   
+        "System.Runtime.Serialization.Primitives": "4.1.1"
       }
     }
   },

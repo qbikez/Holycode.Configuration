@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog.Sinks.Graylog;
 
 namespace Holycode.Configuration.Serilog
 {
@@ -45,18 +46,22 @@ namespace Holycode.Configuration.Serilog
             return this;
         }
 
-        public LoggerConfiguration UseGraylog()
+        public LoggerConfiguration UseGraylog(string graylogConnectionString = null)
         {
-            var elasticSink = configuration["Logging:Sinks:Graylog"] ?? configuration["Logging:Sinks:Graylog:ConnectionString"];
-            this.WriteTo.Logger(inner =>
+            graylogConnectionString = graylogConnectionString ?? configuration["Logging:Sinks:Graylog"] ?? configuration["Logging:Sinks:Graylog:ConnectionString"];
+            if (string.IsNullOrEmpty(graylogConnectionString))
             {
-                var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
-                {
-                    IndexFormat = $"logstash-{prefix}-{env}-{appname}-{{0:yyyy.MM.dd}}"
-                };
-                
-                inner.WriteTo.Elasticsearch(elasticOpts);
-            });
+                throw new ArgumentNullException("graylogConnectionString", "pass graylogConnectionString or set Logging:Sinks:Graylog:ConnectionString in configuration");
+            }
+
+            var uri = new Uri(graylogConnectionString);
+            var opts = new GraylogSinkOptions()
+            {
+                HostnameOrAdress = uri.Host,
+                Port = uri.Port,
+            };
+
+            this.WriteTo.Logger(inner => inner.WriteTo.Graylog(opts));
 
             return this;
         }
