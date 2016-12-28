@@ -57,6 +57,7 @@ namespace common.configuration.tests
             Serilog.Log.CloseAndFlush();
         }
 
+
         private void InnerThrowing()
         {
             try

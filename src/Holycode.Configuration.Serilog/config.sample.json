@@ -15,7 +15,10 @@
       },
       "Elastic": {
         "ConnectionString": "http://serilog:NFKPc4c8IeLdJdahQTn0Pmgk@10.0.0.13:9200",
-        "IndexFormat":  "logstash-{0}-{1}" //0:prefix 1:env 2:appname
+        "IndexFormat": "logstash-{0}-{1}" //0:prefix 1:env 2:appname
+      },
+      "Graylog": {
+        "ConnectionString": "net.udp://localhost:12201"
       }
     }
   }

@@ -8,6 +8,8 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.RollingFileAlternate;
 using Holycode.Configuration.Serilog.Filters;
 using Holycode.Configuration.Serilog.Enrichers;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Holycode.Configuration.Serilog
 {
@@ -23,6 +25,7 @@ namespace Holycode.Configuration.Serilog
         private readonly bool isAzureWebsite;
         private readonly string env;
 
+        
         public SerilogConfiguration(IConfiguration configuration, string appname, string baseDir = null)
         {
             this.configuration = configuration;
@@ -90,19 +93,18 @@ namespace Holycode.Configuration.Serilog
 
         public LoggerConfiguration ConfigureSinks(Action<ElasticsearchSinkOptions> configureElastic = null)
         {
-            var fileSinkEnabled = configuration["Logging:Sinks:File"] != "False" && configuration["Logging:Sinks:File:Enabled"] != "False";
-            if (fileSinkEnabled)
+            if (IsSinkEnabled("File"))
             {
                 UseFileSink();
             }
-            var elasticSinkEnabled = configuration["Logging:Sinks:Elastic"] != "False" && configuration["Logging:Sinks:Elastic:Enabled"] != "False";
-            if (elasticSinkEnabled)
+           
+            if (IsSinkEnabled("Elastic"))
             {
                 UseElasticSink(configureElastic);
             }
 
-            var graylogSinkEnabled = configuration["Logging:Sinks:Graylog"] != "False" && configuration["Logging:Sinks:Graylog:Enabled"] != "False";
-            if (graylogSinkEnabled)
+           
+            if (IsSinkEnabled("Graylog"))
             {
                 UseGraylog();
             }
@@ -110,6 +112,15 @@ namespace Holycode.Configuration.Serilog
             return this;
         }
 
+        public bool IsSinkEnabled(string sink, bool defaultValue = false)
+        {
+            var explicitDisabled = configuration[$"Logging:Sinks:{sink}:Enabled"] == "False";
+            var isSectionPresent = configuration.GetSection($"Logging:Sinks:{sink}").GetChildren().Any();
+            var isKeyPresent = configuration[$"Logging:Sinks:{sink}"] != null;
+            var isKeyDisabled = configuration[$"Logging:Sinks:{sink}"] == "False";
+
+            return !explicitDisabled && !isKeyDisabled && (isSectionPresent || isKeyPresent || defaultValue);
+        }
 
         public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
         {
