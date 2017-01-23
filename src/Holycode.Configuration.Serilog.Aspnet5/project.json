@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.2-master001-10957",
+  "version": "1.0.2",
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": false
@@ -16,7 +16,7 @@
       "target": "project"
     },
     "SerilogWeb.Classic": "2.0.10",
-    "Log4net.Appender.Serilog": "1.0.3-master000-f71fc"
+    "Log4net.Appender.Serilog": "1.0.4"
   },
   "frameworks": {
     "net451": {

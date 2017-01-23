@@ -33,7 +33,7 @@ namespace Holycode.Configuration.Serilog
             ApplicationLifecycleModule.LogPostedFormData = LogPostedFormDataOption.OnlyOnError;
             ApplicationLifecycleModule.RequestLoggingLevel = global::Serilog.Events.LogEventLevel.Information;
 
-            Log4net.Appender.Serilog.Configuration.Configure();
+            Log4net.Appender.Serilog.Configuration.Configure(useParameterExtraction: false);
         }
        
         /// <summary>
