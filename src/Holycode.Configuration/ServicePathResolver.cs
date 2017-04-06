@@ -100,54 +100,7 @@ namespace Holycode.Configuration
             {
                 var dirname = Path.GetFileName(dir);
 
-                // look for www-* or *-www
-                var m1 = Regex.Match(dirname, @"(www-([a-zA-Z1-9\-]*)|([a-zA-Z1-9\-]*)-www)$");
-                if (m1.Success)
-                {
-                    if (!string.IsNullOrEmpty(m1.Groups[2].Value)) names.Add(new ServicePathSource(m1.Groups[2].Value, dir, "wwww-*"));
-                    else if (!string.IsNullOrEmpty(m1.Groups[3].Value)) names.Add(new ServicePathSource(m1.Groups[3].Value, dir, "*-www"));
-                    continue;
-                }
-
-                // look for xxx_postfix or xxx+posftix
-                var m2 = Regex.Match(dirname, @".*[_+]([a-zA-Z\-]+)$");
-                if (m2.Success)
-                {
-                    if (!string.IsNullOrEmpty(m2.Groups[1].Value)) names.Add(new ServicePathSource(m2.Groups[1].Value, dir, "xxx_+postfix"));
-                    continue;
-                }
-
-
-                if (names.Count == 0 || names[0].ServiceName == "bin")
-                {
-                    // look for first descendant of "www" directory
-                    var parent = Path.GetDirectoryName(dir);
-                    if (parent != null)
-                    {
-                        parent = Path.GetFileName(parent);
-                        if (parent != null && parent == "www" && levelUp > 0)
-                        {
-                            names.Add(new ServicePathSource(dirname, dir, "first descendant of 'www' directory"));
-                            continue;
-                        }
-                    }
-                }
-
-                // default path is: c:\...\group-name\svc|tasks|etc\servicename\service.exe
-                // or               c:\...\src-name  \bin          \debug      \service.exe
-                // levelUp == 3 should match the group-name
-                if ((levelUp == 3)
-                    && names.Count == 0 && dir.Split('\\').Contains("www"))
-                {
-                    names.Add(new ServicePathSource(dirname, dir, @"matches c:\...\group-name\svc|tasks|etc\servicename\service.exe"));
-                    continue;
-                }
-
-                if (dirname.Contains("-dev") || dirname.Contains("-rel") || dirname.Contains("-qa") || dirname.Contains("-prod"))
-                {
-                    names.Add(new ServicePathSource(dirname, dir, @"*-(dev|rel|qa|prod)"));
-                }
-
+                // search for env.json
                 if (System.IO.Directory.Exists(dir))
                 {
                     var files = System.IO.Directory.GetFiles(dir, "env.json");
@@ -156,6 +109,58 @@ namespace Holycode.Configuration
                         names.Add(new ServicePathSource(dirname, dir, @"contains env.json"));
                     }
                 }
+
+                // this is old method, inherited from "locator" project. don't use it
+
+                // look for www-* or *-www
+                //var m1 = Regex.Match(dirname, @"(www-([a-zA-Z1-9\-]*)|([a-zA-Z1-9\-]*)-www)$");
+                //if (m1.Success)
+                //{
+                //    if (!string.IsNullOrEmpty(m1.Groups[2].Value)) names.Add(new ServicePathSource(m1.Groups[2].Value, dir, "wwww-*"));
+                //    else if (!string.IsNullOrEmpty(m1.Groups[3].Value)) names.Add(new ServicePathSource(m1.Groups[3].Value, dir, "*-www"));
+                //    continue;
+                //}
+
+                //// look for xxx_postfix or xxx+posftix
+                //var m2 = Regex.Match(dirname, @".*[_+]([a-zA-Z\-]+)$");
+                //if (m2.Success)
+                //{
+                //    if (!string.IsNullOrEmpty(m2.Groups[1].Value)) names.Add(new ServicePathSource(m2.Groups[1].Value, dir, "xxx_+postfix"));
+                //    continue;
+                //}
+
+
+                //if (names.Count == 0 || names[0].ServiceName == "bin")
+                //{
+                //    // look for first descendant of "www" directory
+                //    var parent = Path.GetDirectoryName(dir);
+                //    if (parent != null)
+                //    {
+                //        parent = Path.GetFileName(parent);
+                //        if (parent != null && parent == "www" && levelUp > 0)
+                //        {
+                //            names.Add(new ServicePathSource(dirname, dir, "first descendant of 'www' directory"));
+                //            continue;
+                //        }
+                //    }
+                //}
+
+                // default path is: c:\...\group-name\svc|tasks|etc\servicename\service.exe
+                // or               c:\...\src-name  \bin          \debug      \service.exe
+                // levelUp == 3 should match the group-name
+                //if ((levelUp == 3)
+                //    && names.Count == 0 && dir.Split('\\').Contains("www"))
+                //{
+                //    names.Add(new ServicePathSource(dirname, dir, @"matches c:\...\group-name\svc|tasks|etc\servicename\service.exe"));
+                //    continue;
+                //}
+
+                //if (dirname.Contains("-dev") || dirname.Contains("-rel") || dirname.Contains("-qa") || dirname.Contains("-prod"))
+                //{
+                //    names.Add(new ServicePathSource(dirname, dir, @"*-(dev|rel|qa|prod)"));
+                //}
+
+
             }
 
             if (names.Count == 0)
@@ -166,7 +171,6 @@ namespace Holycode.Configuration
                 }
             }
 
-            names.Reverse();
             return names.ToArray();
         }
     }

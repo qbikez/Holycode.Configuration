@@ -1,5 +1,5 @@
 ﻿{
-  "version": "2.2.5",
+  "version": "2.2.6-master004-0dc04",
   "description": "Tools for managing configuration",
   "authors": [
     "Holycode"
@@ -91,7 +91,10 @@
         "System.Console": "4.0.0",
         "System.Reflection": "4.1.0",
         "System.Runtime.Extensions": "4.1.0",
-        "System.Runtime.Serialization.Primitives": "4.1.1"
+        "System.Runtime.Serialization.Primitives": "4.1.1",
+        "Holycode.Configuration.Abstractions": {
+          "target": "project"
+        }
       }
     }
   },
@@ -133,15 +136,15 @@
           "System.Text.RegularExpressions": "4.0.11-beta-23516"
         }
       }
-    }
-  },
-  "runtimes": {
-    "win": {}
-  },
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "bower_components",
-    "log"
-  ]
+    },
+    "runtimes": {
+      "win": {}
+    },
+    "exclude": [
+      "wwwroot",
+      "node_modules",
+      "bower_components",
+      "log"
+    ]
+  }
 }
