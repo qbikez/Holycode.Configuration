@@ -25,7 +25,13 @@ namespace Holycode.Configuration.Serilog
         private readonly bool isAzureWebsite;
         private readonly string env;
 
-        
+        /// <summary>
+        /// creates a SerilogConfiguration with additional enrichers
+        /// To add default sinks, use 'ConfigureSinks' method
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="appname"></param>
+        /// <param name="baseDir"></param>
         public SerilogConfiguration(IConfiguration configuration, string appname, string baseDir = null)
         {
             this.configuration = configuration;
@@ -122,7 +128,12 @@ namespace Holycode.Configuration.Serilog
             return !explicitDisabled && !isKeyDisabled && (isSectionPresent || isKeyPresent || defaultValue);
         }
 
-        public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
+        [Obsolete("Use CreateAndInitialize")]
+        public static LoggerConfiguration LoggerConfiguration(IConfiguration configuration, string appname = null,
+                string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
+            => CreateAndInitialize(configuration, appname, baseDir, configureElastic);
+
+        public static LoggerConfiguration CreateAndInitialize(IConfiguration configuration, string appname = null, string baseDir = null, Action<ElasticsearchSinkOptions> configureElastic = null)
         {
             var builder = new SerilogConfiguration(configuration, appname, baseDir);
             builder.ConfigureSinks(configureElastic);
