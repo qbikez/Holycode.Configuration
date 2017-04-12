@@ -38,6 +38,14 @@ namespace log4net
             AddAppender((IAppender)appender);
         }
 
+        public static void AddAppender<TAppender>(Func<TAppender> factoryMethod, Action<TAppender> configure)
+            where TAppender : IAppender
+        {
+            var app = factoryMethod();
+            configure?.Invoke(app);
+            AddGlobalAppender(app);
+        }
+
         public static void AddAppender(IAppender appender) => AddGlobalAppender(appender);
 
         internal static void AddGlobalAppender(IAppender appender) => AddGlobalAppender(LogManager.GetRepository(), appender);
@@ -52,6 +60,7 @@ namespace log4net
 
         public static void AddTapAppender() => AddAppender(AppenderFactory.CreateTapAppender());
 
+        public static void AddConsoleAppender(Action<ConsoleAppender> configure) => AddAppender(AppenderFactory.CreateConsoleAppender, configure);
         public static void AddConsoleAppender() => AddAppender(AppenderFactory.CreateConsoleAppender());
 
         public static void AddConsoleAppenderColored() => AddAppender(AppenderFactory.CreateConsoleAppenderColored());
