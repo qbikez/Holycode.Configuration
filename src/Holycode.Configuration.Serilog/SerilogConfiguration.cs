@@ -24,6 +24,7 @@ namespace Holycode.Configuration.Serilog
         private readonly string prefix = "x";
         private readonly bool isAzureWebsite;
         private readonly string env;
+        public Action<string> LogCallback {get;set;}
 
         /// <summary>
         /// creates a SerilogConfiguration with additional enrichers
@@ -57,7 +58,7 @@ namespace Holycode.Configuration.Serilog
 
         private string LogDir => isAzureWebsite ? $"{baseDir}/../../LogFiles/application" : $"{baseDir}/log";
 
-
+        private void LogInternal(string msg) => LogCallback?.Invoke(msg);
         
 
         private void Initialize()
@@ -99,14 +100,23 @@ namespace Holycode.Configuration.Serilog
 
         public LoggerConfiguration ConfigureSinks(Action<ElasticsearchSinkOptions> configureElastic = null)
         {
+            LogInternal($"prefix={prefix} appname={appname}");
             if (IsSinkEnabled("File"))
             {
+                LogInternal("File sink enabled");
                 UseFileSink();
+            } else {
+                LogInternal("File sink disabled");
             }
            
             if (IsSinkEnabled("Elastic"))
             {
+                LogInternal("Elastic sink enabled");
                 UseElasticSink(configureElastic);
+            } 
+            else 
+            {
+                LogInternal("Elastic sink disabled");
             }
 
            
@@ -139,17 +149,15 @@ namespace Holycode.Configuration.Serilog
             builder.ConfigureSinks(configureElastic);
 
             return builder;
-
         }
 
         public static void ConfigureSerilog(IConfiguration configuration, string appname = null, string baseDir = null)
         {
-            var logbuilder = LoggerConfiguration(configuration, appname, baseDir);
-            Log.Logger = logbuilder.CreateLogger();
+            var logbuilder = CreateAndInitialize(configuration, appname, baseDir);
+            logbuilder.Apply();
         }
 
-
-        
+    
         // public static void ConfigureSerilog(IConfiguration configuration, IHttpContextAccessor ctxAccessor)
         // {
         //     var logbuilder = LoggerConfiguration(configuration);
@@ -162,6 +170,8 @@ namespace Holycode.Configuration.Serilog
 
     public static class SerilogConfigurationExtensions
     {
-
+        public static void Apply(this LoggerConfiguration cfg) {
+            Log.Logger = cfg.CreateLogger();
+        }
     }
 }

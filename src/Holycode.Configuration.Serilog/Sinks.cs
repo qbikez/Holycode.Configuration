@@ -37,15 +37,21 @@ namespace Holycode.Configuration.Serilog
         public LoggerConfiguration UseElasticSink(Action<ElasticsearchSinkOptions> configureElastic = null)
         {
             var elasticSink = configuration["Logging:Sinks:Elastic"] ?? configuration["Logging:Sinks:Elastic:ConnectionString"];
+            elasticSink = elasticSink ?? "http://localhost:9200";
             var indexFormat = configuration["Logging:Sinks:Elastic:IndexFormat"] ?? $"logstash-{prefix}-{env}-{appname}";
+                        
             indexFormat = string.Format(indexFormat, prefix, env, appname);
+
+            LogInternal($"elastic sink: {elasticSink} indexformat={indexFormat}");
+
             this.WriteTo.Logger(inner =>
             {
-                var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink ?? "http://localhost:9200"))
+                var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink))
                 {
                     IndexFormat = $"{indexFormat}-{{0:yyyy.MM.dd}}"
                 };
                 if (configureElastic != null) configureElastic(elasticOpts);
+
                 inner.WriteTo.Elasticsearch(elasticOpts);
             });
 
