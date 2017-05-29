@@ -62,12 +62,9 @@ namespace log4net
             {
                 if (!l.Repository.Configured)
                 {
-                    BasicConfigurator.Configure(l.Repository, appender);
+                    BasicConfigurator.Configure(l.Repository);
                 }
-                else
-                {
-                    l.AddAppender(appender);
-                }
+                l.AddAppender(appender);
             }
         }
 

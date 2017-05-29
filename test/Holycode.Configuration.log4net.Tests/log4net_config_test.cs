@@ -45,7 +45,7 @@ namespace Tests
         }
 
         [Fact]
-        public void should_add_appender_to_logger_only()
+        public void should_add_appender_to_logger_level_only()
         {
             LogManager.ResetConfiguration();
             int callbackCount = 0;
