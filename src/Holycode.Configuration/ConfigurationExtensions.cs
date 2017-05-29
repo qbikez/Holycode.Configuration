@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Holycode.Configuration;
+using Holycode.Configuration.Conventions;
+using Holycode.Configuration.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 

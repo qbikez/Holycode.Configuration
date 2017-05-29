@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using Xunit;
 using Microsoft.Extensions.Configuration;
+using Holycode.Configuration.Conventions;
 
 namespace Holycode.Configuration.Tests.dotnet
 {
