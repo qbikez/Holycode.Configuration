@@ -8,79 +8,30 @@ using System.Threading.Tasks;
 
 namespace Holycode.Configuration
 {
-    public class ServicePathResolver
-    {
-        public static string DEFAULT_DEBUG_CONFIG = "default-debug";
-        public static string DEFAULT_RELEASE_CONFIG = "default-release";
-
-        public static string ExtractName(string path = null)
-        {
-            if (path == null)
+    public interface IConfigFileConvention {
+        IEnumerable<ConfigPathSource> GetConfigFiles(string directory);
+    }
+    public class EnvJsonConvention : IConfigFileConvention {
+        public IEnumerable<ConfigPathSource> GetConfigFiles(string directory) {
+            List<ConfigPathSource> names = new List<ConfigPathSource>();
+            var dirname = Path.GetFileName(directory);
+            // search for env.json                
+            var files = System.IO.Directory.GetFiles(directory, "env.json");
+            if (files.Length > 0)
             {
-                //var locCfgName = System.Configuration.ConfigurationManager.AppSettings["locator-config"];
-                //if (!string.IsNullOrEmpty(locCfgName))
-                //    path = locCfgName;
-                if (path == null)
-                {
-#if !CORECLR
-                    path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-#else
-                throw new Exception("could not resolve path from calling assembly codebase");
-#endif
+                foreach(var f in files) {
+                    names.Add(new ConfigPathSource(f, $"[{this.GetType().Name}] contains env.json"));
                 }
             }
-            var names = ExtractNames(path);
-            var name = string.Join("|", names.Select(n => n.ServiceName));
-
-            if (string.IsNullOrEmpty(name))
-            {
-#if DEBUG
-                return DEFAULT_DEBUG_CONFIG;
-#else
-                return DEFAULT_RELEASE_CONFIG;
-#endif
-            }
-
-            return name;
+            return names;
         }
-
-        /// <summary>
-        /// try to split name by '-' and trim first element
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static string ExtractSubName(string path, out string superName)
-        {
-            superName = null;
-            var splits = path.Split('-');
-            if (splits.Length <= 1) return null;
-
-            superName = splits[0];
-            path = path.Substring(splits[0].Length + 1);
-
-            return path;
-        }
-
-        //public static string ExtractName(string path)
-        //{
-        //    for (string dir = path; !string.IsNullOrEmpty(dir); dir = Path.GetDirectoryName(dir))
-        //    {
-        //        var dirname = Path.GetFileName(dir);
-        //        var m = Regex.Match(dirname, @"(www-([a-zA-Z1-9\-]*)|([a-zA-Z1-9\-]*)-www)$");
-        //        if (m.Success)
-        //        {
-        //            if (!string.IsNullOrEmpty(m.Groups[2].Value)) return m.Groups[2].Value;
-        //            if (!string.IsNullOrEmpty(m.Groups[3].Value)) return m.Groups[3].Value;
-        //        }
-        //    }
-
-        //    if (!path.Contains("\\") && !path.Contains("/"))
-        //        return path;
-
-        //    return null;
-        //}
-
-        public static ServicePathSource[] ExtractNames(string path)
+    }
+    public class ConfigPathResolver
+    {
+        private static IConfigFileConvention[] Conventions = new[] {
+            new EnvJsonConvention()
+        };
+        public static ConfigPathSource[] ExtractNames(string path)
         {
             int levelUp = 0; // 0 for a path to a file and 1 for directory
             if (string.IsNullOrWhiteSpace(Path.GetExtension(path))) levelUp = 1;
@@ -88,25 +39,23 @@ namespace Holycode.Configuration
             if (path.Contains('|'))
             {
                 var splits = path.Split('|');
-                return splits.Select(s => new ServicePathSource()
+                return splits.Select(s => new ConfigPathSource()
                 {
                     ServiceName = s,
                     Source = "split"
                 }).ToArray();
             }
 
-            List<ServicePathSource> names = new List<ServicePathSource>();
+            List<ConfigPathSource> names = new List<ConfigPathSource>();
             for (string dir = path; !string.IsNullOrEmpty(dir); dir = Path.GetDirectoryName(dir), levelUp++)
             {
                 var dirname = Path.GetFileName(dir);
 
-                // search for env.json
                 if (System.IO.Directory.Exists(dir))
                 {
-                    var files = System.IO.Directory.GetFiles(dir, "env.json");
-                    if (files.Length > 0)
-                    {
-                        names.Add(new ServicePathSource(dirname, dir, @"contains env.json"));
+                    foreach(var conv in Conventions) {
+                        var found = conv.GetConfigFiles(dir);
+                        if (found != null) names.AddRange(found);
                     }
                 }
 
@@ -167,7 +116,7 @@ namespace Holycode.Configuration
             {
                 if (!path.Contains("\\") && !path.Contains("/"))
                 {
-                    names.Add(new ServicePathSource(path, path, "direct name"));
+                    names.Add(new ConfigPathSource(path, path, "direct name"));
                 }
             }
 

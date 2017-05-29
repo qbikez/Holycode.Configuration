@@ -5,28 +5,28 @@ using System.Threading.Tasks;
 
 namespace Holycode.Configuration
 {
-    public class ServicePathSource
+    public class ConfigPathSource
     {
-        public string ServiceName;
+        public string Path;
         public string Source;
         public string AdditionalInfo;
-        public ServicePathSource()
+        public int Priority;
+        public ConfigPathSource()
         {
             
         }
-        public ServicePathSource(string serviceName, string source)
+        public ConfigPathSource(string source)
         {
-            this.ServiceName = serviceName;
             this.Source = source;
         }
-        public ServicePathSource(string serviceName, string source, string additionalInfo) : this(serviceName, source)
+        public  ConfigPathSource(string source, string additionalInfo) : this( source)
         {
             this.AdditionalInfo = additionalInfo;
         }
 
         public override string ToString()
         {
-            return $"{ServiceName}: '{Source}' ({AdditionalInfo})";
+            return $"'{Source}' ({AdditionalInfo})";
         }
     }
 }

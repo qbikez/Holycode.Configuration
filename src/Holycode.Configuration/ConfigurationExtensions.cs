@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.Configuration
             if (src.Get(ApplicationBasePathKey) == null)
                 src.Set(ApplicationBasePathKey, applicationBasePath);
 
-            var envPath = ServicePathResolver.ExtractNames(applicationBasePath).FirstOrDefault();
+            var envPath = ConfigPathResolver.ExtractNames(applicationBasePath).FirstOrDefault();
             if (envPath != null)
             {
                 var path = Path.Combine(envPath.Source, "env.json");
