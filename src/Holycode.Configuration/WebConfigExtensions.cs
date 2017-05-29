@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-namespace Holycode.Configuration
+namespace Microsoft.Extensions.Configuration
 {
     public static class WebConfigExtensions
     {

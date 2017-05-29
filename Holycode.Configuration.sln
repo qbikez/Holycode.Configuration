@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.configuration.tests.dotnet", "test\Holycode.Configuration.Tests.dotnet\Holycode.configuration.tests.dotnet.xproj", "{8E2A6AF0-A551-43F2-8DB0-01DECA30C26E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0420695C-3739-4B38-B52E-3E4F26AE191B}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.configuration.tests.dotnet", "test\Holycode.Configuration.Tests.dotnet\Holycode.configuration.tests.dotnet.xproj", "{8E2A6AF0-A551-43F2-8DB0-01DECA30C26E}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Holycode.Configuration.log4net", "src\Holycode.Configuration.log4net\Holycode.Configuration.log4net.xproj", "{76D9B7DA-8118-4A4C-BEBB-51A271C5D0FB}"
 EndProject
