@@ -51,13 +51,24 @@ namespace Microsoft.Extensions.Configuration
             }
             return src;
         }
+
+        /// Set will always override other existing entries
         public static IConfigurationBuilder Set(this IConfigurationBuilder builder, string key, string value)
         {
-            builder.Properties[key] = value;
-            var mem = builder.Sources.Where(p => p is MemoryConfigurationSource).FirstOrDefault() as MemoryConfigurationSource;
-            if (mem == null) {
+            //builder.Properties[key] = value;
+          
+            foreach(MemoryConfigurationSource other in builder.Sources.Where(s => s is MemoryConfigurationSource)) {
+                if (other.InitialData == null) continue;
+                var data = other.InitialData.ToList();
+                data.RemoveAll(d => d.Key == key);
+                other.InitialData = data;
+            }
+
+            var mem = builder.Sources.LastOrDefault() as MemoryConfigurationSource;
+            if (mem == null)
+            {
                 builder.AddInMemoryCollection();
-                mem = builder.Sources.Where(p => p is MemoryConfigurationSource).FirstOrDefault() as MemoryConfigurationSource;
+                mem = builder.Sources.LastOrDefault() as MemoryConfigurationSource;
             }
             if (mem != null)
             {
@@ -65,17 +76,20 @@ namespace Microsoft.Extensions.Configuration
                 data.RemoveAll(d => d.Key == key);
                 data.Add(new KeyValuePair<string, string>(key, value));
                 mem.InitialData = data;
+            } else {
+                throw new InvalidOperationException("couldn't find MemoryConfigurationSource on builder");
             }
             return builder;
         }
 
         public static string Get(this IConfigurationBuilder builder, string key)
         {
-            object val;
-            if (builder.Properties.TryGetValue(key, out val))
-            {
-                return val.ToString();
-            }
+            //return builder.Build().Get(key);
+            // object val;
+            // if (builder.Properties.TryGetValue(key, out val))
+            // {
+            //     return val.ToString();
+            // }
             //foreach (var src in builder.Sources)
             //{
             //    string strVal;

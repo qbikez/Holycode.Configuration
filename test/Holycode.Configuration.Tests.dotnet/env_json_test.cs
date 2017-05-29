@@ -5,6 +5,8 @@ using System.IO;
 using Xunit;
 using Microsoft.Extensions.Configuration;
 using Holycode.Configuration.Conventions;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration.Memory;
 
 namespace Holycode.Configuration.Tests.dotnet
 {
@@ -94,6 +96,88 @@ namespace Holycode.Configuration.Tests.dotnet
             val.ShouldNotBeNull();
             val.ShouldEqual("test_from_local");
         }
+
+        [Fact]
+        public void in_mem_collection_order() {
+            var src = new ConfigurationBuilder();
+            
+            src.AddInMemoryCollection(new Dictionary<string, string>() {
+                { "key1", "val1" }
+            });
+
+            var val = src.Build().Get("key1");
+            val.ShouldEqual("val1");
+
+            src.AddInMemoryCollection(new Dictionary<string, string>() {
+                { "key1", "val2" }
+            });
+
+            val = src.Build().Get("key1");
+            val.ShouldEqual("val2");
+        }
+
+        [Fact]
+        public void in_mem_collection_replace()
+        {
+            var src = new ConfigurationBuilder();
+
+            src.AddInMemoryCollection(new Dictionary<string, string>() {
+                { "key1", "val1" }
+            });
+
+            var val = src.Build().Get("key1");
+            val.ShouldEqual("val1");
+
+            var mem = src.Sources.LastOrDefault() as MemoryConfigurationSource;
+
+            var data = mem.InitialData?.ToList() ?? new List<KeyValuePair<string, string>>();
+            data.RemoveAll(d => d.Key == "key1");
+            data.Add(new KeyValuePair<string, string>("key1", "val2"));
+            mem.InitialData = data;
+
+            val = src.Build().Get("key1");
+            val.ShouldEqual("val2");
+        }
+
+        [Fact]
+        public void set_should_override_previous_set_values()
+        {
+            var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
+
+            src.Set("some_key", "from code");
+            var val = src.Get("some_key");
+            val.ShouldEqual("from code");
+
+            src.Set("some_key", "from code 1");
+            val = src.Get("some_key");
+            val.ShouldEqual("from code 1");
+        }
+
+        [Fact]
+        public void set_should_override_previous_file_values()
+        {
+            var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
+            
+            src.Set("some_key", "from code");
+            var val = src.Get("some_key");
+            val.ShouldEqual("from code");
+
+            src.Set("some_key", "from code 1");
+            val = src.Get("some_key");
+            val.ShouldEqual("from code 1");
+
+            src.AddEnvJson(optional: false, environment: "test");
+
+            val  = src.Get("some_key");
+            val.ShouldEqual("from env.test.json");
+
+            src.Set("some_key", "from code 2");
+            val = src.Get("some_key");
+            val.ShouldEqual("from code 2");
+
+            
+        }
+
 
         [Fact]
         public void should_include_env_override_config()

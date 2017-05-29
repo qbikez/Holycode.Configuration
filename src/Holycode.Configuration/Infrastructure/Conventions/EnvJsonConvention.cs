@@ -39,13 +39,13 @@ namespace Holycode.Configuration.Conventions
             var dir = Path.GetDirectoryName(path);
             try
             {
+                builder.AddEnvironmentVariables();
                 AddDefaultFiles(dir, builder);
 
                 AddMainFile(dir, builder, optional);
 
                 var env = GetEnvName(builder);
                 builder.Set(EnvironmentNameKey, env);
-
                 AddOverrideFiles(dir, env, builder, optional);
             }
             catch (Exception ex)
