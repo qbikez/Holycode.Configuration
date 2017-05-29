@@ -43,7 +43,7 @@ namespace common.configuration.tests
             builder.UseFileSink();
             Serilog.Log.Logger = builder.CreateLogger();
 
-            Log4net.Appender.Serilog.Configuration.Configure();
+            log4net.Appender.Serilog.Configuration.Configure();
 
             try
             {

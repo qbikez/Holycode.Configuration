@@ -6,19 +6,22 @@ try {
 	write-progress "initializing .scripts dir"
     if (!(test-path ".scripts")) { mkdir ".scripts" }
     #init build tools
-    write-progress "initializing build tools using qbootstrap"
-	wget http://bit.ly/qbootstrap1 -UseBasicParsing -OutFile ".scripts/bootstrap.ps1" 
+    write-progress "initializing build tools using psbootstrap"
+	wget http://bit.ly/psbootstrap -UseBasicParsing -OutFile ".scripts/bootstrap.ps1" 
     get-content ".scripts/bootstrap.ps1" | out-string | iex
-     
-     write-progress "preparing dnx-packages"
+    
+    <#  
+    write-progress "preparing dnx-packages"
     # prepare packages dir
 	if (!(test-path dnx-packages)) {
 		cmd /c mklink dnx-packages $env:userprofile\.nuget\packages /J
 	}
+    #>
 	
 	write-progress "installing required powershell modules"
 
-    Install-Module pathutils
+    ipmo require
+    req pathutils
     refresh-env
 
     $dotnetver = "1.0.0-preview3-003171"
@@ -40,6 +43,7 @@ try {
 
     dotnet --info
 
+    <# this is deprecated! 
 	write-progress "installing dnvm/dnu install"
 	
     wget "https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.ps1" -UseBasicParsing -OutFile ".scripts/dnvm-install.ps1" 
@@ -48,6 +52,8 @@ try {
     dnvm use default
 
     dnu --version
+
+    #>
 
 
 } finally {

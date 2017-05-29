@@ -26,7 +26,7 @@
       },
       "dependencies": {
         "log4net": "2.0.5",
-        "Log4net.Appender.Serilog": "1.0.3"
+        "log4net.Appender.Serilog": "1.0.5-*"
       },
       "frameworkAssemblies": {
         "System.Configuration": "4.0.0.0"

@@ -107,7 +107,7 @@ namespace Holycode.AspNetCore.Middleware
                     clientip = locftr?.Ip.ToString();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return clientip;

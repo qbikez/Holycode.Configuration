@@ -16,7 +16,7 @@
       "target": "project"
     },
     "SerilogWeb.Classic": "2.0.10",
-    "Log4net.Appender.Serilog": "1.0.4"
+    "log4net.Appender.Serilog": "1.0.5-*"
   },
   "frameworks": {
     "net451": {
