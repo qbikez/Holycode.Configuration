@@ -16,11 +16,9 @@ namespace Microsoft.Extensions.Configuration
         internal const string EnvConfigFoundKey = "env:config:found";
         internal const string EnvConfigPathKey = "env:config:path";
         internal const string ApplicationBasePathKey = "application:basePath";
-        internal const string EnvironmentNameKey = "ASPNET_ENV";
-        private static readonly string DefaultEnvironment = "development";
+        
 
-        private static ConfigPathResolver ConfigResolver = new ConfigPathResolver(new[] { new EnvJsonConvention() });
-
+        
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
@@ -41,89 +39,24 @@ namespace Microsoft.Extensions.Configuration
                 src.SetAppBasePath(applicationBasePath);
             applicationBasePath = src.AppBasePath();
 
-            var envPath = ConfigResolver.ExtractNames(applicationBasePath).FirstOrDefault();
-            if (envPath != null)
-            {
-                var path = envPath.Source;
-                var dir = Path.GetDirectoryName(path);
-                try
-                {
-                    if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
-                    src = src.AddJsonFile(path, optional: optional);
-                }
-                catch (Exception ex)
-                {
-                    throw new FileLoadException($"Failed to load config file {path}", ex);
-                }
-                src.Set(EnvConfigPathKey, path);
-                src.Set(EnvConfigFoundKey, File.Exists(path).ToString());
+            var resolver = new ConfigSourceResolver(new[] {
+                new EnvJsonConvention(applicationBasePath, environmentName: environment)
+            });
 
-                try
-                {
-                    if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
-                    path = Path.Combine(dir, $"env.override.json");
-                    src = src.AddJsonFile(path, optional: true);
-                }
-                catch (Exception ex)
-                {
-                    throw new FileLoadException($"Failed to load config file {path}", ex);
-                }
-
-
-                environment = environment ?? src.Get(EnvironmentNameKey) ?? DefaultEnvironment;
-
-                // force env
-                src.Set(EnvironmentNameKey, environment);
-
-                /// add env.qa.json, etc
-                if (!string.IsNullOrEmpty(environment))
-                {
-                    path = Path.Combine(dir, $"env.{environment}.json");
-                    if (File.Exists(path) || !optional)
-                    {
-                        try
-                        {
-                            if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
-                            src = src.AddJsonFile(path, optional: optional);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new FileLoadException($"Failed to load config file {path}", ex);
-                        }
-
-                        src.Set(EnvConfigPathKey, path);
-                        src.Set(EnvConfigFoundKey, "true");
-                    }
-                }
-
-              
-                if (!string.IsNullOrEmpty(environment))
-                {
-                    try
-                    {
-                        path = Path.Combine(dir, $"env.{environment}.override.json");
-                        src = src.AddJsonFile(path, optional: true);                        
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new FileLoadException($"Failed to load config file {path}", ex);
-                    }
-                }
-
+            var cfgSources = resolver.GetConfigSources();
+            foreach(var cfgSrc in cfgSources) {
+                src.Add(cfgSrc);
             }
-            else
-            {
-
-            }
-
             return src;
         }
-
-
         public static IConfigurationBuilder Set(this IConfigurationBuilder builder, string key, string value)
         {
             builder.Properties[key] = value;
             var mem = builder.Sources.Where(p => p is MemoryConfigurationSource).FirstOrDefault() as MemoryConfigurationSource;
+            if (mem == null) {
+                builder.AddInMemoryCollection();
+                mem = builder.Sources.Where(p => p is MemoryConfigurationSource).FirstOrDefault() as MemoryConfigurationSource;
+            }
             if (mem != null)
             {
                 var data = mem.InitialData?.ToList() ?? new List<KeyValuePair<string, string>>();
@@ -338,12 +271,12 @@ namespace Microsoft.Extensions.Configuration
 
         public static string EnvironmentName(this IConfiguration cfg)
         {
-            return cfg.Get(EnvironmentNameKey);
+            return cfg.Get(EnvJsonConvention.EnvironmentNameKey);
         }
 
         public static string EnvironmentName(this IConfigurationBuilder cfg)
         {
-            return cfg.Get(EnvironmentNameKey);
+            return cfg.Get(EnvJsonConvention.EnvironmentNameKey);
         }
 
         public static string AppBasePath(this IConfiguration cfg)

@@ -20,12 +20,12 @@ namespace Holycode.Configuration.Tests.dotnet
         [Fact]
         public void should_find_env_json_root_folder_with_absolute_path()
         {
-            var envPaths = new ConfigPathResolver().ExtractNames(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
+            var envPaths = new UpwardFileFinder().Find(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"), EnvJsonConvention.MainConfigFile);
 
             Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
             envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; });
 
-            envPaths.Length.ShouldBeGreaterThan(0);
+            envPaths.Count().ShouldBeGreaterThan(0);
             envPaths.Last().Directory.ShouldEqual(Path.GetFullPath(@"input\reporoot1"));
         }
 
@@ -33,12 +33,12 @@ namespace Holycode.Configuration.Tests.dotnet
         [Fact]
         public void should_find_env_json_root_folder_with_relative_path()
         {
-            var envPaths = new ConfigPathResolver().ExtractNames(@"input\reporoot1\subfolder\projectfolder\");
+            var envPaths = new UpwardFileFinder().Find(@"input\reporoot1\subfolder\projectfolder\", EnvJsonConvention.MainConfigFile);
 
             Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
             envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; } );
 
-            envPaths.Length.ShouldBeGreaterThan(0);
+            envPaths.Count().ShouldBeGreaterThan(0);
             envPaths.Last().Directory.ShouldEqual(@"input\reporoot1");
         }
 
