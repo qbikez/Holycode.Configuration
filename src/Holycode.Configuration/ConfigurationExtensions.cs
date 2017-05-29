@@ -15,8 +15,6 @@ namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensions
     {
-        internal const string EnvConfigFoundKey = "env:config:found";
-        internal const string EnvConfigPathKey = "env:config:path";
         internal const string ApplicationBasePathKey = "application:basePath";
         
 
@@ -317,6 +315,14 @@ namespace Microsoft.Extensions.Configuration
         }
 
 
+        public static string EnvJsonPath(this IConfiguration cfg) {
+            return cfg.Get(EnvJsonConvention.EnvConfigPathKey);
+        }
+
+        public static string EnvJsonPath(this IConfigurationBuilder cfg)
+        {
+            return cfg.Get(EnvJsonConvention.EnvConfigPathKey);
+        }
         /*
 
         public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)

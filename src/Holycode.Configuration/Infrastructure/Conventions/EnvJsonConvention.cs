@@ -19,6 +19,9 @@ namespace Holycode.Configuration.Conventions
     internal const string DefaultEnvironment = "development";
     public const string MainConfigFile = "env.json";
 
+    internal const string EnvConfigFoundKey = "env:config:found";
+    internal const string EnvConfigPathKey = "env:config:path";
+
     private string _baseDir;
     private string _envName;
     public EnvJsonConvention(string appBaseDir, string environmentName = null)
@@ -71,6 +74,9 @@ namespace Holycode.Configuration.Conventions
         var path = Path.Combine(dir, MainConfigFile);
         if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
         builder.AddJsonFile(path, optional: optional);
+
+        builder.Set(EnvConfigFoundKey, "true");
+        builder.Set(EnvConfigPathKey, path);
     }
 
     public void AddDefaultFiles(string dir, ConfigurationBuilder builder)
