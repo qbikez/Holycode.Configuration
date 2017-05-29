@@ -126,7 +126,7 @@ namespace Holycode.Configuration.Commands
                 }
                 else if (cmd == "list")
                 {
-                    System.Console.WriteLine($"base path: {conf.BasePath()}"); 
+                    System.Console.WriteLine($"base path: {conf.AppBasePath()}"); 
                     System.Console.WriteLine();
                     ListConfigKeys(conf, builder);
                     return 0;
@@ -149,7 +149,7 @@ namespace Holycode.Configuration.Commands
                     return 0;
                 }
                 else if (cmd.Equals("tree", StringComparison.OrdinalIgnoreCase)){
-                    System.Console.WriteLine($"base path: {conf.BasePath()}"); 
+                    System.Console.WriteLine($"base path: {conf.AppBasePath()}"); 
                     System.Console.WriteLine();
                     ShowConfigTree(builder);
                 } 

@@ -168,7 +168,7 @@ namespace Microsoft.Extensions.Configuration
             if (logRootPath == null)
             {
                 logRootPath = config.Get("application:wwwroot")
-                                ?? config.BasePath()
+                                ?? config.AppBasePath()
                                 ?? ".";
                 logRootPath += "/log";
                 if (logRootPath.StartsWith("/")) logRootPath = "." + logRootPath;

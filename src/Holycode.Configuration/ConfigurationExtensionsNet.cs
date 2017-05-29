@@ -13,10 +13,11 @@ namespace Microsoft.Extensions.Configuration
     {
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, bool optional = true, string environment = null)
         {
-            var path = src.BasePath();
+            var path = src.AppBasePath();
             if (path == null)
             {
                 path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
+                path = Path.GetDirectoryName(path);
             }
             return src.AddEnvJson(path, optional: optional, environment: environment);
         }
@@ -25,7 +26,7 @@ namespace Microsoft.Extensions.Configuration
            this IConfigurationBuilder cfg)
         {
             var path = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
-            cfg.SetBasePath(path);
+            cfg.SetAppBasePath(path);
             return cfg;
         }
     }

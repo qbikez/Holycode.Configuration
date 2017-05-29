@@ -19,6 +19,8 @@ namespace Microsoft.Extensions.Configuration
         internal const string EnvironmentNameKey = "ASPNET_ENV";
         private static readonly string DefaultEnvironment = "development";
 
+        private static ConfigPathResolver ConfigResolver = new ConfigPathResolver(new[] { new EnvJsonConvention() });
+
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath)
         {
             return AddEnvJson(src, applicationBasePath, optional: true);
@@ -35,15 +37,18 @@ namespace Microsoft.Extensions.Configuration
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional, string environment = null)
         {
 
-            if (src.Get(ApplicationBasePathKey) == null)
-                src.Set(ApplicationBasePathKey, applicationBasePath);
+            if (src.AppBasePath() == null)
+                src.SetAppBasePath(applicationBasePath);
+            applicationBasePath = src.AppBasePath();
 
-            var envPath = ConfigPathResolver.ExtractNames(applicationBasePath).FirstOrDefault();
+            var envPath = ConfigResolver.ExtractNames(applicationBasePath).FirstOrDefault();
             if (envPath != null)
             {
-                var path = Path.Combine(envPath.Source, "env.json");
+                var path = envPath.Source;
+                var dir = Path.GetDirectoryName(path);
                 try
                 {
+                    if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
                     src = src.AddJsonFile(path, optional: optional);
                 }
                 catch (Exception ex)
@@ -55,7 +60,8 @@ namespace Microsoft.Extensions.Configuration
 
                 try
                 {
-                    path = Path.Combine(envPath.Source, $"env.override.json");
+                    if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
+                    path = Path.Combine(dir, $"env.override.json");
                     src = src.AddJsonFile(path, optional: true);
                 }
                 catch (Exception ex)
@@ -72,11 +78,12 @@ namespace Microsoft.Extensions.Configuration
                 /// add env.qa.json, etc
                 if (!string.IsNullOrEmpty(environment))
                 {
-                    path = Path.Combine(envPath.Source, $"env.{environment}.json");
+                    path = Path.Combine(dir, $"env.{environment}.json");
                     if (File.Exists(path) || !optional)
                     {
                         try
                         {
+                            if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
                             src = src.AddJsonFile(path, optional: optional);
                         }
                         catch (Exception ex)
@@ -94,10 +101,8 @@ namespace Microsoft.Extensions.Configuration
                 {
                     try
                     {
-                        path = Path.Combine(envPath.Source, $"env.{environment}.override.json");
-                        src = src.AddJsonFile(path, optional: true);
-                        path = Path.Combine(envPath.Source, $"env.{environment}.local.json");
-                        if (File.Exists(path)) src = src.AddJsonFile(path, optional: true);
+                        path = Path.Combine(dir, $"env.{environment}.override.json");
+                        src = src.AddJsonFile(path, optional: true);                        
                     }
                     catch (Exception ex)
                     {
@@ -341,14 +346,25 @@ namespace Microsoft.Extensions.Configuration
             return cfg.Get(EnvironmentNameKey);
         }
 
-        public static string BasePath(this IConfiguration cfg)
+        public static string AppBasePath(this IConfiguration cfg)
+        {
+
+            return cfg.Get(ApplicationBasePathKey);
+        }
+
+        public static void SetAppBasePath(this IConfiguration cfg, string path)
+        {
+            cfg.Set(ApplicationBasePathKey, path);
+        }
+
+        public static string AppBasePath(this IConfigurationBuilder cfg)
         {
             return cfg.Get(ApplicationBasePathKey);
         }
 
-        public static string BasePath(this IConfigurationBuilder cfg)
+        public static void SetAppBasePath(this IConfigurationBuilder cfg, string path)
         {
-            return cfg.Get(ApplicationBasePathKey);
+            cfg.Set(ApplicationBasePathKey, path);
         }
 
 

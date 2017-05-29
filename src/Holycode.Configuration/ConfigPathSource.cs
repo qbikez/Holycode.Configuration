@@ -7,10 +7,12 @@ namespace Holycode.Configuration
 {
     public class ConfigPathSource
     {
-        public string Path;
         public string Source;
         public string AdditionalInfo;
         public int Priority;
+
+        public string Directory => System.IO.Path.GetDirectoryName(Source);
+
         public ConfigPathSource()
         {
             

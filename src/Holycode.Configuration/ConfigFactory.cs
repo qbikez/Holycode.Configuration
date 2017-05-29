@@ -45,11 +45,8 @@ namespace Microsoft.Extensions.Configuration
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
             if (addEnvVariables) builder.AddEnvironmentVariables();
             builder.AddInMemoryCollection();
-            //builder.SetBasePath(applicationBasePath);
-
-
-            if (builder.Get(ConfigurationExtensions.ApplicationBasePathKey) == null)
-                builder.Set(ConfigurationExtensions.ApplicationBasePathKey, applicationBasePath);
+            
+            builder.SetAppBasePath(applicationBasePath);
 
             return builder;
         }
@@ -64,7 +61,7 @@ namespace Microsoft.Extensions.Configuration
 
             var config = CreateConfigSource(applicationBasePath, addEnvVariables);
 
-            applicationBasePath = config.BasePath();
+            applicationBasePath = config.AppBasePath();
             if (applicationBasePath == null)
             {
 #if !CORECLR
@@ -75,10 +72,10 @@ namespace Microsoft.Extensions.Configuration
 
                 if (File.Exists(applicationBasePath))
                     applicationBasePath = Path.GetDirectoryName(applicationBasePath);
-                config.SetBasePath(applicationBasePath);
+                config.SetAppBasePath(applicationBasePath);
             }
 
-            config = config.AddEnvJson(config.BasePath(), optional: false, environment: environment);
+            config = config.AddEnvJson(config.AppBasePath(), optional: false, environment: environment);
 
             return config.Build();
         }
