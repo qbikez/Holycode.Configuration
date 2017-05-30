@@ -1,0 +1,62 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "dotnet launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/Holycode.Configuration/bin/cmd/netcoreapp1.0/hcfg.dll",
+            "args": ["c:/legimi/nowaera.hg/Platform/src/Website/NowaEra.Server.Website.vnext/","get","sslPaths"],
+           // "cwd": "${workspaceRoot}/test/Holycode.Configuration.Tests.dotnet",
+           "cwd": "${workspaceRoot}/src/Holycode.Configuration",
+            "stopAtEntry": true,
+            "externalConsole": false,
+            "requireExactSource": false
+        },
+        {
+            "name": ".NET Core Direct Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/test/Holycode.Configuration.Tests.dotnet/bin/Debug/netcoreapp1.0/win7-x64/Holycode.Configuration.Tests.dotnet.exe",
+            "args": ["Holycode.Configuration.Tests.dotnet.exe"],
+            "cwd": "${workspaceRoot}/test/Holycode.Configuration.TEsts.dotnet/bin/Debug/netcoreapp1.0/win7-x64",
+            "stopAtEntry": true,
+            "externalConsole": false
+        },
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/bin/Debug/<target-framework>/<project-name.dll>",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": 0
+        }
+    ]
+}

@@ -3,7 +3,6 @@ bin/
 obj/
 project.lock.json
 .vs/
-.vscode/
 node_modules/
 bower_components/
 .scripts/
