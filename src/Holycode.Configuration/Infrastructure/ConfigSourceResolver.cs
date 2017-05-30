@@ -20,18 +20,24 @@ namespace Holycode.Configuration
     {
         private IEnumerable<IConfigSourceConvention> Conventions;
 
+        public bool StopOnFirstMatch { get; private set; }
     
-        public ConfigSourceResolver(IEnumerable<IConfigSourceConvention> conventions)
+        public ConfigSourceResolver(IEnumerable<IConfigSourceConvention> conventions, bool stopOnFirstMatch = false)
         {
             this.Conventions = conventions;
+            this.StopOnFirstMatch = stopOnFirstMatch;
         }
-      
+
+
         public IEnumerable<IConfigurationSource> GetConfigSources()
         {
             List<IConfigurationSource> sources = new List<IConfigurationSource>();
             foreach(var c in Conventions) {
                 var cs = c.GetConfigSources();
-                if (cs != null) sources.AddRange(cs);
+                if (cs != null) { 
+                    sources.AddRange(cs);
+                    if (StopOnFirstMatch) break;
+                }
             }
 
             return sources;

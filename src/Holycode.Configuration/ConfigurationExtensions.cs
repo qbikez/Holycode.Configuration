@@ -40,8 +40,13 @@ namespace Microsoft.Extensions.Configuration
             applicationBasePath = src.AppBasePath();
 
             var resolver = new ConfigSourceResolver(new[] {
-                new EnvJsonConvention(applicationBasePath, environmentName: environment)
-            });
+                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                    MainConfigFile = "env.json"
+                },
+                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                    MainConfigFile = "config/env.json"
+                }
+            }, stopOnFirstMatch: true);
 
             var cfgSources = resolver.GetConfigSources();
             foreach(var cfgSrc in cfgSources) {

@@ -17,7 +17,7 @@ namespace Holycode.Configuration.Conventions
 {
     internal const string EnvironmentNameKey = "ASPNET_ENV";
     internal const string DefaultEnvironment = "development";
-    public const string MainConfigFile = "env.json";
+    public string MainConfigFile = "env.json";
 
     internal const string EnvConfigFoundKey = "env:config:found";
     internal const string EnvConfigPathKey = "env:config:path";
@@ -53,7 +53,7 @@ namespace Holycode.Configuration.Conventions
             }
             catch (Exception ex)
             {
-                throw new FileLoadException($"Failed to load config file {path}", ex);
+                throw new FileLoadException($"Failed to load config file {path}: {ex.Message}", ex);
             }
         }
 
@@ -71,8 +71,9 @@ namespace Holycode.Configuration.Conventions
 
     private void AddMainFile(string dir, ConfigurationBuilder builder, bool optional)
     {
-        var path = Path.Combine(dir, MainConfigFile);
-        if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load config file {path}", path);
+        // if MainConfigFile contains folder, it will be already included in dir. strip it from mainconfigfile
+        var path = Path.Combine(dir, Path.GetFileName(MainConfigFile));
+        if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load main config file {path}", path);
         builder.AddJsonFile(path, optional: optional);
 
         builder.Set(EnvConfigFoundKey, "true");

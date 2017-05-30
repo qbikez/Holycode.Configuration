@@ -23,7 +23,7 @@ namespace Holycode.Configuration.Tests.dotnet
         [Fact]
         public void should_find_env_json_root_folder_with_absolute_path()
         {
-            var envPaths = new ConfigFileFinder().Find(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"), EnvJsonConvention.MainConfigFile);
+            var envPaths = new ConfigFileFinder().Find(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"), "env.json");
 
             Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
             envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; });
@@ -48,7 +48,7 @@ namespace Holycode.Configuration.Tests.dotnet
         [Fact]
         public void should_find_env_json_root_folder_with_relative_path()
         {
-            var envPaths = new ConfigFileFinder().Find(@"input\reporoot1\subfolder\projectfolder\", EnvJsonConvention.MainConfigFile);
+            var envPaths = new ConfigFileFinder().Find(@"input\reporoot1\subfolder\projectfolder\", "env.json");
 
             Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
             envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; } );
