@@ -1,4 +1,7 @@
-import-module pathutils
+import-module require
+req pathutils
+req process
+
 (get-item "./.tools/dotnet").FullName | add-topath
 
 
@@ -11,14 +14,23 @@ $tests = @(
     "Holycode.Configuration.log4net.Tests"
 )
 
+$errors = @()
+
 foreach($test in $tests) {
     pushd 
     try {
     
         cd "test\$test"
-        dotnet restore
-        dotnet test -xml "..\.results\$($test).xml"
+        invoke dotnet restore -nothrow
+        if ($LASTEXITCODE -ne 0) { errors += "dotnet restore FAILED for $test" }
+        invoke dotnet test -xml "..\.results\$($test).xml" -nothrow
+        if ($LASTEXITCODE -ne 0) { errors += "dotnet test FAILED for $test" }
     } finally {
         popd
     }
+}
+
+if ($errors.Count -gt 0) {
+    $msg = "tests failed:`r`n" + [string]::Join("`r`n", $errors)
+    throw $msg
 }
