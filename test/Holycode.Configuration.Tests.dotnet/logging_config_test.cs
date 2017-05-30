@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using System.IO;
 
 namespace common.configuration.tests
 {
@@ -13,13 +14,14 @@ namespace common.configuration.tests
         [Fact]
         public void no_logging_config_should_not_throw()
         {
-            string cfgfile = @"{
+            string cfg = @"{
             }
             ";
 
-            System.IO.File.WriteAllText("config.json", cfgfile);
+            System.IO.File.WriteAllText("config.json", cfg);
 
             var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("config.json", optional: false)
                 .Build();
             var builder = new SerilogConfiguration(configuration, "test", ".");
@@ -43,6 +45,7 @@ namespace common.configuration.tests
             System.IO.File.WriteAllText("config.json", cfgfile);
 
             var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("config.json", optional: false)
                 .Build();
             var builder = new SerilogConfiguration(configuration, "test", ".");

@@ -11,9 +11,9 @@ namespace Holycode.Configuration
     ///<summary>
     /// env.json convention
     ///</summary>
-    public class UpwardFileFinder 
+    public class ConfigFileFinder 
     {
-        public UpwardFileFinder()
+        public ConfigFileFinder()
         {
         }
 
@@ -28,15 +28,14 @@ namespace Holycode.Configuration
             {
                 var dirname = Path.GetFileName(dir);
 
-                if (System.IO.Directory.Exists(dir))
-                {
+                
                     var found = GetConfigFilesInDir(dir, filePattern);
                     if (found != null && found.Any())
                     {
                         names.AddRange(found);
                         break;
                     }
-                }
+                
             }
 
             return names;
@@ -47,15 +46,25 @@ namespace Holycode.Configuration
             // stop at first env.json
             List<ConfigPathSource> names = new List<ConfigPathSource>();
             var dirname = Path.GetFileName(directory);
-            // search for env.json                
-            var files = System.IO.Directory.GetFiles(directory, filePattern);
-            if (files.Length > 0)
+
+            filePattern = filePattern.Replace("\\","/");
+            var patternDir = Path.GetDirectoryName(filePattern);
+            if (!string.IsNullOrEmpty(patternDir)) { 
+                directory = Path.Combine(directory, patternDir);
+                filePattern = Path.GetFileName(filePattern);
+            }
+            if (System.IO.Directory.Exists(directory))
             {
-                foreach (var f in files)
+                // search for env.json                
+                var files = System.IO.Directory.GetFiles(directory, filePattern);
+                if (files.Length > 0)
                 {
-                    names.Add(new ConfigPathSource(f, $"[{this.GetType().Name}] contains {filePattern}"));
+                    foreach (var f in files)
+                    {
+                        names.Add(new ConfigPathSource(f, $"[{this.GetType().Name}] contains {filePattern}"));
+                    }
+                    // do not process other directories
                 }
-                // do not process other directories
             }
             return names;
         }

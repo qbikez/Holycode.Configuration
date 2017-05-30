@@ -34,7 +34,7 @@ namespace Holycode.Configuration.Conventions
         var builder = new ConfigurationBuilder();
         bool optional = false;
 
-        var configFiles = new UpwardFileFinder().Find(_baseDir, MainConfigFile, stopOnFirstMatch: true);
+        var configFiles = new ConfigFileFinder().Find(_baseDir, MainConfigFile, stopOnFirstMatch: true);
 
         foreach (var file in configFiles)
         {
