@@ -10,6 +10,7 @@ using Holycode.Configuration.Serilog.Filters;
 using Holycode.Configuration.Serilog.Enrichers;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Holycode.Configuration.Serilog
 {
@@ -172,6 +173,17 @@ namespace Holycode.Configuration.Serilog
     {
         public static void Apply(this LoggerConfiguration cfg) {
             Log.Logger = cfg.CreateLogger();
+        }
+
+        public static LoggerConfiguration SelfLog(this LoggerConfiguration cfg, Action<string> output) {
+            global::Serilog.Debugging.SelfLog.Enable(output);
+            return cfg;
+        }
+
+        public static LoggerConfiguration SelfLog(this LoggerConfiguration cfg, TextWriter output)
+        {
+            global::Serilog.Debugging.SelfLog.Enable(output);
+            return cfg;
         }
     }
 }
