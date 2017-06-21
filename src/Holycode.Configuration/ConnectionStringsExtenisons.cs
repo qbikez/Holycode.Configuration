@@ -9,8 +9,17 @@ namespace Microsoft.Extensions.Configuration
 {
     public static partial class ConnectionStringsExtenisons
     {
-        
-
+        ///<summary>
+        /// this method causes conflict with same method from Microsoft.Extensions.Configuration.Abstractions
+        /// and it's intentional. GetConnectionStringValue handles also structured entries, like:
+        /// "connectionStrings" {
+        ///   "MyDb": {
+        ///     "connectionString": "Application Name=xxx;Data Source=db1.example.org;Initial Catalog=my-db;",
+        ///     "provider": "System.Data.SqlClient"
+        ///   } 
+        /// }
+        ///</summary>
+        public static string GetConnectionString(this IConfiguration cfg, string name) => GetConnectionStringValue(cfg, name);
         public static string GetConnectionStringValue(this IConfiguration cfg, string name)
         {
             var subkey = cfg.GetSection($"connectionStrings:{name}");

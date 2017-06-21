@@ -31,7 +31,7 @@ try {
     if ((get-command "dotnet" -ErrorAction Ignore) -eq $null -or ((dotnet --version) -ne $dotnetver)) {
         wget "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1" -UseBasicParsing -OutFile ".scripts/dotnet-install.ps1" 
         ./.scripts/dotnet-install.ps1 -Version $dotnetver    
-        if (test-path "./.tools/dotnet") { remove-item "./.tools/dotnet" -force }
+        if (test-path "./.tools/dotnet") { remove-item "./.tools/dotnet" -force -Confirm:$false }
     } 
     
     if (!(test-path "./.tools/dotnet")) {

@@ -34,7 +34,7 @@ namespace Holycode.Configuration
             List<IConfigurationSource> sources = new List<IConfigurationSource>();
             foreach(var c in Conventions) {
                 var cs = c.GetConfigSources();
-                if (cs != null) { 
+                if (cs?.Any() ?? false) { 
                     sources.AddRange(cs);
                     if (StopOnFirstMatch) break;
                 }
