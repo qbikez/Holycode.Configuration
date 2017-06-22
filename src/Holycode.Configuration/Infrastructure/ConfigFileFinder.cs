@@ -11,14 +11,14 @@ namespace Holycode.Configuration
     ///<summary>
     /// env.json convention
     ///</summary>
-    public class ConfigFileFinder 
+    public class ConfigFileFinder
     {
         public ConfigFileFinder()
         {
         }
 
         public IEnumerable<ConfigPathSource> Find(string rootDir, string filePattern, bool stopOnFirstMatch = false) => FindConfigFilesUpwards(rootDir, filePattern, stopOnFirstMatch);
-        
+
         private IEnumerable<ConfigPathSource> FindConfigFilesUpwards(string rootDir, string filePattern, bool stopOnFirstMatch = false)
         {
             List<ConfigPathSource> names = new List<ConfigPathSource>();
@@ -27,15 +27,13 @@ namespace Holycode.Configuration
             for (string dir = rootDir; !string.IsNullOrEmpty(dir); dir = Path.GetDirectoryName(dir), levelUp++)
             {
                 var dirname = Path.GetFileName(dir);
+                var found = GetConfigFilesInDir(dir, filePattern);
+                if (found != null && found.Any())
+                {
+                    names.AddRange(found);
+                    break;
+                }
 
-                
-                    var found = GetConfigFilesInDir(dir, filePattern);
-                    if (found != null && found.Any())
-                    {
-                        names.AddRange(found);
-                        break;
-                    }
-                
             }
 
             return names;
@@ -44,29 +42,32 @@ namespace Holycode.Configuration
         private IEnumerable<ConfigPathSource> GetConfigFilesInDir(string directory, string filePattern)
         {
             // stop at first env.json
-            List<ConfigPathSource> names = new List<ConfigPathSource>();
             var dirname = Path.GetFileName(directory);
 
-            filePattern = filePattern.Replace("\\","/");
-            var patternDir = Path.GetDirectoryName(filePattern);
-            if (!string.IsNullOrEmpty(patternDir)) { 
-                directory = Path.Combine(directory, patternDir);
-                filePattern = Path.GetFileName(filePattern);
-            }
-            if (System.IO.Directory.Exists(directory))
-            {
-                // search for env.json                
-                var files = System.IO.Directory.GetFiles(directory, filePattern);
-                if (files.Length > 0)
+            filePattern = filePattern.Replace("\\", "/");
+            foreach(var split in filePattern.Split('|')) {
+                var pattern = split; 
+                var patternDir = Path.GetDirectoryName(pattern);
+                if (!string.IsNullOrEmpty(patternDir))
                 {
-                    foreach (var f in files)
+                    directory = Path.Combine(directory, patternDir);
+                    pattern = Path.GetFileName(pattern);
+                }
+                if (System.IO.Directory.Exists(directory))
+                {
+                    // search for env.json                
+                    var files = System.IO.Directory.GetFiles(directory, pattern);
+                    if (files.Length > 0)
                     {
-                        names.Add(new ConfigPathSource(f, $"[{this.GetType().Name}] contains {filePattern}"));
+                        foreach (var f in files)
+                        {
+                            yield return new ConfigPathSource(f, $"[{this.GetType().Name}] contains {pattern}");
+                        }
+                        // do not process other directories
                     }
-                    // do not process other directories
                 }
             }
-            return names;
+            
         }
 
     }

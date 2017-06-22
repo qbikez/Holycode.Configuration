@@ -25,20 +25,14 @@ namespace Holycode.Configuration.Tests.dotnet
         {
             var envPaths = new ConfigFileFinder().Find(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"), "env.json");
 
-            Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
-            envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; });
-
             envPaths.Count().ShouldBeGreaterThan(0);
             envPaths.Last().Directory.ShouldEqual(Path.GetFullPath(@"input\reporoot1"));
         }
 
-           [Fact]
+        [Fact]
         public void should_find_env_json_root_in_config_dir()
         {
             var envPaths = new ConfigFileFinder().Find(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"), "config/env.json");
-
-            Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
-            envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; });
 
             envPaths.Count().ShouldBeGreaterThan(0);
             envPaths.Last().Directory.ShouldEqual(Path.GetFullPath(@"input\reporoot1\config"));
@@ -49,9 +43,6 @@ namespace Holycode.Configuration.Tests.dotnet
         public void should_find_env_json_root_folder_with_relative_path()
         {
             var envPaths = new ConfigFileFinder().Find(@"input\reporoot1\subfolder\projectfolder\", "env.json");
-
-            Console.WriteLine("current dir=" + Directory.GetCurrentDirectory());
-            envPaths.All((p) => { Console.WriteLine("envpath:" + p); return true; } );
 
             envPaths.Count().ShouldBeGreaterThan(0);
             envPaths.Last().Directory.ShouldEqual(@"input\reporoot1");
@@ -110,9 +101,10 @@ namespace Holycode.Configuration.Tests.dotnet
         }
 
         [Fact]
-        public void in_mem_collection_order() {
+        public void in_mem_collection_order()
+        {
             var src = new ConfigurationBuilder();
-            
+
             src.AddInMemoryCollection(new Dictionary<string, string>() {
                 { "key1", "val1" }
             });
@@ -169,7 +161,7 @@ namespace Holycode.Configuration.Tests.dotnet
         public void set_should_override_previous_file_values()
         {
             var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot1\subfolder\projectfolder\"));
-            
+
             src.Set("some_key", "from code");
             var val = src.Get("some_key");
             val.ShouldEqual("from code");
@@ -180,14 +172,14 @@ namespace Holycode.Configuration.Tests.dotnet
 
             src.AddEnvJson(optional: false, environment: "test");
 
-            val  = src.Get("some_key");
+            val = src.Get("some_key");
             val.ShouldEqual("from env.test.json");
 
             src.Set("some_key", "from code 2");
             val = src.Get("some_key");
             val.ShouldEqual("from code 2");
 
-            
+
         }
 
 
@@ -210,5 +202,33 @@ namespace Holycode.Configuration.Tests.dotnet
 
             envVal.ShouldNotBeNull();
         }
+
+        [Fact]
+        public void should_resolve_nearest_env_json_before_config_dir()
+        {
+            var applicationBasePath = Path.GetFullPath(@"input\reporoot1");
+            string environment = null;
+
+            var resolver = new ConfigSourceResolver(new[] {
+                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                    ConfigFilePattern = "env.json|config/env.json"
+                }
+            }, stopOnFirstMatch: true);
+
+            var cfgFiles = resolver.GetConfigSources().GetConfigFiles().ToArray();
+
+            var expected = new[] {
+                Path.GetFullPath(@"input\reporoot1\env.default.json"),
+                Path.GetFullPath(@"input\reporoot1\env.json"),
+                Path.GetFullPath(@"input\reporoot1\env.development.json"),
+                Path.GetFullPath(@"input\reporoot1\env.override.json"),
+                Path.GetFullPath(@"input\reporoot1\env.development.override.json"),
+            };
+
+            for (int i = 0; i < cfgFiles.Length && i < expected.Length; i++)
+            {
+                cfgFiles[i].ShouldEqual(expected[i]);
+            }
+        }      
     }
 }

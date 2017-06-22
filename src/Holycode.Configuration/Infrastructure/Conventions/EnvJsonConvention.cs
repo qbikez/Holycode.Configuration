@@ -17,7 +17,7 @@ namespace Holycode.Configuration.Conventions
 {
     internal const string EnvironmentNameKey = "ASPNET_ENV";
     internal const string DefaultEnvironment = "development";
-    public string MainConfigFile = "env.json";
+    public string ConfigFilePattern = "env.json";
 
     internal const string EnvConfigFoundKey = "env:config:found";
     internal const string EnvConfigPathKey = "env:config:path";
@@ -34,7 +34,7 @@ namespace Holycode.Configuration.Conventions
         var builder = new ConfigurationBuilder();
         bool optional = false;
 
-        var configFiles = new ConfigFileFinder().Find(_baseDir, MainConfigFile, stopOnFirstMatch: true);
+        var configFiles = new ConfigFileFinder().Find(_baseDir, ConfigFilePattern, stopOnFirstMatch: true);
 
         foreach (var file in configFiles)
         {
@@ -45,7 +45,7 @@ namespace Holycode.Configuration.Conventions
                 builder.AddEnvironmentVariables();
                 AddDefaultFiles(dir, builder);
 
-                AddMainFile(dir, builder, optional);
+                AddMainFile(path, builder, optional);
 
                 var env = GetEnvName(builder);
                 builder.Set(EnvironmentNameKey, env);
@@ -69,10 +69,9 @@ namespace Holycode.Configuration.Conventions
         return env;
     }
 
-    private void AddMainFile(string dir, ConfigurationBuilder builder, bool optional)
+    private void AddMainFile(string path, ConfigurationBuilder builder, bool optional)
     {
         // if MainConfigFile contains folder, it will be already included in dir. strip it from mainconfigfile
-        var path = Path.Combine(dir, Path.GetFileName(MainConfigFile));
         if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load main config file {path}", path);
         builder.AddJsonFile(path, optional: optional);
 
@@ -82,7 +81,7 @@ namespace Holycode.Configuration.Conventions
 
     public void AddDefaultFiles(string dir, ConfigurationBuilder builder)
     {
-        builder.AddJsonFile($"env.default.json", optional: true);
+        builder.AddJsonFile(Path.Combine(dir, $"env.default.json"), optional: true);
     }
     public void AddOverrideFiles(string dir, string env, ConfigurationBuilder builder, bool optional)
     {

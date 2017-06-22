@@ -34,25 +34,28 @@ namespace Microsoft.Extensions.Configuration
         /// <returns></returns>
         public static IConfigurationBuilder AddEnvJson(this IConfigurationBuilder src, string applicationBasePath, bool optional, string environment = null)
         {
+            try {
+                if (src.AppBasePath() == null)
+                    src.SetAppBasePath(applicationBasePath);
+                applicationBasePath = src.AppBasePath();
 
-            if (src.AppBasePath() == null)
-                src.SetAppBasePath(applicationBasePath);
-            applicationBasePath = src.AppBasePath();
+                var resolver = new ConfigSourceResolver(new[] {
+                    new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                        ConfigFilePattern = "env.json"
+                    },
+                    new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                        ConfigFilePattern = "config/env.json"
+                    }
+                }, stopOnFirstMatch: true);
 
-            var resolver = new ConfigSourceResolver(new[] {
-                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                    MainConfigFile = "env.json"
-                },
-                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                    MainConfigFile = "config/env.json"
+                var cfgSources = resolver.GetConfigSources();
+                foreach(var cfgSrc in cfgSources) {
+                    src.Add(cfgSrc);
                 }
-            }, stopOnFirstMatch: true);
-
-            var cfgSources = resolver.GetConfigSources();
-            foreach(var cfgSrc in cfgSources) {
-                src.Add(cfgSrc);
+                return src;
+            } catch(Exception ex) {
+                throw new Exception(ex.Message + "\r\n" + src.GetConfigTrace(), ex);
             }
-            return src;
         }
 
         /// Set will always override other existing entries
@@ -102,7 +105,11 @@ namespace Microsoft.Extensions.Configuration
             //        return strVal;
             //    }
             //}
-            return builder.Build().Get(key);
+            try {
+                return builder.Build().Get(key);
+             } catch(Exception ex) {
+                throw new Exception(ex.Message + "\r\n" + builder.GetConfigTrace(), ex);
+            }
         }
 
         public static T? GetNullable<T>(this IConfiguration cfg, string key, Func<string, T> convert = null)
@@ -328,6 +335,86 @@ namespace Microsoft.Extensions.Configuration
         {
             return cfg.Get(EnvJsonConvention.EnvConfigPathKey);
         }
+
+        public static IEnumerable<string> GetConfigFiles(this IEnumerable<IConfigurationSource> sources)
+        {
+            foreach (var src in sources)
+            {
+                if (src is FileConfigurationSource)
+                {
+                    var filesrc = src as FileConfigurationSource;
+                    var providerPath = (filesrc.FileProvider as Microsoft.Extensions.FileProviders.PhysicalFileProvider)?.Root ?? "";
+                    yield return Path.Combine(providerPath, filesrc.Path);
+                }
+            }
+        }
+
+        public static string GetConfigTrace(this IConfigurationBuilder cfgBuilder)
+        {
+            var cfgTrace = new System.Text.StringBuilder();
+            cfgTrace.AppendLine();
+            cfgTrace.AppendLine(" === Config Sources: ===");
+            foreach (var src in cfgBuilder.Sources)
+            {
+                cfgTrace.Append("  - ");
+                if (src is FileConfigurationSource)
+                {
+                    var filesrc = src as FileConfigurationSource;
+                    var providerPath = (filesrc.FileProvider as Microsoft.Extensions.FileProviders.PhysicalFileProvider)?.Root ?? "";
+
+                    cfgTrace.Append($"{providerPath} {filesrc.Path}");
+                    if (filesrc.Optional) cfgTrace.Append(" (optional)");
+                }
+                else
+                {
+                    cfgTrace.Append($"{src.GetType().Name}");
+                }
+                cfgTrace.AppendLine();
+            }
+            cfgTrace.AppendLine(" === END Config      ===");
+            return cfgTrace.ToString();
+        }
+
+        public static IEnumerable<string> GetIncludePaths(this IConfigurationBuilder cfgBuilder, string key = "include") {
+            var includeFiles = cfgBuilder.Get(key);
+            if (includeFiles != null)
+            {
+                foreach (var split in includeFiles.Split(';'))
+                {
+                    var path = split;
+                    if (!Path.IsPathRooted(path))
+                    {
+                        var envpath = cfgBuilder.Get(EnvJsonConvention.EnvConfigPathKey);
+                        if (envpath != null && !path.StartsWith("{basePath}"))
+                        {
+                            path = Path.Combine(Path.GetDirectoryName(envpath), path);
+                        }
+                    }
+                    path = Path.GetFullPath(path);
+
+                    yield return path;
+                    
+                }
+            }
+        }
+
+        public static IConfigurationBuilder AddIncludeFiles(this IConfigurationBuilder cfgBuilder, IEnumerable<string> paths) {
+            foreach(var path in paths) {
+                if (path.EndsWith(".config") || path.EndsWith(".xml")) {
+                    cfgBuilder.AddXmlAppSettings(path, optional: false, reloadOnChange: true);
+                }
+                else if (path.EndsWith(".json")) {
+                    cfgBuilder.AddJsonFile(path, optional: false, reloadOnChange: true);
+                } else {
+                    throw new ArgumentException($"unrecognized include file '{path}'");
+                }
+            }
+
+            return cfgBuilder;
+        }
+
+        public static IConfigurationBuilder AddIncludeFiles(IConfigurationBuilder cfgBuilder) => cfgBuilder.AddIncludeFiles(cfgBuilder.GetIncludePaths());
+
         /*
 
         public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)
