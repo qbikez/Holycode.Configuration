@@ -17,7 +17,10 @@ namespace Holycode.Configuration.Conventions
 {
     internal const string EnvironmentNameKey = "ASPNET_ENV";
     internal const string DefaultEnvironment = "development";
-    public string ConfigFilePattern = "env.json";
+    public string MainConfigFile = "env.json";
+    
+    public bool IsMainConfigOptional = false;
+    public bool IsEnvSpecificConfigOptional = false;
 
     internal const string EnvConfigFoundKey = "env:config:found";
     internal const string EnvConfigPathKey = "env:config:path";
@@ -32,24 +35,32 @@ namespace Holycode.Configuration.Conventions
     public IEnumerable<IConfigurationSource> GetConfigSources()
     {
         var builder = new ConfigurationBuilder();
-        bool optional = false;
 
-        var configFiles = new ConfigFileFinder().Find(_baseDir, ConfigFilePattern, stopOnFirstMatch: true);
+        var toSearch = MainConfigFile;
+        var MainConfigExt = MainConfigFile.Substring(MainConfigFile.LastIndexOf('.'));
+        var MainConfigPathNoExt = MainConfigFile.Substring(0, MainConfigFile.LastIndexOf('.'));
+
+        // if env.json is optional, search for env.{_envName}.json
+        if (_envName != null && IsMainConfigOptional) 
+            toSearch = MainConfigPathNoExt + $".{_envName}" + MainConfigExt;
+        var configFiles = new ConfigFileFinder().Find(_baseDir, toSearch, stopOnFirstMatch: true);
 
         foreach (var file in configFiles)
         {
             var path = file.Source;
             var dir = Path.GetDirectoryName(path);
+            var MainConfigNameNoExt = Path.GetFileNameWithoutExtension(MainConfigFile);
             try
             {
                 builder.AddEnvironmentVariables();
-                AddDefaultFiles(dir, builder);
+                AddDefaultFiles(dir, MainConfigNameNoExt, builder);
 
-                AddMainFile(path, builder, optional);
+                AddMainFile(path, builder, IsMainConfigOptional);
 
                 var env = GetEnvName(builder);
                 builder.Set(EnvironmentNameKey, env);
-                AddOverrideFiles(dir, env, builder, optional);
+                AddEnvFiles(dir, MainConfigNameNoExt, env, builder, IsEnvSpecificConfigOptional);
+                AddOverrideFiles(dir, MainConfigNameNoExt, env, builder);
             }
             catch (Exception ex)
             {
@@ -79,15 +90,18 @@ namespace Holycode.Configuration.Conventions
         builder.Set(EnvConfigPathKey, path);
     }
 
-    public void AddDefaultFiles(string dir, ConfigurationBuilder builder)
+    private void AddDefaultFiles(string dir, string MainConfigNameNoExt, ConfigurationBuilder builder)
     {
-        builder.AddJsonFile(Path.Combine(dir, $"env.default.json"), optional: true);
+        builder.AddJsonFile(Path.Combine(dir,$"{MainConfigNameNoExt}.default.json"), optional: true);
     }
-    public void AddOverrideFiles(string dir, string env, ConfigurationBuilder builder, bool optional)
-    {
-        builder.AddJsonFile(Path.Combine(dir, $"env.{env}.json"), optional: optional);
-        builder.AddJsonFile(Path.Combine(dir, $"env.override.json"), optional: true);
-        builder.AddJsonFile(Path.Combine(dir, $"env.{env}.override.json"), optional: true);
+
+    private void AddEnvFiles(string dir, string MainConfigNameNoExt, string env, ConfigurationBuilder builder, bool optional) {
+        builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.{env}.json"), optional: optional);
+    }
+    private void AddOverrideFiles(string dir,string MainConfigNameNoExt,  string env, ConfigurationBuilder builder)
+    {        
+        builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.override.json"), optional: true);
+        builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.{env}.override.json"), optional: true);
     }
 }
 }

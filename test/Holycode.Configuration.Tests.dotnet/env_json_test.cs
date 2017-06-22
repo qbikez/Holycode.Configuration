@@ -211,8 +211,11 @@ namespace Holycode.Configuration.Tests.dotnet
 
             var resolver = new ConfigSourceResolver(new[] {
                 new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                    ConfigFilePattern = "env.json|config/env.json"
-                }
+                    MainConfigFile = "env.json"
+                },
+                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                    MainConfigFile = "config/env.json"
+                },
             }, stopOnFirstMatch: true);
 
             var cfgFiles = resolver.GetConfigSources().GetConfigFiles().ToArray();
@@ -230,5 +233,40 @@ namespace Holycode.Configuration.Tests.dotnet
                 cfgFiles[i].ShouldEqual(expected[i]);
             }
         }      
+
+        /*
+         [Fact]
+        public void should_resolve_nearest_env_json_for_specific_env()
+        {
+            var applicationBasePath = Path.GetFullPath(@"input\reporoot1");
+            string environment = "from_config_dir";
+
+            var resolver = new ConfigSourceResolver(new[] {
+                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                    MainConfigFile = "env.json",
+                    IsMainConfigOptional = environment != null,
+                },
+                new EnvJsonConvention(applicationBasePath, environmentName: environment) {
+                    MainConfigFile = "config/env.json",
+                    IsMainConfigOptional = environment != null,
+                },
+            }, stopOnFirstMatch: true);
+
+            var cfgFiles = resolver.GetConfigSources().GetConfigFiles().ToArray();
+
+            var expected = new[] {
+                Path.GetFullPath(@"input\reporoot1\config\env.default.json"),
+                Path.GetFullPath(@"input\reporoot1\config\env.json"),
+                Path.GetFullPath(@"input\reporoot1\config\env.from_config_dir.json"),
+                Path.GetFullPath(@"input\reporoot1\config\env.override.json"),
+                Path.GetFullPath(@"input\reporoot1\config\env.from_config_dir.override.json"),
+            };
+
+            for (int i = 0; i < cfgFiles.Length && i < expected.Length; i++)
+            {
+                cfgFiles[i].ShouldEqual(expected[i]);
+            }
+        }     
+        */ 
     }
 }

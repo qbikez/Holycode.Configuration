@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.Configuration
             {
                 var val = ConfigurationManager.AppSettings[k];
                 configuration.Set(k.Replace(".", ":"), val);
-                var check = configuration.Get(k.Replace(".", ":"));
+                //var check = configuration.Get(k.Replace(".", ":"));
             }
 
 

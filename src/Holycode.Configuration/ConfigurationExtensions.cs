@@ -41,10 +41,12 @@ namespace Microsoft.Extensions.Configuration
 
                 var resolver = new ConfigSourceResolver(new[] {
                     new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                        ConfigFilePattern = "env.json"
+                        MainConfigFile = "env.json",
+                        IsMainConfigOptional = environment != null
                     },
                     new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                        ConfigFilePattern = "config/env.json"
+                        MainConfigFile = "config/env.json",
+                        IsMainConfigOptional = environment != null
                     }
                 }, stopOnFirstMatch: true);
 
