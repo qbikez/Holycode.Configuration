@@ -71,9 +71,10 @@ namespace Microsoft.Extensions.Configuration
             return configuration;
         }
 
-        public static IConfiguration FillAppSettings(this IConfiguration configuration)
+        public static IConfiguration FillAppSettings(this IConfiguration configuration) => FillAppSettings(configuration, ConfigurationManager.AppSettings);
+        public static IConfiguration FillAppSettings(this IConfiguration configuration, System.Collections.Specialized.NameValueCollection appSettings)
         {
-            configuration.Traverse((key, val) => { ConfigurationManager.AppSettings[key.Replace(':', '.')] = val; });
+            configuration.Traverse((key, val) => { appSettings[key.Replace(':', '.')] = val; });
             return configuration;
         }
     }

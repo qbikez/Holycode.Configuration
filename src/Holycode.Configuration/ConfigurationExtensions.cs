@@ -415,8 +415,8 @@ namespace Microsoft.Extensions.Configuration
             return cfgBuilder;
         }
 
-        public static IConfigurationBuilder AddIncludeFiles(IConfigurationBuilder cfgBuilder) => cfgBuilder.AddIncludeFiles(cfgBuilder.GetIncludePaths());
-
+        public static IConfigurationBuilder AddIncludeFiles(this IConfigurationBuilder cfgBuilder) => cfgBuilder.AddIncludeFiles(cfgBuilder.GetIncludePaths());
+        public static IConfigurationBuilder AddIncludeFiles(this IConfigurationBuilder cfgBuilder, string key) => cfgBuilder.AddIncludeFiles(cfgBuilder.GetIncludePaths(key));
         /*
 
         public static IEnumerable<IConfigurationRoot> GetSources(this IConfigurationRoot root, string key)
