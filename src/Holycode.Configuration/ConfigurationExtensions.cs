@@ -374,7 +374,7 @@ namespace Microsoft.Extensions.Configuration
             var includeFiles = cfgBuilder.Get(key);
             if (includeFiles != null)
             {
-                foreach (var split in includeFiles.Split(';'))
+                foreach (var split in includeFiles.Split(';',','))
                 {
                     var path = split;
                     if (!Path.IsPathRooted(path))
