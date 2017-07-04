@@ -204,6 +204,20 @@ namespace Holycode.Configuration.Tests.dotnet
         }
 
         [Fact]
+        public void should_include_env_default_config()
+        {
+            var src = ConfigFactory.CreateConfigSource(Path.GetFullPath(@"input\reporoot2\subfolder"));
+            src.AddEnvJson(optional: false);
+    
+            var trace = src.GetConfigTrace();
+            Console.WriteLine(trace);
+
+            var val = src.EnvironmentName();
+            
+            val.ShouldEqual("default-env");
+        }
+
+        [Fact]
         public void should_resolve_nearest_env_json_before_config_dir()
         {
             var applicationBasePath = Path.GetFullPath(@"input\reporoot1");

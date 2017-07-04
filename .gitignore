@@ -10,3 +10,4 @@ bower_components/
 .tools/
 test/.results/
 /dnx-packages
+.vscode/

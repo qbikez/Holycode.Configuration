@@ -39,16 +39,9 @@ namespace Microsoft.Extensions.Configuration
                     src.SetAppBasePath(applicationBasePath);
                 applicationBasePath = src.AppBasePath();
 
-                var resolver = new ConfigSourceResolver(new[] {
-                    new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                        MainConfigFile = "env.json",
-                        IsMainConfigOptional = environment != null
-                    },
-                    new EnvJsonConvention(applicationBasePath, environmentName: environment) {
-                        MainConfigFile = "config/env.json",
-                        IsMainConfigOptional = environment != null
-                    }
-                }, stopOnFirstMatch: true);
+               
+                var conventions = DefaultConvention.Get(applicationBasePath, optional, environment);
+                var resolver = new ConfigSourceResolver(conventions, stopOnFirstMatch: true);
 
                 var cfgSources = resolver.GetConfigSources();
                 foreach(var cfgSrc in cfgSources) {

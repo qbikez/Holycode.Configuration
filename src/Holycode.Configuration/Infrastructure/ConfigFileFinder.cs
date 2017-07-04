@@ -30,7 +30,8 @@ namespace Holycode.Configuration
                 var found = GetConfigFilesInDir(dir, filePattern);
                 if (found != null && found.Any())
                 {
-                    names.AddRange(found);
+                    if (stopOnFirstMatch) names.Add(found.First());
+                    else names.AddRange(found);
                     break;
                 }
 
@@ -61,7 +62,9 @@ namespace Holycode.Configuration
                     {
                         foreach (var f in files)
                         {
-                            yield return new ConfigPathSource(f, $"[{this.GetType().Name}] contains {pattern}");
+                            var s = new ConfigPathSource(f, $"[{this.GetType().Name}] contains {pattern}");
+                            //Console.WriteLine($"found config file: {s}");
+                            yield return s;
                         }
                         // do not process other directories
                     }

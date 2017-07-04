@@ -14,94 +14,117 @@ namespace Holycode.Configuration.Conventions
 {
 
     public class EnvJsonConvention : IConfigSourceConvention
-{
-    internal const string EnvironmentNameKey = "ASPNET_ENV";
-    internal const string DefaultEnvironment = "development";
-    public string MainConfigFile = "env.json";
-    
-    public bool IsMainConfigOptional = false;
-    public bool IsEnvSpecificConfigOptional = false;
-
-    internal const string EnvConfigFoundKey = "env:config:found";
-    internal const string EnvConfigPathKey = "env:config:path";
-
-    private string _baseDir;
-    private string _envName;
-    public EnvJsonConvention(string appBaseDir, string environmentName = null)
     {
-        _baseDir = appBaseDir;
-        _envName = environmentName;
-    }
-    public IEnumerable<IConfigurationSource> GetConfigSources()
-    {
-        var builder = new ConfigurationBuilder();
+        internal const string EnvironmentNameKey = "ASPNET_ENV";
+        internal const string DefaultEnvironment = "development";
+        public string MainConfigFile = "env.json";
 
-        var toSearch = MainConfigFile;
-        var MainConfigExt = MainConfigFile.Substring(MainConfigFile.LastIndexOf('.'));
-        var MainConfigPathNoExt = MainConfigFile.Substring(0, MainConfigFile.LastIndexOf('.'));
+        public bool IsMainConfigOptional = false;
+        public bool IsEnvSpecificConfigOptional = false;
 
-        // if env.json is optional, search for env.{_envName}.json
-        if (_envName != null && IsMainConfigOptional) 
-            toSearch = MainConfigPathNoExt + $".{_envName}" + MainConfigExt;
-        var configFiles = new ConfigFileFinder().Find(_baseDir, toSearch, stopOnFirstMatch: true);
+        internal const string EnvConfigFoundKey = "env:config:found";
+        internal const string EnvConfigPathKey = "env:config:path";
 
-        foreach (var file in configFiles)
+        private string _baseDir;
+        private string _envName;
+        public EnvJsonConvention(string appBaseDir, string environmentName = null)
         {
-            var path = file.Source;
-            var dir = Path.GetDirectoryName(path);
-            var MainConfigNameNoExt = Path.GetFileNameWithoutExtension(MainConfigFile);
-            try
-            {
-                builder.AddEnvironmentVariables();
-                AddDefaultFiles(dir, MainConfigNameNoExt, builder);
+            _baseDir = appBaseDir;
+            _envName = environmentName;
+        }
+        public IEnumerable<IConfigurationSource> GetConfigSources()
+        {
+            var configFiles = FindConfigFiles();
 
-                AddMainFile(path, builder, IsMainConfigOptional);
-
-                var env = GetEnvName(builder);
-                builder.Set(EnvironmentNameKey, env);
-                AddEnvFiles(dir, MainConfigNameNoExt, env, builder, IsEnvSpecificConfigOptional);
-                AddOverrideFiles(dir, MainConfigNameNoExt, env, builder);
-            }
-            catch (Exception ex)
-            {
-                throw new FileLoadException($"Failed to load config file {path}: {ex.Message}", ex);
-            }
+            return GetConfigSources(configFiles);
         }
 
-        return builder.Sources;
-    }
+        private IEnumerable<ConfigPathSource> FindConfigFiles()
+        {
+            
+            var toSearch = MainConfigFile;
+             if (_envName != null && IsMainConfigOptional) {                 
+                 // if env.json is optional, search for env.{_envName}.json
+                 var searchFiles = new List<string>();
+                 foreach(var split in MainConfigFile.Split('|')) {
+                    var MainConfigExt = split.Substring(split.LastIndexOf('.'));
+                    var MainConfigPathNoExt = split.Substring(0, split.LastIndexOf('.'));
+                    searchFiles.Add(MainConfigPathNoExt + $".{_envName}" + MainConfigExt);
+                 }
+                 toSearch = string.Join("|", searchFiles);
+            }
+            //Console.WriteLine($"searching for config files: '{toSearch}' in '{_baseDir}'. _envName: {_envName} IsMainConfigOptional: {IsMainConfigOptional}");
+            var configFiles = new ConfigFileFinder().Find(_baseDir, toSearch, stopOnFirstMatch: true);
+            return configFiles;
+        }
 
-    private string GetEnvName(ConfigurationBuilder builder)
-    {
-        var env = _envName;
-        if (string.IsNullOrWhiteSpace(env)) env = builder.Get(EnvironmentNameKey);
-        if (string.IsNullOrWhiteSpace(env)) env = DefaultEnvironment;
+        private IEnumerable<IConfigurationSource> GetConfigSources(IEnumerable<ConfigPathSource> configFiles)
+        {
+            var builder = new ConfigurationBuilder();
+            foreach (var file in configFiles)
+            {
+                var path = file.Source;
+                var dir = Path.GetDirectoryName(path);
+                var MainConfigNameNoExt = Path.GetFileNameWithoutExtension(path);
+                
+                if (MainConfigNameNoExt.EndsWith(".default")) MainConfigNameNoExt = MainConfigNameNoExt.Substring(0, MainConfigNameNoExt.Length - ".default".Length);                
+                if (MainConfigNameNoExt.EndsWith($".{_envName}")) MainConfigNameNoExt = MainConfigNameNoExt.Substring(0, MainConfigNameNoExt.Length - $".{_envName}".Length);
+                
 
-        return env;
-    }
+                try
+                {
+                    builder.AddEnvironmentVariables();
 
-    private void AddMainFile(string path, ConfigurationBuilder builder, bool optional)
-    {
-        // if MainConfigFile contains folder, it will be already included in dir. strip it from mainconfigfile
-        if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load main config file {path}", path);
-        builder.AddJsonFile(path, optional: optional);
+                    AddDefaultFiles(dir, MainConfigNameNoExt, builder);
 
-        builder.Set(EnvConfigFoundKey, "true");
-        builder.Set(EnvConfigPathKey, path);
-    }
+                    AddMainFile(path, builder, IsMainConfigOptional);
 
-    private void AddDefaultFiles(string dir, string MainConfigNameNoExt, ConfigurationBuilder builder)
-    {
-        builder.AddJsonFile(Path.Combine(dir,$"{MainConfigNameNoExt}.default.json"), optional: true);
-    }
+                    var env = GetEnvName(builder);
+                    builder.Set(EnvironmentNameKey, env);
+                    AddEnvFiles(dir, MainConfigNameNoExt, env, builder, IsEnvSpecificConfigOptional);
+                    AddOverrideFiles(dir, MainConfigNameNoExt, env, builder);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException($"Failed to load config file {path}: {ex.Message}", ex);
+                }
+            }
 
-    private void AddEnvFiles(string dir, string MainConfigNameNoExt, string env, ConfigurationBuilder builder, bool optional) {
-        builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.{env}.json"), optional: optional);
+            return builder.Sources;
+        }
+
+        private string GetEnvName(ConfigurationBuilder builder)
+        {
+            var env = _envName;
+            if (string.IsNullOrWhiteSpace(env)) env = builder.Get(EnvironmentNameKey);
+            if (string.IsNullOrWhiteSpace(env)) env = DefaultEnvironment;
+
+            return env;
+        }
+
+        private void AddMainFile(string path, ConfigurationBuilder builder, bool optional)
+        {
+            // if MainConfigFile contains folder, it will be already included in dir. strip it from mainconfigfile
+            if (!File.Exists(path) && !optional) throw new FileLoadException($"Failed to load main config file {path}", path);
+            builder.AddJsonFile(path, optional: optional);
+
+            builder.Set(EnvConfigFoundKey, "true");
+            builder.Set(EnvConfigPathKey, path);
+        }
+
+        private void AddDefaultFiles(string dir, string MainConfigNameNoExt, ConfigurationBuilder builder)
+        {
+            builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.default.json"), optional: true);
+        }
+
+        private void AddEnvFiles(string dir, string MainConfigNameNoExt, string env, ConfigurationBuilder builder, bool optional)
+        {
+            builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.{env}.json"), optional: optional);
+        }
+        private void AddOverrideFiles(string dir, string MainConfigNameNoExt, string env, ConfigurationBuilder builder)
+        {
+            builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.override.json"), optional: true);
+            builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.{env}.override.json"), optional: true);
+        }
     }
-    private void AddOverrideFiles(string dir,string MainConfigNameNoExt,  string env, ConfigurationBuilder builder)
-    {        
-        builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.override.json"), optional: true);
-        builder.AddJsonFile(Path.Combine(dir, $"{MainConfigNameNoExt}.{env}.override.json"), optional: true);
-    }
-}
 }
