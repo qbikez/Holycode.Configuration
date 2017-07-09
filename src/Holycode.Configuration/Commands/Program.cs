@@ -93,8 +93,9 @@ namespace Holycode.Configuration.Commands
 
                 var builder = ConfigFactory.CreateConfigSource(Path.GetFullPath(diskPath));
                 builder.AddEnvJson(environment: env, optional: false);
-                builder.AddJsonFile("config.json", optional: true);
-                builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: true);
+                
+                //builder.AddJsonFile("config.json", optional: true);
+                //builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: true);
                 
                 var conf = builder.Build();
 
@@ -149,7 +150,8 @@ namespace Holycode.Configuration.Commands
                     return 0;
                 }
                 else if (cmd.Equals("tree", StringComparison.OrdinalIgnoreCase)){
-                    System.Console.WriteLine($"base path: {conf.AppBasePath()}"); 
+                    System.Console.WriteLine($"base path:   {conf.AppBasePath()}"); 
+                    System.Console.WriteLine($"environment: {conf.EnvironmentName()}"); 
                     System.Console.WriteLine();
                     ShowConfigTree(builder);
                 } 
@@ -232,6 +234,7 @@ namespace Holycode.Configuration.Commands
         private static void ShowConfigTree(IConfigurationBuilder builder) {
             
             Stack<ConfigSourceInfo> parents = new Stack<ConfigSourceInfo>();
+
             foreach (var src in builder.Sources) {
                 var srcInfo = GetConfigSourceInfo(src); 
                 if (srcInfo.Path != null) {
@@ -250,18 +253,20 @@ namespace Holycode.Configuration.Commands
                     
                     System.Console.Write("  ");
                     if (File.Exists(srcInfo.FullPath)) {
-                        System.Console.Write("[√]");
+                       System.Console.Write(System.Console.OutputEncoding == System.Text.Encoding.UTF8 ? "[√]" : "[v]");
                     } else {
                         System.Console.Write("[×]");
                     }
                     System.Console.Write("  ");
 
+                    int padding = 40;
                     if (parents.Count > 0) {
-                        System.Console.Write("└╴".PadLeft(parents.Count * 2));
+                        System.Console.Write((System.Console.OutputEncoding == System.Text.Encoding.UTF8 ? "└╴" : "└-").PadLeft(parents.Count * 2));
+                        padding-=2;
                     } 
                     
-                    System.Console.Write(srcInfo.Path);                    
-                    System.Console.Write("\t\t");
+                    System.Console.Write(srcInfo.Path.PadRight(padding));                    
+                    System.Console.Write(" ");
                     System.Console.Write($"({srcInfo.FullPath})");  
                     
                     System.Console.WriteLine();     
