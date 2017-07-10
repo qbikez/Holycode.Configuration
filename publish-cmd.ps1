@@ -1,12 +1,17 @@
 param($type="choco",$publishdir = $null)
 
+ipmo require
+req process
+req pathutils
+req nupkg
+
+
+update-buildversion "$psscriptroot\src\Holycode.Configuration"
+
 & "$psscriptroot\build-cmd.ps1"
 #if (!(test-path $publishdir)) { $null = mkdir $publishdir }
 #cp "$psscriptroot\.build\hcfg" $publishdir -Recurse -Force
 
-ipmo require
-req process
-req pathutils
 
 pushd
 try {
@@ -23,8 +28,13 @@ try {
             $nupkg = $matches[1]
 
             write-output "$psscriptroot\.nupkg\hcfg\$nupkg"
-            # $src = $env:NUGET_PUSH_SOURCE
-            # 3invoke nuget push $nupkg -source $src
+            
+            $src = $env:NUGET_PUSH_SOURCE
+            if ($src -ne $null) {
+                invoke nuget push $nupkg -source $src -Verbose
+            } else {
+                Write-Warning "If you want to push to nuget, set `$env:NUGET_PUSH_SOURCE variable to target feed"
+            }
         }
         "choco" {
             $chocoDir = "$psscriptroot\.choco"
@@ -32,16 +42,24 @@ try {
             cp "$psscriptroot\.build\hcfg\*" "$chocoDir\bin" -Recurse -Force
             cd $chocoDir
 
-            $nuspec = get-content "hcfg.nuspec"
+            $nuspec = get-content "hcfg.nuspec.xml"
             $version = invoke "bin\hcfg" "--version" -passthru
             if ($version -match "version\s*(.*)") { $version = $matches[1] }
             $nuspec = $nuspec | % { $_ -replace "{version}",$version }
-            [System.IO.File]::WriteAllLines((get-item "hcfg.nuspec").FullName, $nuspec, [System.Text.Encoding]::UTF8)
+            $p = "$($pwd.Path)\hcfg.nuspec"
+            Write-host "updating nuspec '$p'"
+            [System.IO.File]::WriteAllLines($p, $nuspec, [System.Text.Encoding]::UTF8)
 
             invoke cpack
 
-            # $src = $env:CHOCO_PUSH_SOURCE
-            # 3invoke choco push $nupkg -source $src
+            $nupkg = "hcfg.$version.nupkg"
+
+            $src = $env:CHOCO_PUSH_SOURCE
+            if ($src -ne $null) {
+                invoke nuget push $nupkg -source $src -Verbose
+            } else {
+                Write-Warning "If you want to push to chocolatey, set `$env:CHOCO_PUSH_SOURCE variable to target feed"
+            }
         }
     }
 } finally {
