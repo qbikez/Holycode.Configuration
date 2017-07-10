@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Holycode.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Holycode.Configuration.Commands
 {
@@ -30,6 +32,12 @@ namespace Holycode.Configuration.Commands
                     {
                         nodashArgs.Add(args[i]);                        
                         continue;
+                    }
+                     if (args[i].Equals("--version", StringComparison.OrdinalIgnoreCase) ||
+                        args[i].Equals("-v", StringComparison.OrdinalIgnoreCase))
+                    {
+                        PrintVersion();
+                        return 0;
                     }
                     if (args[i].Equals("--env", StringComparison.OrdinalIgnoreCase) ||
                         args[i].Equals("-env", StringComparison.OrdinalIgnoreCase))
@@ -87,7 +95,7 @@ namespace Holycode.Configuration.Commands
                     Console.WriteLine(" list             list configuration keys");
                     Console.WriteLine(" get {key}        returns config value for key {key}");
                     Console.WriteLine(" connstr {name}   returns connection string with name {name}");
-                    Console.WriteLine(" tree             shows config tree");
+                    Console.WriteLine(" tree|show        shows config tree");
                     return 0;
                 }
 
@@ -149,7 +157,9 @@ namespace Holycode.Configuration.Commands
 
                     return 0;
                 }
-                else if (cmd.Equals("tree", StringComparison.OrdinalIgnoreCase)){
+                else if (cmd.Equals("tree", StringComparison.OrdinalIgnoreCase) 
+                    || cmd.Equals("show", StringComparison.OrdinalIgnoreCase))
+                {
                     System.Console.WriteLine($"base path:   {conf.AppBasePath()}"); 
                     System.Console.WriteLine($"environment: {conf.EnvironmentName()}"); 
                     System.Console.WriteLine();
@@ -168,6 +178,13 @@ namespace Holycode.Configuration.Commands
             return 0;
         }
 
+        private static void PrintVersion()
+        {
+            var asm = typeof(Program).GetTypeInfo().Assembly;
+            //var ver = asm.GetName().Version
+            var ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(asm.Location).ProductVersion;
+            System.Console.WriteLine($"hcfg version {ver}");
+        }
 
         private static void ListConfigKeys(IConfiguration conf, IConfigurationBuilder builder)
         {

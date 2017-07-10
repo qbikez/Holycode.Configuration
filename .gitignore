@@ -11,3 +11,4 @@ bower_components/
 test/.results/
 /dnx-packages
 .vscode/
+*.nupkg
