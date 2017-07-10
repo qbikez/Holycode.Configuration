@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
+using System.Text;
 
 namespace Holycode.Configuration.Commands
 {
@@ -91,16 +92,16 @@ namespace Holycode.Configuration.Commands
                     System.Console.WriteLine("hfcg [path] <command>");
                     System.Console.WriteLine();
                     Console.WriteLine("Available commands:");
+                    Console.WriteLine(" tree|show        shows config tree");
                     Console.WriteLine(" get              returns whole configuration, serialized as JSON");
                     Console.WriteLine(" list             list configuration keys");
                     Console.WriteLine(" get {key}        returns config value for key {key}");
                     Console.WriteLine(" connstr {name}   returns connection string with name {name}");
-                    Console.WriteLine(" tree|show        shows config tree");
+                    Console.WriteLine(" set-env {name}   modify env.json to use environment named {name}");
                     return 0;
                 }
 
-                var builder = ConfigFactory.CreateConfigSource(Path.GetFullPath(diskPath));
-                builder.AddEnvJson(environment: env, optional: false);
+                var builder = GetBuilder(diskPath, env);
                 
                 //builder.AddJsonFile("config.json", optional: true);
                 //builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: true);
@@ -140,6 +141,28 @@ namespace Holycode.Configuration.Commands
                     ListConfigKeys(conf, builder);
                     return 0;
                 }
+                else if (cmd.Equals("set-env", StringComparison.OrdinalIgnoreCase)
+                || cmd.Equals("setenv", StringComparison.OrdinalIgnoreCase)) {
+                     if (cfgPath == null)
+                    {
+                        Console.WriteLine("Error: expected environment name!");
+                        return -1;
+                    }
+                    else
+                    {
+                        SetEnv(builder, cfgPath);
+                        
+                        // reload config
+                        builder = GetBuilder(diskPath, env);
+
+                        System.Console.WriteLine($"base path:   {conf.AppBasePath()}"); 
+                        System.Console.WriteLine($"environment: {conf.EnvironmentName()}"); 
+                        System.Console.WriteLine();
+                        ShowConfigTree(builder);
+                    }
+
+                    return 0;
+                }
                 else if (cmd.Equals("connstr", StringComparison.OrdinalIgnoreCase)
                 || cmd.Equals("getconnstr", StringComparison.OrdinalIgnoreCase)
                 || cmd.Equals("conn", StringComparison.OrdinalIgnoreCase))
@@ -176,6 +199,14 @@ namespace Holycode.Configuration.Commands
             }
 
             return 0;
+        }
+
+        private static IConfigurationBuilder GetBuilder(string diskPath, string env)
+        {
+            var builder = ConfigFactory.CreateConfigSource(Path.GetFullPath(diskPath));
+            builder.AddEnvJson(environment: env, optional: false);
+
+            return builder;
         }
 
         private static void PrintVersion()
@@ -246,6 +277,60 @@ namespace Holycode.Configuration.Commands
                 };
             }
             
+        }
+
+        private static void SetEnv(IConfigurationBuilder builder, string name) {
+             string envJson = null;
+             foreach (var src in builder.Sources) {
+                var srcInfo = GetConfigSourceInfo(src); 
+                if (srcInfo.FullPath != null) {
+                    var fn = Path.GetFileName(srcInfo.FullPath);
+                    if (fn == "env.default.json") {
+                        envJson = srcInfo.FullPath;
+                        envJson = Path.Combine(Path.GetDirectoryName(envJson), "env.json");
+                    }
+                    if (fn == "env.json")  {
+                        envJson = srcInfo.FullPath;
+                        break;
+                    }
+                }
+             }
+
+             if (envJson == null) throw new Exception("no valid env.json or env.default.json found!"); 
+
+            
+            if (name == "default" || name == "auto") {
+                var bak = Path.Combine(Path.GetDirectoryName(envJson), "_" + Path.GetFileName(envJson));
+
+                if (!File.Exists(envJson)) {
+                    System.Console.WriteLine($"'{envJson}' not found - already using defaults.");
+                    return;
+                }
+                System.Console.WriteLine($"Reverting environment to default settings: moving '{envJson}' to '{bak}'");
+
+                if (File.Exists(bak)) File.Delete(bak);
+                File.Move(envJson, bak);
+
+                return;
+            }
+
+             var cfgLine = $@"""ASPNET_ENV"": ""{name}""";
+             var cfgText = new string[] { $@"{{
+  {cfgLine}
+}}" };
+             if (File.Exists(envJson)) 
+             {
+                 cfgText = File.ReadAllLines(envJson);
+                 for(int i = 0; i < cfgText.Length; i++) {
+                    if (cfgText[i].Contains("ASPNET_ENV")) {
+                        cfgText[i] = cfgLine;
+                    }
+                 }
+             }
+
+             System.Console.WriteLine($"setting {envJson} to environment: '{name}'");
+             File.WriteAllLines(envJson, cfgText, Encoding.UTF8);
+        
         }
 
         private static void ShowConfigTree(IConfigurationBuilder builder) {
