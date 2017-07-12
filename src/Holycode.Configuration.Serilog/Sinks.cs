@@ -49,7 +49,7 @@ namespace Holycode.Configuration.Serilog
             {
                 var elasticOpts = new ElasticsearchSinkOptions(new Uri(elasticSink))
                 {
-                    IndexFormat = $"{indexFormat}-{{0:yyyy.MM.dd}}".ToLowerInvariant()
+                    IndexFormat = $"{indexFormat.ToLowerInvariant()}-{{0:yyyy.MM.dd}}"
                 };
                 if (configureElastic != null) configureElastic(elasticOpts);
 
