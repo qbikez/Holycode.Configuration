@@ -175,15 +175,16 @@ namespace Microsoft.Extensions.Configuration.Xml
                 return;
             }
 
+            var val = reader.Value.Replace('.',':');
             // If current element is not root element
             if (prefixStack.Any())
             {
                 var lastPrefix = prefixStack.Pop();
-                prefixStack.Push(ConfigurationPath.Combine(lastPrefix, reader.Value));
+                prefixStack.Push(ConfigurationPath.Combine(lastPrefix, val));
             }
             else
             {
-                prefixStack.Push(reader.Value);
+                prefixStack.Push(val);
             }
         }
 

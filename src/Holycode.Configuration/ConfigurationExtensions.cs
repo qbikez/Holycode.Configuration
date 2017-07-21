@@ -47,6 +47,9 @@ namespace Microsoft.Extensions.Configuration
                 foreach(var cfgSrc in cfgSources) {
                     src.Add(cfgSrc);
                 }
+
+                src.AddIncludeFiles();
+
                 return src;
             } catch(Exception ex) {
                 throw new Exception(ex.Message + "\r\n" + src.GetConfigTrace(), ex);

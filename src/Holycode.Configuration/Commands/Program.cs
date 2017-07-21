@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration.Xml;
 
 namespace Holycode.Configuration.Commands
 {
@@ -25,21 +28,29 @@ namespace Holycode.Configuration.Commands
                 string env = null;
                 string cmd = null;
                 string cfgPath = null;
-                string diskPath = null;
+                string diskPath = ".";
                 List<string> nodashArgs = new List<string>();
                 for (int i = 0; i < args.Length; i++)
                 {
                     if (!args[i].StartsWith("-"))
                     {
-                        nodashArgs.Add(args[i]);                        
+                        nodashArgs.Add(args[i]);
                         continue;
                     }
-                     if (args[i].Equals("--version", StringComparison.OrdinalIgnoreCase) ||
-                        args[i].Equals("-v", StringComparison.OrdinalIgnoreCase))
+                    if (args[i].Equals("--version", StringComparison.OrdinalIgnoreCase) 
+                        || args[i].Equals("-v", StringComparison.OrdinalIgnoreCase))
                     {
                         PrintVersion();
                         return 0;
                     }
+                       if (args[i].Equals("--help", StringComparison.OrdinalIgnoreCase) 
+                            || args[i].Equals("-h", StringComparison.OrdinalIgnoreCase)
+                            || args[i].Equals("-?", StringComparison.OrdinalIgnoreCase))
+                    {
+                        PrintUsage();
+                        return 0;
+                    }
+
                     if (args[i].Equals("--env", StringComparison.OrdinalIgnoreCase) ||
                         args[i].Equals("-env", StringComparison.OrdinalIgnoreCase))
                     {
@@ -63,49 +74,39 @@ namespace Holycode.Configuration.Commands
                     }
                 }
 
-                if (nodashArgs.Count > 0) {
+                if (nodashArgs.Count > 0)
+                {
                     var diskPathIdx = 0;
                     var cmdIdx = 1;
                     var cfgPathIdx = 2;
                     if (nodashArgs.Count < 3)
-                    {                        
+                    {
                         if (System.IO.File.Exists(nodashArgs[0]) || System.IO.Directory.Exists(nodashArgs[0]) || nodashArgs[0].Contains("/") || nodashArgs.Contains("\\"))
                         {
                             // first argument seems like a disk path                                                       
-                        } else {
+                        }
+                        else
+                        {
                             // first argument seems like a cmd
                             diskPathIdx = -1;
                             cmdIdx = 0;
                             cfgPathIdx = 1;
                         }
-                    } 
+                    }
 
                     diskPath = diskPathIdx >= 0 && diskPathIdx < nodashArgs.Count ? nodashArgs[diskPathIdx] : ".";
-                    cmd =  cmdIdx >= 0 && cmdIdx < nodashArgs.Count ? nodashArgs[cmdIdx] : null;
+                    cmd = cmdIdx >= 0 && cmdIdx < nodashArgs.Count ? nodashArgs[cmdIdx] : null;
                     cfgPath = cfgPathIdx >= 0 && cfgPathIdx < nodashArgs.Count ? nodashArgs[cfgPathIdx] : null;
                 }
 
                 //Console.WriteLine($"looking for env.config... environment={env}");
-                if (cmd == null)
-                {
-                    System.Console.WriteLine("Usage:");
-                    System.Console.WriteLine("hfcg [path] <command>");
-                    System.Console.WriteLine();
-                    Console.WriteLine("Available commands:");
-                    Console.WriteLine(" tree|show        shows config tree");
-                    Console.WriteLine(" get              returns whole configuration, serialized as JSON");
-                    Console.WriteLine(" list             list configuration keys");
-                    Console.WriteLine(" get {key}        returns config value for key {key}");
-                    Console.WriteLine(" connstr {name}   returns connection string with name {name}");
-                    Console.WriteLine(" set-env {name}   modify env.json to use environment named {name}");
-                    return 0;
-                }
+                if (cmd == null) cmd = "tree";
 
                 var builder = GetBuilder(diskPath, env);
-                
+
                 //builder.AddJsonFile("config.json", optional: true);
                 //builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: true);
-                
+
                 var conf = builder.Build();
 
                 if (cmd == "get")
@@ -116,18 +117,23 @@ namespace Holycode.Configuration.Commands
                     }
                     else
                     {
+                        //cfgPath = cfgPath.Replace('.',':');
                         var val = conf.Get(cfgPath);
                         if (val == null)
                         {
                             var sub = conf.GetSection(cfgPath);
-                            
+
                             if (sub != null)
                             {
                                 ListConfigValues(sub, builder);
-                            } else {
+                            }
+                            else
+                            {
                                 return 1;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             Console.WriteLine(val);
                         }
                     }
@@ -136,14 +142,15 @@ namespace Holycode.Configuration.Commands
                 }
                 else if (cmd == "list")
                 {
-                    System.Console.WriteLine($"base path: {conf.AppBasePath()}"); 
+                    System.Console.WriteLine($"base path: {conf.AppBasePath()}");
                     System.Console.WriteLine();
                     ListConfigKeys(conf, builder);
                     return 0;
                 }
                 else if (cmd.Equals("set-env", StringComparison.OrdinalIgnoreCase)
-                || cmd.Equals("setenv", StringComparison.OrdinalIgnoreCase)) {
-                     if (cfgPath == null)
+                || cmd.Equals("setenv", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (cfgPath == null)
                     {
                         Console.WriteLine("Error: expected environment name!");
                         return -1;
@@ -151,12 +158,12 @@ namespace Holycode.Configuration.Commands
                     else
                     {
                         SetEnv(builder, cfgPath);
-                        
+
                         // reload config
                         builder = GetBuilder(diskPath, env);
 
-                        System.Console.WriteLine($"base path:   {conf.AppBasePath()}"); 
-                        System.Console.WriteLine($"environment: {conf.EnvironmentName()}"); 
+                        System.Console.WriteLine($"base path:   {conf.AppBasePath()}");
+                        System.Console.WriteLine($"environment: {conf.EnvironmentName()}");
                         System.Console.WriteLine();
                         ShowConfigTree(builder);
                     }
@@ -167,29 +174,30 @@ namespace Holycode.Configuration.Commands
                 || cmd.Equals("getconnstr", StringComparison.OrdinalIgnoreCase)
                 || cmd.Equals("conn", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (cfgPath == null)
-                    {
-                        Console.WriteLine("Error: expected connstr name!");
-                        return -1;
-                    }
-                    else
-                    {
-                        var val = conf.GetConnectionStringValue(cfgPath);
-                        Console.WriteLine(val);
-                    }
-
+                    PrintConnectionStrings(conf, cfgPath);
                     return 0;
                 }
-                else if (cmd.Equals("tree", StringComparison.OrdinalIgnoreCase) 
-                    || cmd.Equals("show", StringComparison.OrdinalIgnoreCase))
+                else if (cmd.Equals("tree", StringComparison.OrdinalIgnoreCase)
+                    || cmd.Equals("show", StringComparison.OrdinalIgnoreCase)
+                    || cmd.Equals("info", StringComparison.OrdinalIgnoreCase)
+                    || cmd.Equals("full", StringComparison.OrdinalIgnoreCase))
                 {
-                    System.Console.WriteLine($"base path:   {conf.AppBasePath()}"); 
-                    System.Console.WriteLine($"environment: {conf.EnvironmentName()}"); 
+                    System.Console.WriteLine($"base path:   {conf.AppBasePath()}");
+                    System.Console.WriteLine($"environment: {conf.EnvironmentName()}");
                     System.Console.WriteLine();
                     ShowConfigTree(builder);
-                } 
-                else {
-                    System.Console.WriteLine($"Unknown command: '{cmd}'"); 
+                    if (cmd.Equals("info", StringComparison.OrdinalIgnoreCase)
+                        || cmd.Equals("full", StringComparison.OrdinalIgnoreCase))
+                    {
+                        System.Console.WriteLine();
+                        System.Console.WriteLine("Connection strings:");
+                        System.Console.WriteLine();
+                        PrintConnectionStrings(conf, null);
+                    }
+                }
+                else
+                {
+                    System.Console.WriteLine($"Unknown command: '{cmd}'");
                 }
             }
             catch (Exception ex)
@@ -201,12 +209,30 @@ namespace Holycode.Configuration.Commands
             return 0;
         }
 
+
+
         private static IConfigurationBuilder GetBuilder(string diskPath, string env)
         {
             var builder = ConfigFactory.CreateConfigSource(Path.GetFullPath(diskPath));
             builder.AddEnvJson(environment: env, optional: false);
+            builder.AddIncludeFiles();
 
             return builder;
+        }
+
+        private static void PrintUsage()
+        {
+            System.Console.WriteLine("Usage:");
+            System.Console.WriteLine("hfcg [path] <command>");
+            System.Console.WriteLine();
+            Console.WriteLine("Available commands:");
+            Console.WriteLine(" tree|show        shows config tree");
+            Console.WriteLine(" info|full        shows full config info (including connectionstrings)");
+            Console.WriteLine(" get              returns whole configuration, serialized as JSON");
+            Console.WriteLine(" list             list configuration keys");
+            Console.WriteLine(" get {key}        returns config value for key {key}");
+            Console.WriteLine(" connstr [{name}] returns connection string with name {name}");
+            Console.WriteLine(" set-env {name}   modify env.json to use environment named {name}");
         }
 
         private static void PrintVersion()
@@ -240,69 +266,80 @@ namespace Holycode.Configuration.Commands
         }
 
 
-        class ConfigSourceInfo {
+        class ConfigSourceInfo
+        {
             public string Path;
             public string Name;
             public string FullPath;
         }
-        private static ConfigSourceInfo GetConfigSourceInfo(IConfigurationSource src) {
+        private static ConfigSourceInfo GetConfigSourceInfo(IConfigurationSource src)
+        {
             var srcName = src.ToString();
-            if (src is Microsoft.Extensions.Configuration.Json.JsonConfigurationSource)
+            if (src is FileConfigurationSource)
             {
-                var json = (src as Microsoft.Extensions.Configuration.Json.JsonConfigurationSource);
-                 return new ConfigSourceInfo() {
-                    Name = $"{json.Path} ({json.FileProvider.GetFileInfo(json.Path).PhysicalPath})",
-                    Path = json.Path,
-                    FullPath = json.FileProvider.GetFileInfo(json.Path).PhysicalPath
+                var file = (src as FileConfigurationSource);
+                return new ConfigSourceInfo()
+                {
+                    Name = $"{file.Path} ({file.FileProvider.GetFileInfo(file.Path).PhysicalPath})",
+                    Path = file.Path,
+                    FullPath = file.FileProvider.GetFileInfo(file.Path).PhysicalPath
                 };
             }
-            else if (
-                src is
-                    Microsoft.Extensions.Configuration.EnvironmentVariables.
-                        EnvironmentVariablesConfigurationSource)
+            else if (src is EnvironmentVariablesConfigurationSource)
             {
-                  return new ConfigSourceInfo() {
-                    Name = "ENV" 
+                return new ConfigSourceInfo()
+                {
+                    Name = "ENV"
                 };
             }
             else if (src is Microsoft.Extensions.Configuration.Memory.MemoryConfigurationSource)
             {
-                 return new ConfigSourceInfo() {
-                    Name = "in-mem" 
+                return new ConfigSourceInfo()
+                {
+                    Name = "in-mem"
                 };
             }
-            else {
-                 return new ConfigSourceInfo() {
+            else
+            {
+                return new ConfigSourceInfo()
+                {
                     Name = src.ToString()
                 };
             }
-            
+
         }
 
-        private static void SetEnv(IConfigurationBuilder builder, string name) {
-             string envJson = null;
-             foreach (var src in builder.Sources) {
-                var srcInfo = GetConfigSourceInfo(src); 
-                if (srcInfo.FullPath != null) {
+        private static void SetEnv(IConfigurationBuilder builder, string name)
+        {
+            string envJson = null;
+            foreach (var src in builder.Sources)
+            {
+                var srcInfo = GetConfigSourceInfo(src);
+                if (srcInfo.FullPath != null)
+                {
                     var fn = Path.GetFileName(srcInfo.FullPath);
-                    if (fn == "env.default.json") {
+                    if (fn == "env.default.json")
+                    {
                         envJson = srcInfo.FullPath;
                         envJson = Path.Combine(Path.GetDirectoryName(envJson), "env.json");
                     }
-                    if (fn == "env.json")  {
+                    if (fn == "env.json")
+                    {
                         envJson = srcInfo.FullPath;
                         break;
                     }
                 }
-             }
+            }
 
-             if (envJson == null) throw new Exception("no valid env.json or env.default.json found!"); 
+            if (envJson == null) throw new Exception("no valid env.json or env.default.json found!");
 
-            
-            if (name == "default" || name == "auto") {
+
+            if (name == "default" || name == "auto")
+            {
                 var bak = Path.Combine(Path.GetDirectoryName(envJson), "_" + Path.GetFileName(envJson));
 
-                if (!File.Exists(envJson)) {
+                if (!File.Exists(envJson))
+                {
                     System.Console.WriteLine($"'{envJson}' not found - already using defaults.");
                     return;
                 }
@@ -314,64 +351,92 @@ namespace Holycode.Configuration.Commands
                 return;
             }
 
-             var cfgLine = $@"""ASPNET_ENV"": ""{name}""";
-             var cfgText = new string[] { $@"{{
+            var cfgLine = $@"""ASPNET_ENV"": ""{name}""";
+            var cfgText = new string[] { $@"{{
   {cfgLine}
 }}" };
-             if (File.Exists(envJson)) 
-             {
-                 cfgText = File.ReadAllLines(envJson);
-                 for(int i = 0; i < cfgText.Length; i++) {
-                    if (cfgText[i].Contains("ASPNET_ENV")) {
+            if (File.Exists(envJson))
+            {
+                cfgText = File.ReadAllLines(envJson);
+                for (int i = 0; i < cfgText.Length; i++)
+                {
+                    if (cfgText[i].Contains("ASPNET_ENV"))
+                    {
                         cfgText[i] = cfgLine;
                     }
-                 }
-             }
+                }
+            }
 
-             System.Console.WriteLine($"setting {envJson} to environment: '{name}'");
-             File.WriteAllLines(envJson, cfgText, Encoding.UTF8);
-        
+            System.Console.WriteLine($"setting {envJson} to environment: '{name}'");
+            File.WriteAllLines(envJson, cfgText, Encoding.UTF8);
+
         }
+        
+        private static void PrintConnectionStrings(IConfiguration conf, string cfgPath = null) {
+            if (cfgPath == null)
+            {
+                var connStrs = conf.GetSection("connectionStrings");
+                foreach (var cs in connStrs.GetChildren())
+                {
+                    var val = conf.GetConnectionStringValue(cs.Key);
+                    Console.WriteLine($"  {cs.Key}={val}");
+                }
+            }
+            else
+            {
+                var val = conf.GetConnectionStringValue(cfgPath);
+                Console.WriteLine($"  {cfgPath}={val}");
+            }
+        }
+        private static void ShowConfigTree(IConfigurationBuilder builder)
+        {
 
-        private static void ShowConfigTree(IConfigurationBuilder builder) {
-            
             Stack<ConfigSourceInfo> parents = new Stack<ConfigSourceInfo>();
 
-            foreach (var src in builder.Sources) {
-                var srcInfo = GetConfigSourceInfo(src); 
-                if (srcInfo.Path != null) {
+            foreach (var src in builder.Sources)
+            {
+                var srcInfo = GetConfigSourceInfo(src);
+                if (srcInfo.Path != null)
+                {
                     var fn = Path.GetFileNameWithoutExtension(srcInfo.Path);
-                    while (parents.Count > 0) {
+                    while (parents.Count > 0)
+                    {
                         var p = parents.Peek();
                         var pfn = Path.GetFileNameWithoutExtension(p.Path);
-                        if (fn.StartsWith(pfn)) {
+                        if (fn.StartsWith(pfn))
+                        {
                             // fn is a child of pfn
                             break;
                         }
-                        else {
+                        else
+                        {
                             parents.Pop();
                         }
                     }
-                    
+
                     System.Console.Write("  ");
-                    if (File.Exists(srcInfo.FullPath)) {
-                       System.Console.Write(System.Console.OutputEncoding == System.Text.Encoding.UTF8 ? "[√]" : "[v]");
-                    } else {
+                    if (File.Exists(srcInfo.FullPath))
+                    {
+                        System.Console.Write(System.Console.OutputEncoding == System.Text.Encoding.UTF8 ? "[√]" : "[v]");
+                    }
+                    else
+                    {
                         System.Console.Write("[×]");
                     }
                     System.Console.Write("  ");
 
                     int padding = 40;
-                    if (parents.Count > 0) {
+                    if (parents.Count > 0)
+                    {
                         System.Console.Write((System.Console.OutputEncoding == System.Text.Encoding.UTF8 ? "└╴" : "└-").PadLeft(parents.Count * 2));
-                        padding-=2;
-                    } 
-                    
-                    System.Console.Write(srcInfo.Path.PadRight(padding));                    
+                        padding -= 2;
+                    }
+
+                    System.Console.Write(srcInfo.Path.PadRight(padding));
                     System.Console.Write(" ");
-                    System.Console.Write($"({srcInfo.FullPath})");  
-                    
-                    System.Console.WriteLine();     
+                    System.Console.Write($"({srcInfo.FullPath})");
+
+                    System.Console.WriteLine();
                     parents.Push(srcInfo);
                 }
             }
@@ -382,7 +447,7 @@ namespace Holycode.Configuration.Commands
         {
             var result = BuildAnonymousDict(() => new { Value = "", Source = "" });
             var dict = conf.AsDictionaryPlain();
-            
+
             foreach (var src in builder.Sources.Reverse())
             {
                 var srcName = GetConfigSourceInfo(src).Name;
@@ -395,7 +460,8 @@ namespace Holycode.Configuration.Commands
                 {
                     var key = k;
                     string v = null;
-                    if (conf is IConfigurationSection) {
+                    if (conf is IConfigurationSection)
+                    {
                         key = (conf as IConfigurationSection).Path + ":" + key;
                     }
                     if (srcCfg.TryGet(key, out v))

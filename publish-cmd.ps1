@@ -1,4 +1,9 @@
-param($type="choco",$publishdir = $null)
+param(
+    [Parameter()]
+    [ValidateSet("local","choco","octo")]
+    $type="local",
+    $publishdir = $null
+)
 
 ipmo require
 req process
@@ -16,6 +21,19 @@ update-buildversion "$psscriptroot\src\Holycode.Configuration"
 pushd
 try {
     switch($type) {
+        "local" {
+            cd "$psscriptroot\.build\hcfg"
+            $installPath = "C:\tools\hcfg"
+            write-host "installing hcfg to $installpath"
+            if (!(test-path $installpath)) { $null = mkdir $installpath }
+            copy-item  * $installpath -force -Recurse
+
+            ipmo require
+            req pathutils
+
+            $installpath | add-topath -persistent
+        }
+
         "octo" {
             cd "$psscriptroot\.build\hcfg"
 
