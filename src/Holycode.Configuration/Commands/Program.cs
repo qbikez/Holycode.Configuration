@@ -18,6 +18,7 @@ namespace Holycode.Configuration.Commands
     {
         private static bool verbose = false;
         private static bool noEnvVar = false;
+        private static bool fullOutput = false;
 
         public static int Main(string[] args)
         {
@@ -72,6 +73,11 @@ namespace Holycode.Configuration.Commands
                         noEnvVar = true;
                         continue;
                     }
+                     if (args[i].Equals("--full", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fullOutput = true;
+                        continue;
+                    }
                 }
 
                 if (nodashArgs.Count > 0)
@@ -108,6 +114,12 @@ namespace Holycode.Configuration.Commands
                 //builder.AddJsonFile($"config.{builder.EnvironmentName()}.json", optional: true);
 
                 var conf = builder.Build();
+
+                if (cmd.Equals("info", StringComparison.OrdinalIgnoreCase)
+                    || cmd.Equals("full", StringComparison.OrdinalIgnoreCase))
+                {
+                    fullOutput = true;
+                }
 
                 if (cmd == "get")
                 {
@@ -186,9 +198,7 @@ namespace Holycode.Configuration.Commands
                     System.Console.WriteLine($"environment: {conf.EnvironmentName()}");
                     System.Console.WriteLine();
                     ShowConfigTree(builder);
-                    if (cmd.Equals("info", StringComparison.OrdinalIgnoreCase)
-                        || cmd.Equals("full", StringComparison.OrdinalIgnoreCase))
-                    {
+                    if (fullOutput) {
                         System.Console.WriteLine();
                         System.Console.WriteLine("Connection strings:");
                         System.Console.WriteLine();
@@ -223,7 +233,7 @@ namespace Holycode.Configuration.Commands
         private static void PrintUsage()
         {
             System.Console.WriteLine("Usage:");
-            System.Console.WriteLine("hfcg [path] <command>");
+            System.Console.WriteLine("hfcg [path] <command> [switch]");
             System.Console.WriteLine();
             Console.WriteLine("Available commands:");
             Console.WriteLine(" tree|show        shows config tree");
@@ -233,6 +243,13 @@ namespace Holycode.Configuration.Commands
             Console.WriteLine(" get {key}        returns config value for key {key}");
             Console.WriteLine(" connstr [{name}] returns connection string with name {name}");
             Console.WriteLine(" set-env {name}   modify env.json to use environment named {name}");
+            Console.WriteLine();
+            Console.WriteLine("Switches:");
+            Console.WriteLine(" --verbose           show verbose log");
+            Console.WriteLine(" --full              show full output");
+            Console.WriteLine(" --help              show this help page");
+            Console.WriteLine(" --env {environment} use specific environment");
+            Console.WriteLine(" --no-env-var        do not include ENV variables in result");
         }
 
         private static void PrintVersion()
