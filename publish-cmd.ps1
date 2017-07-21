@@ -41,12 +41,13 @@ try {
                 choco install -y octopustools
             }
 
-            $r = invoke octo pack -id "tools.cfg" --outFolder="$psscriptroot\.nupkg\hcfg" -passthru
+            $r = invoke octo pack -id "tools.hcfg" --outFolder="$psscriptroot\.nupkg\hcfg" -passthru
             $line = $r | ? { $_ -match "Saving ([^\s]*) to" }
             $nupkg = $matches[1]
 
             write-output "$psscriptroot\.nupkg\hcfg\$nupkg"
             
+            cd "$psscriptroot\.nupkg\hcfg"
             $src = $env:NUGET_PUSH_SOURCE
             if ($src -ne $null) {
                 invoke nuget push $nupkg -source $src -Verbose

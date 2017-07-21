@@ -256,7 +256,11 @@ namespace Holycode.Configuration.Commands
         {
             var asm = typeof(Program).GetTypeInfo().Assembly;
             //var ver = asm.GetName().Version
+            #if !CORECLR
             var ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(asm.Location).ProductVersion;
+            #else 
+            var ver = "?";
+            #endif
             System.Console.WriteLine($"hcfg version {ver}");
         }
 
