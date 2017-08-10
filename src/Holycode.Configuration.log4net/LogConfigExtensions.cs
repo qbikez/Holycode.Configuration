@@ -12,6 +12,11 @@ namespace Microsoft.Extensions.Configuration
     public static class LogConfigExtensions
     {
         private static ILog debugLog = LogManager.GetLogger(typeof (LogConfigExtensions));
+        #if CORECLR
+        private static ILog rootLog => LogManager.GetLogger(typeof (LogConfigExtensions).GetTypeInfo().Assembly, "root");
+        #else 
+        private static ILog rootLog => LogManager.GetLogger("root");
+        #endif
         public static IConfiguration ConfigureLog4net(this IConfiguration config, string appName, ILog log = null, string logRootPath = null, bool internalDebug = false)
         {
             if (internalDebug)
@@ -20,7 +25,7 @@ namespace Microsoft.Extensions.Configuration
             }
 
 
-            log = log ?? LogManager.GetLogger("root");
+            log = log ?? rootLog;
             bool isRoot = log.Logger.Name == "root";
 
             var rootLevel = config.Get("log4net:level") ?? "Debug";
@@ -44,8 +49,6 @@ namespace Microsoft.Extensions.Configuration
             ConfigureFileLog(config, appName, env, logRootPath, log);
             ConfigureTraceLog(config, log);
             ConfigureConsoleLog(config, log);
-
-            ConfigureSolrLog(config, appName, log);
 
             ConfigureLoggers(config);
 
@@ -89,7 +92,6 @@ namespace Microsoft.Extensions.Configuration
             if (traceEnabled && Debugger.IsAttached)
             {
                 log.AddTraceAppender();
-                Logger l;
             }
         }
 
@@ -109,32 +111,7 @@ namespace Microsoft.Extensions.Configuration
         }
 
 
-        private static void ConfigureSolrLog(IConfiguration config, string appName, ILog log)
-        {
-            var solrConnectionString = config.GetConnectionStringValue("log4net:appenders:solr");
-            var solrEnabled = (config.GetNullable<bool>("log4net:appenders:solr:enabled") ?? true) &&
-                              solrConnectionString != null;
-            if (solrConnectionString?.Equals("False") ?? false)
-            {
-                solrConnectionString = null;
-                solrEnabled = false;
-                
-            }
-            if (solrEnabled)
-            {
-                log.Info($"enabling solr log. connectionstring={solrConnectionString}");
-                log.AddSolrLog(options =>
-                {
-                    options.SolrUrl = solrConnectionString;
-                    options.LogLogLevel = Level.All;         
-                },
-                    domain: appName);
-            }
-            else
-            {
-                log.Info($"solr log not enabled. connectionstring={solrConnectionString}");
-            }
-        }
+       
 
         private static void ConfigureFileLog(IConfiguration config, string appName, string env, string logRootPath, ILog log, bool minimalLock = true)
         {

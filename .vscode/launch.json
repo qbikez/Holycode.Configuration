@@ -1,68 +1,28 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+   // Use IntelliSense to find out which attributes exist for C# debugging
+   // Use hover for the description of the existing attributes
+   // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+   "version": "0.2.0",
+   "configurations": [
         {
-            "type": "PowerShell",
-            "request": "launch",
-            "name": "PowerShell Interactive Session",
-            "cwd": "${workspaceRoot}"
-        },
-        {
-            "name": "dotnet launch (console)",
+            "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/Holycode.Configuration/bin/cmd/netcoreapp1.0/hcfg.dll",
-            "args": ["c:/legimi/nowaera.hg/Platform/src/Website/NowaEra.Server.Website.vnext/","get","sslPaths"],
-           // "cwd": "${workspaceRoot}/test/Holycode.Configuration.Tests.dotnet",
-           "cwd": "${workspaceRoot}/src/Holycode.Configuration",
-            "stopAtEntry": true,
-            "externalConsole": false,
-            "requireExactSource": false
-        },
-        {
-            "name": ".NET Core Direct Launch (console)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceRoot}/test/Holycode.Configuration.Tests.dotnet/bin/Debug/netcoreapp1.0/win7-x64/Holycode.Configuration.Tests.dotnet.exe",
-            "args": ["Holycode.Configuration.Tests.dotnet.exe"],
-            "cwd": "${workspaceRoot}/test/Holycode.Configuration.TEsts.dotnet/bin/Debug/netcoreapp1.0/win7-x64",
-            "stopAtEntry": true,
-            "externalConsole": false
-        },
-        {
-            "name": ".NET Core Launch (web)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceRoot}/bin/Debug/<target-framework>/<project-name.dll>",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceRoot}/test/Holycode.Configuration.Tests.dotnet/bin/Debug/netcoreapp2.0/Holycode.Configuration.Tests.dotnet.dll",
             "args": [],
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}/test/Holycode.Configuration.Tests.dotnet",
+            // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
+            "console": "internalConsole",
             "stopAtEntry": false,
-            "launchBrowser": {
-                "enabled": true,
-                "args": "${auto-detect-url}",
-                "windows": {
-                    "command": "cmd.exe",
-                    "args": "/C start ${auto-detect-url}"
-                },
-                "osx": {
-                    "command": "open"
-                },
-                "linux": {
-                    "command": "xdg-open"
-                }
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            }
+            "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach",
-            "processId": 0
+            "processId": "${command:pickProcess}"
         }
     ]
 }

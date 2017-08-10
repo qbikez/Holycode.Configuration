@@ -67,8 +67,11 @@ namespace Microsoft.Extensions.Configuration
 #if !CORECLR
                 applicationBasePath = Assembly.GetCallingAssembly().CodeBase.Substring("file:///".Length);
 #else
-                throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
+                
 #endif
+                if (applicationBasePath == null) {
+                    throw new Exception("could not resolve applicationBasePath from calling assembly codebase");
+                }
 
                 if (File.Exists(applicationBasePath))
                     applicationBasePath = Path.GetDirectoryName(applicationBasePath);

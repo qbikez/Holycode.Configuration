@@ -21,7 +21,7 @@ namespace Holycode.Configuration.Serilog
         public static void Initialize(IConfiguration config, string appName, string diskPath, string virtPath)
         {
             string suffix = (virtPath?.Contains("-staging") ?? false) ? "-staging" : "";
-            Log.Logger = SerilogConfiguration.LoggerConfiguration(config, appname: $"{appName}{suffix}", baseDir: diskPath)
+            Log.Logger = SerilogConfiguration.CreateAndInitialize(config, appname: $"{appName}{suffix}", baseDir: diskPath)
                 .Enrich.With<HttpRequestIdEnricher>()
                 .Enrich.With<UserNameEnricher>()
                 .Enrich.With<HttpRequestUrlEnricher>()

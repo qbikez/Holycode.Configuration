@@ -47,23 +47,21 @@ namespace log4net
             if (l.GetAppender(appender.Name) != null)
                 return;
 
+            if (!l.Repository.Configured)
+            {
+                BasicConfigurator.Configure(l.Repository);
+                
+            }
             if (l.Name == "root")
             {
-                if (!l.Repository.Configured)
-                {
-                    BasicConfigurator.Configure(appender);
-                }
-                else
+                // if (!l.Repository.Configured) BasicConfigurator.Configure(l.Repository); // is this needed?
+                if (l.Repository.Configured)
                 {
                     LogManagerTools.AddGlobalAppender(appender);
                 }
             }
             else
             {
-                if (!l.Repository.Configured)
-                {
-                    BasicConfigurator.Configure(l.Repository);
-                }
                 l.AddAppender(appender);
             }
         }

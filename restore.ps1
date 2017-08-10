@@ -5,8 +5,7 @@ req pathutils
 
 write-host "dotnet found at:"
 $r = where-is "dotnet"
-$r | format-table | otu-string | write-host
+$r | format-table | out-string | write-host
 dotnet --info
 
-dotnet restore src/
-dotnet restore test/
+dotnet restore 

@@ -5,24 +5,21 @@ using log4net.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting;
 using System.Text;
 using log4net.Filter;
 using log4net.Layout;
 using log4net.Util;
 using log4net.Repository.Hierarchy;
+using System.Reflection;
 
 namespace log4net
 {
     public static class LogManagerTools
     {
+        static ILoggerRepository repository => LogManager.GetRepository(typeof(LogManagerTools).GetTypeInfo().Assembly);
         public static void FlushBuffers()
         {
-
-            ILoggerRepository rep = LogManager.GetRepository();
-
-
-            foreach (IAppender appender in rep.GetAppenders())
+            foreach (IAppender appender in repository.GetAppenders())
             {
                 var buffered = appender as BufferingAppenderSkeleton;
                 if (buffered != null)
@@ -48,7 +45,7 @@ namespace log4net
 
         public static void AddAppender(IAppender appender) => AddGlobalAppender(appender);
 
-        internal static void AddGlobalAppender(IAppender appender) => AddGlobalAppender(LogManager.GetRepository(), appender);
+        internal static void AddGlobalAppender(IAppender appender) => AddGlobalAppender(repository, appender);
 
         internal static void AddGlobalAppender(ILoggerRepository repository, IAppender appender)
         {
@@ -67,10 +64,10 @@ namespace log4net
 
         public static void AddTerminalAppenderColored() => AddAppender(AppenderFactory.CreateAnsiColorTerminalAppender());
 
-
+#if !CORECLR
         public static void AddSmtpAppender(string sendto, string programName = "", Level levelMin = null) 
             => AddAppender(AppenderFactory.CreateSmtpAppender(sendto, programName, levelMin));
-
+#endif
         public static void AddFileAppender(string filename, string appenderName = "RollingFileAppender", bool minimalLock = true,
         Action<RollingFileAppender> config = null) 
             => AddAppender(AppenderFactory.CreateFileAppender(filename, appenderName, minimalLock: minimalLock, config: config));
@@ -82,15 +79,6 @@ namespace log4net
         public static void AddCallbackAppender(Action<string> callback)
             => AddAppender(AppenderFactory.CreateCallbackAppender(callback));
 
-
-
-        // Set the level for a named logger
-        public static void SetLevel(string loggerName, Level level)
-        {
-            ILog log = LogManager.GetLogger(loggerName);
-            var l = (Logger)log.Logger;
-
-            l.Level = level;//l.Hierarchy.LevelMap[levelName];
-        }
+       
     }
 }

@@ -24,7 +24,7 @@ try {
     req pathutils
     refresh-env
 
-    $dotnetver = "1.0.0-preview3-003171"
+    $dotnetver = "2.0.0-preview2-006497"
     
     write-progress "installing dotnet $dotnetver"
     

@@ -10,7 +10,7 @@ namespace Holycode.Extensions.log4net
 {
     public class Log4NetTraceListener : TraceListener
     {
-        ILog _logger = LogManager.GetLogger("trace");
+        ILog _logger = LogManager.GetLogger(typeof(TraceListener));
 
         public override void Write(string message)
         {

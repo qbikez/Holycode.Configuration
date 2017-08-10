@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using log4net;
+using log4net.Config;
 
 namespace common.configuration.tests
 {
@@ -35,15 +37,16 @@ namespace common.configuration.tests
         [Fact]
         public void log4net_with_seriog_file_sink()
         {
-            var log = log4net.LogManager.GetLogger("root");
-            log4net.Config.BasicConfigurator.Configure();
+            var log = LogManager.GetLogger(typeof(serilog_test));
+            var repo = LogManager.GetRepository(typeof(serilog_test).Assembly);
+            BasicConfigurator.Configure(repo);
 
             var configuration = new ConfigurationBuilder().Build();
             var builder = new SerilogConfiguration(configuration, "test", ".");
             builder.UseFileSink();
             Serilog.Log.Logger = builder.CreateLogger();
 
-            log4net.Appender.Serilog.Configuration.Configure();
+            log4net.Appender.Serilog.Configuration.Configure(repo);
 
             try
             {
@@ -51,7 +54,7 @@ namespace common.configuration.tests
             } catch (Exception ex)
             {
                 // stack trace points to rethrow statement and cointains wrapped inner exception
-                log4net.LogManager.GetLogger("root").Error("caugth exception", ex);
+                log.Error("caugth exception", ex);
             }
 
             Serilog.Log.CloseAndFlush();
@@ -60,6 +63,7 @@ namespace common.configuration.tests
 
         private void InnerThrowing()
         {
+            var log = LogManager.GetLogger(typeof(serilog_test));
             try
             {
                 try
@@ -69,13 +73,13 @@ namespace common.configuration.tests
                 catch(Exception ex)
                 {                    
                     // stack trace points to original exception
-                    log4net.LogManager.GetLogger("root").Error("rethrowing exception", ex);
+                    log.Error("rethrowing exception", ex);
                     throw;
                 }
             } catch (Exception ex)
             {
                 /// stack trace ponts to rethrow statement
-                log4net.LogManager.GetLogger("root").Error("wrapping exception", ex);
+                log.Error("wrapping exception", ex);
                 throw new Exception("this is inner exception wrapper", ex);
             }
         }

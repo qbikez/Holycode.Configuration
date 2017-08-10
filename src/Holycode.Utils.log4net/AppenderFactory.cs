@@ -36,7 +36,9 @@ namespace log4net
 
         };
 
-        internal static ColoredConsoleAppender CreateConsoleAppenderColored()
+#if !CORECLR
+
+        internal static AppenderSkeleton CreateConsoleAppenderColored()
         {
             var appender = new ColoredConsoleAppender()
             {
@@ -66,7 +68,9 @@ namespace log4net
             });
             return appender;
         }
-
+#else
+        internal static AppenderSkeleton CreateConsoleAppenderColored() => CreateConsoleAppender();
+#endif
         internal static AnsiColorTerminalAppender CreateAnsiColorTerminalAppender()
         {
             var appender = new AnsiColorTerminalAppender()
@@ -133,6 +137,7 @@ namespace log4net
             return l;
         }
 
+#if !CORECLR
         internal static SmtpAppenderWithSubjectLayout CreateSmtpAppender(string sendto, string programName, Level levelMin)
         {
             const string layout =
@@ -164,6 +169,7 @@ namespace log4net
             return appender;
         }
 
+#endif
         internal static CallbackAppender CreateCallbackAppender(Action<string> callback)
         {
             return new CallbackAppender(callback)

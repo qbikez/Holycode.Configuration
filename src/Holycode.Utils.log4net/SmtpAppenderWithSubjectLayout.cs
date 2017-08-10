@@ -1,10 +1,12 @@
-﻿
+﻿#if !CORECLR
+
 namespace log4net.Appender
 {
     using log4net.Core;
     using log4net.Layout;
     using System.Collections.Generic;
     using System.IO;
+
 
     public class SmtpAppenderWithSubjectLayout : SmtpAppender
     {
@@ -54,3 +56,4 @@ namespace log4net.Appender
         }
     }
 }
+#endif
