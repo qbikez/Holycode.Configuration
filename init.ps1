@@ -1,3 +1,4 @@
+param([switch][bool]$force)
 pushd 
 
 cd $psscriptroot
@@ -28,9 +29,15 @@ try {
     
     write-progress "installing dotnet $dotnetver"
     
-    if ((get-command "dotnet" -ErrorAction Ignore) -eq $null -or ((dotnet --version) -ne $dotnetver)) {
-        wget "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1" -UseBasicParsing -OutFile ".scripts/dotnet-install.ps1" 
-        ./.scripts/dotnet-install.ps1 -Version $dotnetver    
+    if ($dotnetver.StartsWith("2.")) {
+        $obtain = "https://raw.githubusercontent.com/dotnet/cli/v2.0.0/scripts/obtain/dotnet-install.ps1"
+    } elseif ($dotnetver.StartsWith("1.")) {
+        $obtain = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1"
+    }
+    if ((get-command "dotnet" -ErrorAction Ignore) -eq $null -or ((dotnet --version) -ne $dotnetver) -or $force) {
+        write-verbose "getting dotnet install scripts from $obtain" -Verbose
+        wget $obtain -UseBasicParsing -OutFile ".scripts/dotnet-install.ps1" 
+        ./.scripts/dotnet-install.ps1 -Version $dotnetver -Verbose    
         if (test-path "./.tools/dotnet") { remove-item "./.tools/dotnet" -force -Confirm:$false }
     } 
     
