@@ -6,14 +6,16 @@ using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace Microsoft.Extensions.Configuration
 {
     public static class LogConfigExtensions
     {
         private static ILog debugLog = LogManager.GetLogger(typeof (LogConfigExtensions));
+        private static Assembly rootAssembly = typeof (LogConfigExtensions).GetTypeInfo().Assembly;
         #if CORECLR
-        private static ILog rootLog => LogManager.GetLogger(typeof (LogConfigExtensions).GetTypeInfo().Assembly, "root");
+        private static ILog rootLog => LogManager.GetLogger(rootAssembly, "root");
         #else 
         private static ILog rootLog => LogManager.GetLogger("root");
         #endif
@@ -64,7 +66,7 @@ namespace Microsoft.Extensions.Configuration
                 var level = ch.Get("level");
                 if (level != null)
                 {
-                    var logger = LogManager.GetLogger(loggername);
+                    var logger = LogManager.GetLogger(rootAssembly, loggername);
                     ((Logger)logger.Logger).SetLevel(level);
                     if (ch.Get("test") != null)
                     {
@@ -99,12 +101,12 @@ namespace Microsoft.Extensions.Configuration
         private const string ReqLoggerName = "req";
         public static ILog ConfigureStatsLogs(this IConfiguration config, string appName, string logdir)
         {
-            var statsLog = log4net.LogManager.GetLogger(StatsLoggerName);
+            var statsLog = log4net.LogManager.GetLogger(rootAssembly, StatsLoggerName);
             statsLog.SetLevel(Level.Info);
             statsLog.SetAdditivity(false);
             statsLog.AddFileAppender($"{logdir}/stats/{appName}-stats.csv", "stats", minimalLock: false);
 
-            var reqLog = log4net.LogManager.GetLogger(ReqLoggerName);
+            var reqLog = log4net.LogManager.GetLogger(rootAssembly, ReqLoggerName);
             reqLog.SetAdditivity(false);
             reqLog.AddFileAppender($"{logdir}/reqs/{appName}-req.log", "reqs", minimalLock: false);
             return statsLog;
