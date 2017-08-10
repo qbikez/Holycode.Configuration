@@ -4,7 +4,7 @@
     <Description>Tools for managing configuration</Description>
     <VersionPrefix>3.0.1-v3-015-2d15a</VersionPrefix>
     <Authors>Holycode</Authors>
-    <TargetFrameworks>net451;netcoreapp1.1;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6;net451;netcoreapp1.1</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Holycode.Configuration</AssemblyName>
     <PackageId>Holycode.Configuration</PackageId>

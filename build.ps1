@@ -7,9 +7,10 @@ dotnet --info
 
 pushd
 try {
-    dotnet build test/Holycode.Configuration.Tests.dotnet
-    dotnet build test/Holycode.Configuration.log4net.Tests
-    dotnet build src/Holycode.AspNetCore.Middleware
+    dotnet build Holycode.Configuration.sln
+    # dotnet build test/Holycode.Configuration.Tests.dotnet
+    # dotnet build test/Holycode.Configuration.log4net.Tests
+    # dotnet build src/Holycode.AspNetCore.Middleware
     
 } finally {
     popd

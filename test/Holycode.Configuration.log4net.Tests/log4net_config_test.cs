@@ -2,15 +2,17 @@
 using System;
 using Xunit;
 using Should;
+using System.Reflection;
 
 namespace Tests
 {
     public class log4net_config_test
     {
+        Assembly rootAsm = typeof(log4net_config_test).GetTypeInfo().Assembly;
         [Fact]
         public void should_add_global_appender()
         {
-            LogManager.ResetConfiguration();
+            LogManager.ResetConfiguration(rootAsm);
             bool callbackExecuted = false;
 
             var log = LogManager.GetLogger(typeof(log4net_config_test));
@@ -28,7 +30,7 @@ namespace Tests
         [Fact]
         public void should_add_appender_to_logger()
         {
-            LogManager.ResetConfiguration();
+            LogManager.ResetConfiguration(rootAsm);
             bool callbackExecuted = false;
 
             var log = LogManager.GetLogger(typeof(log4net_config_test));
@@ -47,11 +49,11 @@ namespace Tests
         [Fact]
         public void should_add_appender_to_logger_level_only()
         {
-            LogManager.ResetConfiguration();
+            LogManager.ResetConfiguration(rootAsm);
             int callbackCount = 0;
 
             var log = LogManager.GetLogger(typeof(log4net_config_test));
-            var rootLog = LogManager.GetLogger("root");
+            var rootLog = LogManager.GetLogger(rootAsm, "root");
 
             log.AddCallbackAppender(msg =>
             {
@@ -68,10 +70,10 @@ namespace Tests
         [Fact]
         public void root_appender_should_propagate()
         {
-            LogManager.ResetConfiguration();
+            LogManager.ResetConfiguration(rootAsm);
             int callbackCount = 0;
 
-            var rootLog = LogManager.GetLogger("root");
+            var rootLog = LogManager.GetLogger(rootAsm, "root");
             rootLog.AddCallbackAppender(msg =>
             {
                 Console.WriteLine(msg);
