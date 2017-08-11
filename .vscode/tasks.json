@@ -5,14 +5,14 @@
     "tasks": [
         {
             "taskName": "build",
-            "command": "dotnet build Holycode.Configuration.sln",
+            "command": "dotnet build Holycode.Configuration.sln /p:GenerateFullPaths=true",
             "type": "shell",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always"
             },
             "problemMatcher": "$msCompile"
         }

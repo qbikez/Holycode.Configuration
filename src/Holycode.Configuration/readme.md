@@ -11,6 +11,14 @@ Concept
 
 The concept is based on [asp.net Core Configuration model](https://docs.asp.net/en/latest/fundamentals/configuration.html).
 
+### Requirements
+
+* Configuration should work with minimal to none action from end-user (developer) side (that includes installing additional tools)
+* Configuration should be shared across different microservices and potentially different repos
+* Config files should bea easily discoverable
+* Production config should not be stored in same repository as dev config
+* switching configs should be easy
+
 Basic Usage
 -----------
 

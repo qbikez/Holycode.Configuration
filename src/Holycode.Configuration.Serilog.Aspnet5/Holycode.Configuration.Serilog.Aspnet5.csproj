@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="SerilogWeb.Classic" Version="2.0.10" />
-    <PackageReference Include="log4net.Appender.Serilog" Version="1.0.5-*" />
+    <PackageReference Include="log4net.Appender.Serilog" Version="1.0.5-master008-6b3d7" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">

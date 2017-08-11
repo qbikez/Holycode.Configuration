@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="Should" Version="1.1.20" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="log4net.Appender.Serilog" Version="1.0.5-*" />
+    <PackageReference Include="log4net.Appender.Serilog" Version="1.0.5-master008-*" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net451' ">
